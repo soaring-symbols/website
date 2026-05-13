@@ -18,6 +18,7 @@
         icon="hugeicons:upload-04"
         label="Drop SVG here or click to upload"
         :description="`Expected viewBox: 0 0 ${expectedSize} ${expectedSize}`"
+        :preview="false"
         class="w-full"
       />
 
@@ -29,8 +30,7 @@
             v-if="file"
             :src="previewUrl"
             :alt="type + ' preview'"
-            class="max-h-40 object-contain"
-            :class="type === 'icon' ? 'h-full w-auto' : 'w-full h-auto'"
+            class="object-contain w-full h-auto"
           />
         </div>
 

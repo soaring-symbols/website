@@ -74,20 +74,6 @@ export function runSvgChecks(
   ];
 
   if (bbox) {
-    const tolerance = 0.5;
-    const fits =
-      bbox.x >= -tolerance &&
-      bbox.y >= -tolerance &&
-      bbox.x + bbox.width <= size + tolerance &&
-      bbox.y + bbox.height <= size + tolerance;
-    checks.push({
-      label: "Fits viewBox",
-      pass: fits,
-      detail: fits
-        ? `${r(bbox.width)} × ${r(bbox.height)} at (${r(bbox.x)}, ${r(bbox.y)})`
-        : `extends to (${r(bbox.x)}, ${r(bbox.y)}) → (${r(bbox.x + bbox.width)}, ${r(bbox.y + bbox.height)})`,
-    });
-
     const maxDim = Math.max(bbox.width, bbox.height);
     const fills = maxDim / size >= 0.999;
     checks.push({
@@ -98,19 +84,48 @@ export function runSvgChecks(
         : `${r(bbox.width)} × ${r(bbox.height)}, need ${size} px in largest dimension`,
     });
 
-    const cx = bbox.x + bbox.width / 2;
-    const cy = bbox.y + bbox.height / 2;
-    const maxOffset = size * 0.05;
-    const isCentered =
-      Math.abs(cx - size / 2) <= maxOffset &&
-      Math.abs(cy - size / 2) <= maxOffset;
-    checks.push({
-      label: "Centered",
-      pass: isCentered,
-      detail: isCentered
-        ? `center (${r(cx)}, ${r(cy)})`
-        : `center (${r(cx)}, ${r(cy)}), expected (${size / 2}, ${size / 2})`,
-    });
+    if (!fills) {
+      checks.push(
+        {
+          label: "Fits viewBox",
+          pass: false,
+          detail: `extends to (${r(bbox.x)}, ${r(bbox.y)}) → (${r(bbox.x + bbox.width)}, ${r(bbox.y + bbox.height)})`,
+        },
+        {
+          label: "Centered",
+          pass: false,
+          detail: `center (${r(bbox.x + bbox.width / 2)}, ${r(bbox.y + bbox.height / 2)}), expected (${size / 2}, ${size / 2})`,
+        },
+      );
+    } else {
+      const tolerance = 0.5;
+      const fits =
+        bbox.x >= -tolerance &&
+        bbox.y >= -tolerance &&
+        bbox.x + bbox.width <= size + tolerance &&
+        bbox.y + bbox.height <= size + tolerance;
+      checks.push({
+        label: "Fits viewBox",
+        pass: fits,
+        detail: fits
+          ? `${r(bbox.width)} × ${r(bbox.height)} at (${r(bbox.x)}, ${r(bbox.y)})`
+          : `extends to (${r(bbox.x)}, ${r(bbox.y)}) → (${r(bbox.x + bbox.width)}, ${r(bbox.y + bbox.height)})`,
+      });
+
+      const cx = bbox.x + bbox.width / 2;
+      const cy = bbox.y + bbox.height / 2;
+      const maxOffset = size * 0.05;
+      const isCentered =
+        Math.abs(cx - size / 2) <= maxOffset &&
+        Math.abs(cy - size / 2) <= maxOffset;
+      checks.push({
+        label: "Centered",
+        pass: isCentered,
+        detail: isCentered
+          ? `center (${r(cx)}, ${r(cy)})`
+          : `center (${r(cx)}, ${r(cy)}), expected (${size / 2}, ${size / 2})`,
+      });
+    }
   }
 
   return checks;
