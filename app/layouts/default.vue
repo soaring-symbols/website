@@ -10,9 +10,9 @@
           color="neutral"
         />
         <UButton
-          to="/preview"
-          label="Preview"
-          icon="hugeicons:image-01"
+          to="/validate"
+          label="Validate"
+          icon="hugeicons:checkmark-circle-02"
           variant="ghost"
           color="neutral"
         />
