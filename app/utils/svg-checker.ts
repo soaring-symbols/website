@@ -5,7 +5,7 @@ export interface SvgCheck {
 }
 
 function r(n: number): number {
-  return Math.round(n * 10) / 10;
+  return Math.round(n * 1000) / 1000;
 }
 
 export function computeSvgBBox(svgEl: SVGSVGElement): DOMRect | null {
@@ -86,6 +86,16 @@ export function runSvgChecks(
       detail: fits
         ? `${r(bbox.width)} × ${r(bbox.height)} at (${r(bbox.x)}, ${r(bbox.y)})`
         : `extends to (${r(bbox.x)}, ${r(bbox.y)}) → (${r(bbox.x + bbox.width)}, ${r(bbox.y + bbox.height)})`,
+    });
+
+    const maxDim = Math.max(bbox.width, bbox.height);
+    const fills = maxDim / size >= 0.999;
+    checks.push({
+      label: "Fills viewBox",
+      pass: fills,
+      detail: fills
+        ? `${r(bbox.width)} × ${r(bbox.height)}`
+        : `${r(bbox.width)} × ${r(bbox.height)}, need ${size} px in largest dimension`,
     });
 
     const cx = bbox.x + bbox.width / 2;
