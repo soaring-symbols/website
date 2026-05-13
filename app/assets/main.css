@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+@theme {
+  --breakpoint-3xl: 112rem;
+  --breakpoint-4xl: 128rem;
+
+  --font-sans: 'Reddit Sans', sans-serif;
+  --font-mono: 'Reddit Mono', monospace;
+  --font-dosis: 'Dosis', sans-serif;
+
+  --color-discord: #5865f2;
+  --color-google: #ea4335;
+  --color-reddit: #ff4500;
+  --color-buymeacoffee: #ffdd00;
+  --color-paypal: #003087;
+  --color-qq: #f9ae08;
+
+  --color-donator: #bf3989;
+}
