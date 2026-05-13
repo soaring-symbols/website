@@ -1,58 +1,47 @@
 <template>
-  <UPage>
-    <template #left>
-      <UPageAside>
-        <div class="flex flex-col gap-6">
-          <!-- Search -->
-          <UInput
-            v-model="search"
-            placeholder="Search airlines..."
-            icon="hugeicons:search-01"
-            size="md"
-          />
+  <UContainer class="py-8">
+    <div class="flex flex-col gap-6">
+      <!-- Filters -->
+      <div class="flex flex-wrap items-center gap-4">
+        <UInput
+          v-model="search"
+          placeholder="Search airlines..."
+          icon="hugeicons:search-01"
+          class="w-64"
+        />
 
-          <!-- Flag Carrier filter -->
-          <UCheckbox
-            v-model="flagCarrierOnly"
-            label="Flag Carriers only"
-          />
+        <UCheckbox
+          v-model="flagCarrierOnly"
+          label="Flag Carriers only"
+        />
 
-          <!-- Alliance filter -->
-          <div class="flex flex-col gap-2">
-            <p class="text-sm font-semibold text-gray-900 dark:text-white">Alliance</p>
-            <div class="flex flex-col gap-2">
-              <UCheckbox
-                v-for="alliance in allianceOptions"
-                :key="alliance.value"
-                :label="alliance.label"
-                :model-value="selectedAlliances.includes(alliance.value)"
-                @update:model-value="(v) => toggleAlliance(alliance.value, v)"
-              />
-            </div>
-          </div>
+        <USeparator orientation="vertical" class="h-5" />
 
-          <!-- Reset -->
-          <UButton
-            v-if="search || selectedAlliances.length || flagCarrierOnly"
-            label="Reset filters"
-            variant="ghost"
-            color="neutral"
-            icon="hugeicons:cancel-01"
-            size="sm"
-            @click="resetFilters"
-          />
-        </div>
-      </UPageAside>
-    </template>
+        <USelect
+          v-model="selectedAlliances"
+          multiple
+          placeholder="All Alliances"
+          :items="allianceOptions"
+          class="w-48"
+        />
 
-    <!-- Results -->
-    <div class="flex flex-col gap-6 py-6">
-      <div class="flex items-center justify-between">
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          {{ filtered.length }} of {{ total }} airlines
-        </p>
+        <UButton
+          v-if="search || selectedAlliances.length || flagCarrierOnly"
+          label="Reset"
+          variant="ghost"
+          color="neutral"
+          icon="hugeicons:cancel-01"
+          size="sm"
+          @click="resetFilters"
+        />
       </div>
 
+      <!-- Count -->
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        {{ filtered.length }} of {{ total }} airlines
+      </p>
+
+      <!-- Results -->
       <div v-if="filtered.length" class="flex flex-col">
         <AirlineCard
           v-for="airline in filtered"
@@ -66,7 +55,7 @@
         <p class="text-sm">No airlines found</p>
       </div>
     </div>
-  </UPage>
+  </UContainer>
 </template>
 
 <script setup>
@@ -109,14 +98,6 @@ const filtered = computed(() => {
 
   return list
 })
-
-function toggleAlliance(alliance, checked) {
-  if (checked) {
-    selectedAlliances.value = [...selectedAlliances.value, alliance]
-  } else {
-    selectedAlliances.value = selectedAlliances.value.filter((a) => a !== alliance)
-  }
-}
 
 function resetFilters() {
   search.value = ''
