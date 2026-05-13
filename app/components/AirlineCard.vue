@@ -70,20 +70,6 @@ const variants = computed(() =>
   }))
 )
 
-function countryFlag(iso) {
-  return [...iso.toUpperCase()]
-    .map((c) => String.fromCodePoint(c.charCodeAt(0) + 127397))
-    .join('')
-}
-
-function countryName(iso) {
-  try {
-    return new Intl.DisplayNames(['en'], { type: 'region' }).of(iso) ?? iso
-  } catch {
-    return iso
-  }
-}
-
 function cleanUrl(url) {
   return url.replace(/^https?:\/\//, '').replace(/\/$/, '')
 }

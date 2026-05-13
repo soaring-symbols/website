@@ -12,7 +12,7 @@
 
         <UCheckbox
           v-model="flagCarrierOnly"
-          label="Flag Carriers only"
+          label="Flag Carriers"
         />
 
         <USeparator orientation="vertical" class="h-5" />
@@ -25,8 +25,16 @@
           class="w-48"
         />
 
+        <USelect
+          v-model="selectedCountries"
+          multiple
+          placeholder="All Countries"
+          :items="countryOptions"
+          class="w-48"
+        />
+
         <UButton
-          v-if="search || selectedAlliances.length || flagCarrierOnly"
+          v-if="search || selectedAlliances.length || selectedCountries.length || flagCarrierOnly"
           label="Reset"
           variant="ghost"
           color="neutral"
@@ -65,12 +73,18 @@ const airlines = airlinesData
 
 const search = ref('')
 const selectedAlliances = ref([])
+const selectedCountries = ref([])
 const flagCarrierOnly = ref(false)
 
 const allianceOptions = [
   ...[...new Set(airlines.map((a) => a.alliance).filter(Boolean))].sort().map((a) => ({ value: a, label: a })),
   { value: '__none__', label: 'No Alliance' },
 ]
+
+const countryOptions = [...new Set(airlines.map((a) => a.country))]
+  .sort((a, b) => countryName(a).localeCompare(countryName(b)))
+  .map((code) => ({ value: code, label: countryFlag(code) + ' ' + countryName(code) }))
+
 const total = airlines.length
 
 const filtered = computed(() => {
@@ -96,12 +110,17 @@ const filtered = computed(() => {
     )
   }
 
+  if (selectedCountries.value.length) {
+    list = list.filter((a) => selectedCountries.value.includes(a.country))
+  }
+
   return list
 })
 
 function resetFilters() {
   search.value = ''
   selectedAlliances.value = []
+  selectedCountries.value = []
   flagCarrierOnly.value = false
 }
 </script>
