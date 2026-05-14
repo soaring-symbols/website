@@ -1,68 +1,69 @@
 <template>
   <UDashboardPanel>
-    <div class="flex flex-col gap-6">
-      <!-- Filters -->
-      <div class="flex flex-wrap items-center gap-4">
-        <UInput
-          v-model="search"
-          placeholder="Search airlines..."
-          icon="hugeicons:search-01"
-          class="w-64"
-        />
+    <template #body>
+      <UPageHeader
+        title="Browse Airlines"
+        description="Explore the collection of airline symbols."
+      >
+        <div class="flex flex-wrap items-center gap-4 mt-8">
+          <UInput
+            v-model="search"
+            placeholder="Search airlines..."
+            icon="hugeicons:search-01"
+            class="w-64"
+          />
 
-        <UCheckbox
-          v-model="flagCarrierOnly"
-          label="Flag Carriers"
-        />
+          <UCheckbox v-model="flagCarrierOnly" label="Flag Carriers" />
 
-        <USeparator orientation="vertical" class="h-5" />
+          <USeparator orientation="vertical" class="h-5" />
 
-        <USelect
-          v-model="selectedAlliances"
-          multiple
-          placeholder="All Alliances"
-          :items="allianceOptions"
-          class="w-48"
-        />
+          <USelect
+            v-model="selectedAlliances"
+            multiple
+            placeholder="All Alliances"
+            :items="allianceOptions"
+            class="w-48"
+          />
 
-        <USelect
-          v-model="selectedCountries"
-          multiple
-          placeholder="All Countries"
-          :items="countryOptions"
-          class="w-48"
-        />
+          <USelect
+            v-model="selectedCountries"
+            multiple
+            placeholder="All Countries"
+            :items="countryOptions"
+            class="w-48"
+          />
 
-        <UButton
-          v-if="search || selectedAlliances.length || selectedCountries.length || flagCarrierOnly"
-          label="Reset"
-          variant="ghost"
-          color="neutral"
-          icon="hugeicons:cancel-01"
-          size="sm"
-          @click="resetFilters"
-        />
-      </div>
+          <UButton
+            v-if="
+              search ||
+              selectedAlliances.length ||
+              selectedCountries.length ||
+              flagCarrierOnly
+            "
+            label="Reset"
+            variant="ghost"
+            color="neutral"
+            icon="hugeicons:cancel-01"
+            size="sm"
+            @click="resetFilters"
+          />
+        </div>
+      </UPageHeader>
 
-      <!-- Count -->
-      <p class="text-sm text-gray-500 dark:text-gray-400">
-        {{ filtered.length }} of {{ total }} airlines
-      </p>
+      <UPageList v-if="filtered.length" divide>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          {{ filtered.length }} of {{ total }} airlines
+        </p>
 
-      <!-- Results -->
-      <div v-if="filtered.length" class="flex flex-col">
         <AirlineCard
           v-for="airline in filtered"
           :key="airline.slug"
           :airline="airline"
         />
-      </div>
+      </UPageList>
 
-      <div v-else class="flex flex-col items-center justify-center py-24 gap-3 text-gray-400">
-        <UIcon name="hugeicons:airplane-mode" class="size-12" />
-        <p class="text-sm">No airlines found</p>
-      </div>
-    </div>
+      <UPageSection v-else title="No Airlines Found" />
+    </template>
   </UDashboardPanel>
 </template>
 
@@ -77,13 +78,18 @@ const selectedCountries = ref([])
 const flagCarrierOnly = ref(false)
 
 const allianceOptions = [
-  ...[...new Set(airlines.map((a) => a.alliance).filter(Boolean))].sort().map((a) => ({ value: a, label: a })),
+  ...[...new Set(airlines.map((a) => a.alliance).filter(Boolean))]
+    .sort()
+    .map((a) => ({ value: a, label: a })),
   { value: '__none__', label: 'No Alliance' },
 ]
 
 const countryOptions = [...new Set(airlines.map((a) => a.country))]
   .sort((a, b) => countryName(a).localeCompare(countryName(b)))
-  .map((code) => ({ value: code, label: countryFlag(code) + ' ' + countryName(code) }))
+  .map((code) => ({
+    value: code,
+    label: countryFlag(code) + ' ' + countryName(code),
+  }))
 
 const total = airlines.length
 
@@ -106,7 +112,7 @@ const filtered = computed(() => {
 
   if (selectedAlliances.value.length) {
     list = list.filter((a) =>
-      selectedAlliances.value.includes(a.alliance ?? '__none__')
+      selectedAlliances.value.includes(a.alliance ?? '__none__'),
     )
   }
 
