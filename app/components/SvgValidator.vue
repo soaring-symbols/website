@@ -3,11 +3,7 @@
     <template #header>
       <div class="flex items-center justify-between">
         <span class="font-semibold">SVG Checker</span>
-        <USelect
-          v-model="type"
-          :items="typeOptions"
-          class="w-32"
-        />
+        <USelect v-model="type" :items="typeOptions" class="w-32" />
       </div>
     </template>
 
@@ -25,8 +21,10 @@
       <!-- Preview + results side by side -->
       <div v-if="checks.length" class="grid grid-cols-2 gap-6">
         <!-- Preview -->
-        <div class="flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 p-8 min-h-40">
-          <img
+        <div
+          class="flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 p-8 min-h-40"
+        >
+          <NuxtImg
             v-if="file"
             :src="previewUrl"
             :alt="type + ' preview'"
@@ -43,19 +41,33 @@
               class="flex items-start gap-2 text-sm"
             >
               <UIcon
-                :name="check.pass ? 'hugeicons:checkmark-circle-02' : 'hugeicons:cancel-circle'"
+                :name="
+                  check.pass
+                    ? 'hugeicons:checkmark-circle-02'
+                    : 'hugeicons:cancel-circle'
+                "
                 class="size-4 mt-0.5 shrink-0"
                 :class="check.pass ? 'text-green-500' : 'text-red-500'"
               />
               <div>
                 <span class="font-medium">{{ check.label }}</span>
-                <span class="block text-gray-400 font-mono text-xs mt-0.5">{{ check.detail }}</span>
+                <span class="block text-gray-400 font-mono text-xs mt-0.5">{{
+                  check.detail
+                }}</span>
               </div>
             </li>
           </ul>
 
-          <UBadge :color="allPass ? 'success' : 'error'" variant="subtle" class="self-start mt-auto">
-            {{ allPass ? 'All checks passed' : `${failCount} check${failCount > 1 ? 's' : ''} failed` }}
+          <UBadge
+            :color="allPass ? 'success' : 'error'"
+            variant="subtle"
+            class="self-start mt-auto"
+          >
+            {{
+              allPass
+                ? 'All checks passed'
+                : `${failCount} check${failCount > 1 ? 's' : ''} failed`
+            }}
           </UBadge>
         </div>
       </div>
@@ -81,7 +93,10 @@ watch(type, () => {
   file.value = null
   svgContent.value = null
   svgBBox.value = null
-  if (previewUrl.value) { URL.revokeObjectURL(previewUrl.value); previewUrl.value = null }
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = null
+  }
 })
 
 watch(file, (newFile, oldFile) => {
@@ -94,7 +109,9 @@ watch(file, (newFile, oldFile) => {
   }
   previewUrl.value = URL.createObjectURL(newFile)
   const reader = new FileReader()
-  reader.onload = (e) => { svgContent.value = e.target.result }
+  reader.onload = (e) => {
+    svgContent.value = e.target.result
+  }
   reader.readAsText(newFile)
 })
 

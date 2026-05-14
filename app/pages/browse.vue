@@ -1,10 +1,7 @@
 <template>
   <UDashboardPanel>
     <template #body>
-      <UPageHeader
-        title="Browse Airlines"
-        description="Explore the collection of airline symbols."
-      >
+      <UPageHeader v-bind="meta">
         <div class="flex flex-wrap items-center gap-4 mt-8">
           <UInput
             v-model="search"
@@ -69,6 +66,19 @@
 
 <script setup>
 import airlinesData from '#airlines-data'
+
+const meta = {
+  title: 'Browse Airlines',
+  description:
+    'Explore the collection of airline logos, icons, and branding from airlines around the world.',
+}
+
+useSeoMeta({
+  title: meta.title,
+  description: meta.description,
+  ogTitle: meta.title,
+  ogDescription: meta.description,
+})
 
 const airlines = airlinesData
 

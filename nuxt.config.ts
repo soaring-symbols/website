@@ -1,38 +1,49 @@
-import { createRequire } from "node:module";
-import { resolve } from "node:path";
+import { createRequire } from 'node:module'
+import { resolve } from 'node:path'
+import app from './package.json'
 
-const require = createRequire(import.meta.url);
+const require = createRequire(import.meta.url)
 const soaringSymbolsDir = resolve(
-  require.resolve("soaring-symbols/package.json"),
-  "..",
-);
+  require.resolve('soaring-symbols/package.json'),
+  '..',
+)
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  css: ["~/assets/main.css"],
+  css: ['~/assets/main.css'],
 
-  modules: ["@nuxt/ui"],
+  modules: ['@nuxt/ui'],
 
-  compatibilityDate: "2025-07-15",
+  compatibilityDate: '2025-07-15',
 
   devtools: { enabled: true },
 
   alias: {
-    "#airlines-data": resolve(soaringSymbolsDir, "dist/airlines.json"),
+    '#airlines-data': resolve(soaringSymbolsDir, 'dist/airlines.json'),
+  },
+
+  runtimeConfig: {
+    public: {
+      site: {
+        name: app.displayName,
+        description: app.description,
+        homepage: app.homepage,
+      },
+    },
   },
 
   vite: {
     optimizeDeps: {
-      exclude: ["soaring-symbols"],
+      exclude: ['soaring-symbols'],
     },
   },
 
   nitro: {
     publicAssets: [
       {
-        baseURL: "/airlines",
-        dir: resolve(soaringSymbolsDir, "dist/assets"),
+        baseURL: '/airlines',
+        dir: resolve(soaringSymbolsDir, 'dist/assets'),
       },
     ],
   },
-});
+})

@@ -12,7 +12,7 @@
       class="flex flex-col items-center justify-center gap-6 rounded-xl p-12"
       :style="{ backgroundColor: brandColor + '18' }"
     >
-      <img
+      <NuxtImg
         :src="logoSrc"
         :alt="airline.name"
         class="h-auto object-contain"
@@ -42,14 +42,15 @@ const props = defineProps({
 })
 
 const brandColor = computed(
-  () => props.airline.branding?.primary_color ?? '#6b7280'
+  () => props.airline.branding?.primary_color ?? '#6b7280',
 )
 
 const brandColors = computed(() => {
   const colors = props.airline.branding?.colors
-  return [
-    ...new Set([...(colors?.logo ?? []), ...(colors?.icon ?? [])]),
-  ].slice(0, 6)
+  return [...new Set([...(colors?.logo ?? []), ...(colors?.icon ?? [])])].slice(
+    0,
+    6,
+  )
 })
 
 const features = computed(() => {
@@ -83,20 +84,24 @@ const features = computed(() => {
 
 const links = computed(() => {
   if (!props.airline.website) return []
-  return [{
-    label: cleanUrl(props.airline.website),
-    icon: 'hugeicons:link-01',
-    to: props.airline.website,
-    target: '_blank',
-    variant: 'outline',
-    color: 'neutral',
-  }]
+  return [
+    {
+      label: cleanUrl(props.airline.website),
+      icon: 'hugeicons:link-01',
+      to: props.airline.website,
+      target: '_blank',
+      variant: 'outline',
+      color: 'neutral',
+    },
+  ]
 })
 
 const logoSrc = ref(`/airlines/${props.airline.slug}/logo.svg`)
 watch(
   () => props.airline.slug,
-  (slug) => { logoSrc.value = `/airlines/${slug}/logo.svg` }
+  (slug) => {
+    logoSrc.value = `/airlines/${slug}/logo.svg`
+  },
 )
 
 function onLogoError() {

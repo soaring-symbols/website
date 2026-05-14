@@ -1,18 +1,23 @@
 <template>
-  <div>
-    <!-- Hero -->
+  <UDashboardPanel>
     <UPageSection
       headline="Airline Branding Archive"
       title="Soaring Symbols"
       :description="`A curated collection of airline branding — logos, icons, and tail designs from ${total} airlines across the globe, all in SVG format.`"
-      :links="[{ label: 'Browse Airlines', to: '/browse', icon: 'hugeicons:airplane-01', trailingIcon: 'hugeicons:arrow-right-01' }]"
+      :links="[
+        {
+          label: 'Browse Airlines',
+          to: '/browse',
+          icon: 'hugeicons:airplane-01',
+          trailingIcon: 'hugeicons:arrow-right-01',
+        },
+      ]"
     />
 
-    <!-- Featured Airline -->
     <Transition name="fade" mode="out-in">
       <AirlineFeature :key="featured.slug" :airline="featured" />
     </Transition>
-  </div>
+  </UDashboardPanel>
 </template>
 
 <script setup>

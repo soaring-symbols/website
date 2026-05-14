@@ -1,20 +1,37 @@
 <template>
   <UDashboardPanel>
     <template #body>
-      <UPageHeader title="SVG Validator">
-        <template #description>
-          Validate your airline SVG assets against the
-          <a
-            href="https://github.com/anhthang/soaring-symbols/blob/main/CONTRIBUTING.md"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary hover:underline"
-            >contribution guidelines</a
-          >.
-        </template>
-      </UPageHeader>
+      <UPageHeader
+        v-bind="meta"
+        :links="[
+          {
+            label: 'Contribution Guidelines',
+            icon: 'hugeicons:github',
+            to: 'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md',
+            target: '_blank',
+            external: tree,
+          },
+        ]"
+      />
 
       <SvgValidator />
     </template>
   </UDashboardPanel>
 </template>
+
+<script setup>
+import { tree } from '#build/ui'
+
+const meta = {
+  title: 'SVG Validator',
+  description:
+    'Validate your airline SVG assets against the Soaring Symbols contribution guidelines.',
+}
+
+useSeoMeta({
+  title: meta.title,
+  description: meta.description,
+  ogTitle: meta.title,
+  ogDescription: meta.description,
+})
+</script>

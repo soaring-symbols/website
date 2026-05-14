@@ -17,7 +17,7 @@
           color="neutral"
         />
         <UButton
-          to="https://github.com/anhthang/soaring-symbols"
+          to="https://github.com/soaring-symbols/soaring-symbols"
           target="_blank"
           icon="hugeicons:github"
           variant="ghost"
