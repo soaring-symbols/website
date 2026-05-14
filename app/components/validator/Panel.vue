@@ -1,6 +1,10 @@
 <template>
   <div class="flex flex-col gap-4">
-    <UCard>
+    <UCard
+      :class="
+        allPass ? 'bg-success/10 ring-success/30' : 'bg-error/10 ring-error/30'
+      "
+    >
       <UUser
         v-if="allPass"
         name="SVG Valid"

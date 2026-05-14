@@ -1,20 +1,18 @@
 <template>
   <div class="flex flex-col gap-4">
-    <!-- Hidden file input for toolbar upload button -->
-    <input
-      ref="fileInputRef"
-      type="file"
+    <!-- Toolbar with file upload -->
+    <UFileUpload
+      v-slot="{ open }"
+      v-model="file"
       accept=".svg,image/svg+xml"
-      class="sr-only"
-      @change="onFileInputChange"
-    />
-
-    <!-- Toolbar -->
-    <ValidatorToolbar
-      :type="type"
-      @update:type="onTypeChange"
-      @upload="fileInputRef?.click()"
-    />
+      :preview="false"
+    >
+      <ValidatorToolbar
+        :type="type"
+        @update:type="onTypeChange"
+        @upload="open()"
+      />
+    </UFileUpload>
 
     <!-- Two-column layout when file loaded -->
     <div v-if="file" class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
@@ -41,7 +39,6 @@ const file = ref(null)
 const svgContent = ref(null)
 const svgBBox = ref(null)
 const previewUrl = ref(null)
-const fileInputRef = ref(null)
 
 const STRUCTURE_LABELS = [
   'Required attributes',
@@ -64,14 +61,6 @@ function resetFile() {
   if (previewUrl.value) {
     URL.revokeObjectURL(previewUrl.value)
     previewUrl.value = null
-  }
-}
-
-function onFileInputChange(e) {
-  const selected = e.target.files?.[0]
-  if (selected) {
-    file.value = selected
-    e.target.value = ''
   }
 }
 
