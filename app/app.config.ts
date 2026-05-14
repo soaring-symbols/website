@@ -4,9 +4,10 @@ export default defineAppConfig({
       primary: 'sky',
       secondary: 'indigo',
       success: 'emerald',
-      info: 'blue',
-      error: 'red',
+      info: 'teal',
       warning: 'amber',
+      error: 'rose',
+      neutral: 'zinc',
     },
     icons: {
       arrowDown: 'hugeicons:arrow-down-02',

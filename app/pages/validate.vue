@@ -7,9 +7,10 @@
           {
             label: 'Contribution Guidelines',
             icon: 'hugeicons:github',
-            to: 'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md',
+            to: 'https://github.com/anhthang/soaring-symbols/blob/main/CONTRIBUTING.md',
             target: '_blank',
-            external: tree,
+            variant: 'soft',
+            color: 'info',
           },
         ]"
       />
@@ -20,8 +21,6 @@
 </template>
 
 <script setup>
-import { tree } from '#build/ui'
-
 const meta = {
   title: 'SVG Validator',
   description:

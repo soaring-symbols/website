@@ -1,97 +1,63 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="flex flex-col gap-4">
-        <URadioGroup
-          v-model="type"
-          :items="typeOptions"
-          orientation="horizontal"
-          variant="table"
-          size="sm"
-        />
-      </div>
-    </template>
+  <div class="flex flex-col gap-4">
+    <!-- Hidden file input for toolbar upload button -->
+    <input
+      ref="fileInputRef"
+      type="file"
+      accept=".svg,image/svg+xml"
+      class="sr-only"
+      @change="onFileInputChange"
+    />
 
-    <template #default>
-      <UFileUpload
-        v-if="!file"
-        v-model="file"
-        accept="image/svg+xml,.svg"
-        icon="hugeicons:upload-04"
-        label="Upload an SVG file to validate it against the contribution guidelines."
-        :description="`Expected viewBox: 0 0 ${expectedSize} ${expectedSize}`"
-        size="xl"
+    <!-- Toolbar -->
+    <ValidatorToolbar
+      :type="type"
+      @update:type="onTypeChange"
+      @upload="fileInputRef?.click()"
+    />
+
+    <!-- Two-column layout when file loaded -->
+    <div v-if="file" class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+      <ValidatorPreviewCard
+        :preview-url="previewUrl"
+        :file-name="file.name"
+        :metadata="svgMetadata"
+        :all-pass="allPass"
+        @remove="resetFile"
       />
-      <UPageCard v-else orientation="horizontal" reverse variant="naked">
-        <UFileUpload
-          v-model="file"
-          accept="image/svg+xml,.svg"
-          icon="hugeicons:upload-04"
-          label="Upload an SVG file to validate it against the contribution guidelines."
-          :description="`Expected viewBox: 0 0 ${expectedSize} ${expectedSize}`"
-          size="xl"
-          class="aspect-square"
-        />
-
-        <template #description>
-          <div class="flex flex-col gap-3">
-            <ul class="flex flex-col gap-2">
-              <li
-                v-for="check in checks"
-                :key="check.label"
-                class="flex items-start gap-2 text-sm"
-              >
-                <UIcon
-                  :name="
-                    check.pass
-                      ? 'hugeicons:checkmark-circle-02'
-                      : 'hugeicons:cancel-circle'
-                  "
-                  class="size-4 mt-0.5 shrink-0"
-                  :class="check.pass ? 'text-success' : 'text-error'"
-                />
-                <div>
-                  <span class="font-medium">{{ check.label }}</span>
-                  <span class="block text-muted font-mono text-xs mt-0.5">{{
-                    check.detail
-                  }}</span>
-                </div>
-              </li>
-            </ul>
-
-            <UBadge
-              :color="allPass ? 'success' : 'error'"
-              variant="subtle"
-              class="self-start mt-auto"
-            >
-              {{
-                allPass
-                  ? 'All checks passed'
-                  : `${failCount} check${failCount > 1 ? 's' : ''} failed`
-              }}
-            </UBadge>
-          </div>
-        </template>
-      </UPageCard>
-    </template>
-  </UCard>
+      <ValidatorPanel
+        :groups="groupedChecks"
+        :all-pass="allPass"
+        :total="allChecks.length"
+        :passed="passedCount"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup>
-const typeOptions = [
-  { label: 'Logo', value: 'logo' },
-  { label: 'Icon', value: 'icon' },
-]
-
 const type = ref('logo')
-const expectedSize = computed(() => (type.value === 'logo' ? '64' : '24'))
-
 const file = ref(null)
 const svgContent = ref(null)
 const svgBBox = ref(null)
 const previewUrl = ref(null)
+const fileInputRef = ref(null)
 
-watch(type, () => {
+const STRUCTURE_LABELS = [
+  'Required attributes',
+  'No embedded scripts',
+  'No transforms',
+]
+const GEOMETRY_LABELS = ['Fills viewBox', 'Fits viewBox', 'Centered']
+
+// --- Handlers ---
+
+function onTypeChange(newType) {
+  type.value = newType
+  resetFile()
+}
+
+function resetFile() {
   file.value = null
   svgContent.value = null
   svgBBox.value = null
@@ -99,10 +65,20 @@ watch(type, () => {
     URL.revokeObjectURL(previewUrl.value)
     previewUrl.value = null
   }
-})
+}
+
+function onFileInputChange(e) {
+  const selected = e.target.files?.[0]
+  if (selected) {
+    file.value = selected
+    e.target.value = ''
+  }
+}
+
+// --- Watchers ---
 
 watch(file, (newFile, oldFile) => {
-  if (oldFile) URL.revokeObjectURL(previewUrl.value)
+  if (oldFile && previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   if (!newFile) {
     svgContent.value = null
     svgBBox.value = null
@@ -125,6 +101,8 @@ watch(svgContent, async () => {
   svgBBox.value = computeSvgBBox(parsedSvg.value)
 })
 
+// --- Computed ---
+
 const parsedSvg = computed(() => {
   if (!svgContent.value || !import.meta.client) return null
   const parser = new DOMParser()
@@ -132,11 +110,89 @@ const parsedSvg = computed(() => {
   return doc.querySelector('svg')
 })
 
-const checks = computed(() => {
-  if (!parsedSvg.value) return []
-  return runSvgValidations(parsedSvg.value, type.value, svgBBox.value)
+const stylingCheck = computed(() => {
+  if (!parsedSvg.value) return null
+  const elements = parsedSvg.value.querySelectorAll('*')
+  const colors = new Set()
+  elements.forEach((el) => {
+    const fill = el.getAttribute('fill')
+    const stroke = el.getAttribute('stroke')
+    if (fill && fill !== 'none' && fill !== 'currentColor')
+      colors.add(fill.toLowerCase())
+    if (stroke && stroke !== 'none' && stroke !== 'currentColor')
+      colors.add(stroke.toLowerCase())
+    const style = el.getAttribute('style')
+    if (style) {
+      const fillMatch = style.match(/fill\s*:\s*([^;]+)/)
+      const strokeMatch = style.match(/stroke\s*:\s*([^;]+)/)
+      if (fillMatch && fillMatch[1].trim() !== 'none')
+        colors.add(fillMatch[1].trim().toLowerCase())
+      if (strokeMatch && strokeMatch[1].trim() !== 'none')
+        colors.add(strokeMatch[1].trim().toLowerCase())
+    }
+  })
+  const count = colors.size || 1
+  const limit = type.value === 'icon' ? 3 : 8
+  return {
+    label: 'Consistent styling',
+    pass: count <= limit,
+    detail: `${count} color${count !== 1 ? 's' : ''} used`,
+  }
 })
 
-const allPass = computed(() => checks.value.every((c) => c.pass))
-const failCount = computed(() => checks.value.filter((c) => !c.pass).length)
+const allChecks = computed(() => {
+  if (!parsedSvg.value) return []
+  const base = runSvgValidations(parsedSvg.value, type.value, svgBBox.value)
+  return stylingCheck.value ? [...base, stylingCheck.value] : base
+})
+
+const groupedChecks = computed(() => {
+  const groups = [
+    { title: 'Structure', labels: STRUCTURE_LABELS },
+    { title: 'Geometry', labels: GEOMETRY_LABELS },
+    { title: 'Styling', labels: ['Consistent styling'] },
+  ]
+  return groups
+    .map((g) => ({
+      title: g.title,
+      checks: g.labels
+        .map((label) => allChecks.value.find((c) => c.label === label))
+        .filter(Boolean),
+    }))
+    .filter((g) => g.checks.length > 0)
+})
+
+const allPass = computed(() => allChecks.value.every((c) => c.pass))
+const passedCount = computed(() => allChecks.value.filter((c) => c.pass).length)
+
+const svgMetadata = computed(() => {
+  if (!parsedSvg.value || !file.value) return null
+  const svg = parsedSvg.value
+  const viewBox = svg.getAttribute('viewBox') ?? 'missing'
+  const paths = svg.querySelectorAll('path').length
+  const elements = svg.querySelectorAll('*')
+  const colors = new Set()
+  elements.forEach((el) => {
+    const fill = el.getAttribute('fill')
+    const stroke = el.getAttribute('stroke')
+    if (fill && fill !== 'none' && fill !== 'currentColor')
+      colors.add(fill.toLowerCase())
+    if (stroke && stroke !== 'none' && stroke !== 'currentColor')
+      colors.add(stroke.toLowerCase())
+  })
+
+  const bbox = svgBBox.value
+  const r = (n) => Math.round(n * 1000) / 1000
+  const dimensions = bbox
+    ? `${r(bbox.width)} × ${r(bbox.height)}`
+    : viewBox !== 'missing'
+      ? viewBox.split(' ').slice(2).join(' × ')
+      : '—'
+
+  const bytes = file.value.size
+  const fileSize =
+    bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`
+
+  return { dimensions, paths, colors: colors.size || 0, fileSize, viewBox }
+})
 </script>

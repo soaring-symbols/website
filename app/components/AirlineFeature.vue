@@ -90,7 +90,6 @@ const links = computed(() => {
       icon: 'hugeicons:link-01',
       to: props.airline.website,
       target: '_blank',
-      variant: 'outline',
       color: 'neutral',
     },
   ]
