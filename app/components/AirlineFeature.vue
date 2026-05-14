@@ -12,7 +12,7 @@
       class="flex flex-col items-center justify-center gap-6 rounded-xl p-12"
       :style="{ backgroundColor: brandColor + '18' }"
     >
-      <NuxtImg
+      <img
         :src="logoSrc"
         :alt="airline.name"
         class="h-auto object-contain"

@@ -36,6 +36,7 @@
     "@commitlint/config-conventional": "^21.0.0",
     "@iconify-json/hugeicons": "^1.2.27",
     "@nuxt/eslint-config": "^1.15.2",
+    "@nuxt/image": "^2.0.0",
     "@tailwindcss/typography": "^0.5.19",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",

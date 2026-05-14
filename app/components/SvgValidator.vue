@@ -1,77 +1,79 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex items-center justify-between">
-        <span class="font-semibold">SVG Checker</span>
-        <USelect v-model="type" :items="typeOptions" class="w-32" />
+      <div class="flex flex-col gap-4">
+        <URadioGroup
+          v-model="type"
+          :items="typeOptions"
+          orientation="horizontal"
+          variant="table"
+          size="sm"
+        />
       </div>
     </template>
 
-    <div class="flex flex-col gap-4">
+    <template #default>
       <UFileUpload
+        v-if="!file"
         v-model="file"
         accept="image/svg+xml,.svg"
         icon="hugeicons:upload-04"
-        label="Drop SVG here or click to upload"
+        label="Upload an SVG file to validate it against the contribution guidelines."
         :description="`Expected viewBox: 0 0 ${expectedSize} ${expectedSize}`"
-        :preview="false"
-        class="w-full"
+        size="xl"
       />
+      <UPageCard v-else orientation="horizontal" reverse variant="naked">
+        <UFileUpload
+          v-model="file"
+          accept="image/svg+xml,.svg"
+          icon="hugeicons:upload-04"
+          label="Upload an SVG file to validate it against the contribution guidelines."
+          :description="`Expected viewBox: 0 0 ${expectedSize} ${expectedSize}`"
+          size="xl"
+          class="aspect-square"
+        />
 
-      <!-- Preview + results side by side -->
-      <div v-if="checks.length" class="grid grid-cols-2 gap-6">
-        <!-- Preview -->
-        <div
-          class="flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 p-8 min-h-40"
-        >
-          <NuxtImg
-            v-if="file"
-            :src="previewUrl"
-            :alt="type + ' preview'"
-            class="object-contain w-full h-auto"
-          />
-        </div>
+        <template #description>
+          <div class="flex flex-col gap-3">
+            <ul class="flex flex-col gap-2">
+              <li
+                v-for="check in checks"
+                :key="check.label"
+                class="flex items-start gap-2 text-sm"
+              >
+                <UIcon
+                  :name="
+                    check.pass
+                      ? 'hugeicons:checkmark-circle-02'
+                      : 'hugeicons:cancel-circle'
+                  "
+                  class="size-4 mt-0.5 shrink-0"
+                  :class="check.pass ? 'text-success' : 'text-error'"
+                />
+                <div>
+                  <span class="font-medium">{{ check.label }}</span>
+                  <span class="block text-muted font-mono text-xs mt-0.5">{{
+                    check.detail
+                  }}</span>
+                </div>
+              </li>
+            </ul>
 
-        <!-- Checks -->
-        <div class="flex flex-col gap-3">
-          <ul class="flex flex-col gap-2">
-            <li
-              v-for="check in checks"
-              :key="check.label"
-              class="flex items-start gap-2 text-sm"
+            <UBadge
+              :color="allPass ? 'success' : 'error'"
+              variant="subtle"
+              class="self-start mt-auto"
             >
-              <UIcon
-                :name="
-                  check.pass
-                    ? 'hugeicons:checkmark-circle-02'
-                    : 'hugeicons:cancel-circle'
-                "
-                class="size-4 mt-0.5 shrink-0"
-                :class="check.pass ? 'text-green-500' : 'text-red-500'"
-              />
-              <div>
-                <span class="font-medium">{{ check.label }}</span>
-                <span class="block text-gray-400 font-mono text-xs mt-0.5">{{
-                  check.detail
-                }}</span>
-              </div>
-            </li>
-          </ul>
-
-          <UBadge
-            :color="allPass ? 'success' : 'error'"
-            variant="subtle"
-            class="self-start mt-auto"
-          >
-            {{
-              allPass
-                ? 'All checks passed'
-                : `${failCount} check${failCount > 1 ? 's' : ''} failed`
-            }}
-          </UBadge>
-        </div>
-      </div>
-    </div>
+              {{
+                allPass
+                  ? 'All checks passed'
+                  : `${failCount} check${failCount > 1 ? 's' : ''} failed`
+              }}
+            </UBadge>
+          </div>
+        </template>
+      </UPageCard>
+    </template>
   </UCard>
 </template>
 

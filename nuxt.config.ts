@@ -12,7 +12,12 @@ const soaringSymbolsDir = resolve(
 export default defineNuxtConfig({
   css: ['~/assets/main.css'],
 
-  modules: ['@nuxt/ui'],
+  modules: [
+    '@nuxt/ui',
+    '@nuxt/image',
+    '@vercel/analytics',
+    '@vercel/speed-insights',
+  ],
 
   compatibilityDate: '2025-07-15',
 
@@ -35,6 +40,7 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       exclude: ['soaring-symbols'],
+      include: ['@vue/devtools-core', '@vue/devtools-kit'],
     },
   },
 
