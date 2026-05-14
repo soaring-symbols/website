@@ -115,7 +115,7 @@ const parsedSvg = computed(() => {
 
 const checks = computed(() => {
   if (!parsedSvg.value) return []
-  return runSvgChecks(parsedSvg.value, type.value, svgBBox.value)
+  return runSvgValidations(parsedSvg.value, type.value, svgBBox.value)
 })
 
 const allPass = computed(() => checks.value.every((c) => c.pass))

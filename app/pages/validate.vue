@@ -13,6 +13,6 @@
       </template>
     </UPageHeader>
 
-    <SvgChecker />
+    <SvgValidator />
   </UContainer>
 </template>
