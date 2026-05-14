@@ -12,10 +12,10 @@
   "homepage": "https://soaring-symbols.vercel.app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/soaring-symbols/soaring-symbols.git"
+    "url": "git+https://github.com/soaring-symbols/website.git"
   },
   "bugs": {
-    "url": "https://github.com/soaring-symbols/soaring-symbols/issues"
+    "url": "https://github.com/soaring-symbols/website/issues"
   },
   "scripts": {
     "build": "nuxt build",
