@@ -1,5 +1,5 @@
 <template>
-  <UContainer class="py-8">
+  <UDashboardPanel>
     <div class="flex flex-col gap-6">
       <!-- Filters -->
       <div class="flex flex-wrap items-center gap-4">
@@ -63,7 +63,7 @@
         <p class="text-sm">No airlines found</p>
       </div>
     </div>
-  </UContainer>
+  </UDashboardPanel>
 </template>
 
 <script setup>

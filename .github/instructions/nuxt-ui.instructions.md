@@ -1,7 +1,7 @@
 ---
 name: nuxt-ui-instructions
-description: "Auto-activated instructions for Nuxt UI component development in this Soaring Symbols project"
-applyTo: "**/*.vue,**/*.ts"
+description: 'Auto-activated instructions for Nuxt UI component development in this Soaring Symbols project'
+applyTo: '**/*.vue,**/*.ts'
 ---
 
 # Nuxt UI Development Guidelines
@@ -64,7 +64,7 @@ When developing Nuxt UI components, I have access to:
 - **Component Documentation**: `mcp_nuxt_ui_get-component` - Get detailed component docs
 - **Component Search**: `mcp_nuxt_ui_search-components` - Find components by name
 - **Code Examples**: `mcp_nuxt_ui_get-example` - View real implementation examples
-- **Icons Search**: `mcp_nuxt_ui_search-icons` - Find available Lucide icons
+- **Icons Search**: `mcp_nuxt_ui_search-icons` - Find available Hugeicons
 
 ## File Structure
 

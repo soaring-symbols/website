@@ -29,7 +29,9 @@
     </UHeader>
 
     <main class="flex-1">
-      <slot />
+      <UContainer class="py-8">
+        <slot />
+      </UContainer>
     </main>
 
     <UFooter>
@@ -41,6 +43,3 @@
     </UFooter>
   </div>
 </template>
-
-<script setup>
-</script>
