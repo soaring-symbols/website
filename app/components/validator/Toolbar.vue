@@ -8,16 +8,6 @@
         @update:model-value="$emit('update:type', $event)"
       />
 
-      <USeparator orientation="vertical" class="h-7 hidden sm:block" />
-
-      <p class="text-xs text-muted hidden md:block">
-        {{
-          type === 'logo'
-            ? 'Logos — 64×64 viewBox, may contain text'
-            : 'Icons — 24×24 viewBox, geometry only'
-        }}
-      </p>
-
       <div class="flex items-center gap-2 ms-auto">
         <UButton
           label="Upload SVG"
@@ -38,7 +28,11 @@ defineProps({
 defineEmits(['update:type', 'upload'])
 
 const typeOptions = [
-  { label: 'Logo', value: 'logo' },
-  { label: 'Icon', value: 'icon' },
+  {
+    label: 'Logo',
+    value: 'logo',
+    description: '64×64 viewBox, may contain text',
+  },
+  { label: 'Icon', value: 'icon', description: '24×24 viewBox, geometry only' },
 ]
 </script>

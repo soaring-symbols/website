@@ -1,9 +1,5 @@
 <template>
-  <UAccordion
-    v-model="defaultOpenGroups"
-    :items="accordionItems"
-    type="multiple"
-  >
+  <UAccordion v-model="openGroups" :items="accordionItems" type="multiple">
     <template #body="{ item }">
       <UPageList>
         <li
@@ -40,10 +36,16 @@ const props = defineProps({
   groups: Array,
 })
 
-const defaultOpenGroups = computed(() =>
-  props.groups
-    .filter((g) => !g.checks.every((c) => c.pass))
-    .map((g) => g.title),
+const failingTitles = (groups) =>
+  groups.filter((g) => !g.checks.every((c) => c.pass)).map((g) => g.title)
+
+const openGroups = ref(failingTitles(props.groups))
+
+watch(
+  () => props.groups,
+  (newGroups) => {
+    openGroups.value = failingTitles(newGroups)
+  },
 )
 
 const accordionItems = computed(() =>

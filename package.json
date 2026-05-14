@@ -1,7 +1,7 @@
 {
   "name": "website",
   "displayName": "Soaring Symbols",
-  "description": "A collection of airline symbols in SVG format.",
+  "description": "A curated collection of airline branding assets — logos, icons, and tails in SVG.",
   "type": "module",
   "private": true,
   "author": {
