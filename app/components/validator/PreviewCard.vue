@@ -4,7 +4,7 @@
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 min-w-0">
-          <UIcon name="hugeicons:file-01" class="size-4 text-muted shrink-0" />
+          <UIcon name="hugeicons:svg-01" class="size-4 text-muted shrink-0" />
           <span class="font-medium text-sm truncate">{{ fileName }}</span>
         </div>
         <UButton
@@ -83,10 +83,10 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  previewUrl: String,
-  fileName: String,
-  metadata: Object,
+defineProps({
+  previewUrl: { type: String, default: '' },
+  fileName: { type: String, default: '' },
+  metadata: { type: Object, default: () => ({}) },
   allPass: Boolean,
 })
 

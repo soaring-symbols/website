@@ -1,24 +1,42 @@
 <template>
-  <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-    <div
+  <div class="flex flex-wrap items-center justify-between gap-x-5 gap-y-2">
+    <UUser
       v-for="stat in statItems"
       :key="stat.label"
-      class="flex items-center gap-1.5 text-sm"
-    >
-      <UIcon :name="stat.icon" class="size-3.5 text-muted shrink-0" />
-      <span class="text-muted">{{ stat.label }}</span>
-      <span class="font-mono font-medium text-default">{{ stat.value }}</span>
-    </div>
+      :avatar="{
+        icon: stat.icon,
+        ui: {
+          root: 'bg-transparent',
+        },
+      }"
+      :name="stat.label"
+      :description="stat.value"
+    />
   </div>
 </template>
 
 <script setup>
 const props = defineProps({
-  dimensions: String,
-  paths: Number,
-  colors: Number,
-  fileSize: String,
-  viewBox: String,
+  dimensions: {
+    type: String,
+    default: '',
+  },
+  paths: {
+    type: Number,
+    default: 0,
+  },
+  colors: {
+    type: Number,
+    default: 0,
+  },
+  fileSize: {
+    type: String,
+    default: '',
+  },
+  viewBox: {
+    type: String,
+    default: '',
+  },
 })
 
 const statItems = computed(() => [
@@ -30,7 +48,7 @@ const statItems = computed(() => [
   {
     label: 'Paths',
     value: props.paths ?? 0,
-    icon: 'hugeicons:bezier-curve-02',
+    icon: 'hugeicons:bend-tool',
   },
   {
     label: 'Colors',

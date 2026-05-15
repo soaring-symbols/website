@@ -99,47 +99,15 @@ const parsedSvg = computed(() => {
   return doc.querySelector('svg')
 })
 
-const stylingCheck = computed(() => {
-  if (!parsedSvg.value) return null
-  const elements = parsedSvg.value.querySelectorAll('*')
-  const colors = new Set()
-  elements.forEach((el) => {
-    const fill = el.getAttribute('fill')
-    const stroke = el.getAttribute('stroke')
-    if (fill && fill !== 'none' && fill !== 'currentColor')
-      colors.add(fill.toLowerCase())
-    if (stroke && stroke !== 'none' && stroke !== 'currentColor')
-      colors.add(stroke.toLowerCase())
-    const style = el.getAttribute('style')
-    if (style) {
-      const fillMatch = style.match(/fill\s*:\s*([^;]+)/)
-      const strokeMatch = style.match(/stroke\s*:\s*([^;]+)/)
-      if (fillMatch && fillMatch[1].trim() !== 'none')
-        colors.add(fillMatch[1].trim().toLowerCase())
-      if (strokeMatch && strokeMatch[1].trim() !== 'none')
-        colors.add(strokeMatch[1].trim().toLowerCase())
-    }
-  })
-  const count = colors.size || 1
-  const limit = type.value === 'icon' ? 3 : 8
-  return {
-    label: 'Consistent styling',
-    pass: count <= limit,
-    detail: `${count} color${count !== 1 ? 's' : ''} used`,
-  }
-})
-
 const allChecks = computed(() => {
   if (!parsedSvg.value) return []
-  const base = runSvgValidations(parsedSvg.value, type.value, svgBBox.value)
-  return stylingCheck.value ? [...base, stylingCheck.value] : base
+  return runSvgValidations(parsedSvg.value, type.value, svgBBox.value)
 })
 
 const groupedChecks = computed(() => {
   const groups = [
     { title: 'Structure', labels: STRUCTURE_LABELS },
     { title: 'Geometry', labels: GEOMETRY_LABELS },
-    { title: 'Styling', labels: ['Consistent styling'] },
   ]
   return groups
     .map((g) => ({
