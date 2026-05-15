@@ -7,21 +7,18 @@
           label="Browse"
           icon="hugeicons:airplane-01"
           variant="ghost"
-          color="neutral"
         />
         <UButton
           to="/validate"
           label="Validate"
           icon="hugeicons:checkmark-circle-02"
           variant="ghost"
-          color="neutral"
         />
         <UButton
           to="https://github.com/soaring-symbols/soaring-symbols"
           target="_blank"
           icon="hugeicons:github"
           variant="ghost"
-          color="neutral"
           aria-label="GitHub"
         />
         <UColorModeButton />

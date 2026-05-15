@@ -60,14 +60,12 @@ const features = computed(() => {
     title: countryName(props.airline.country),
     description: countryFlag(props.airline.country),
     icon: 'hugeicons:global',
-    orientation: 'horizontal',
   })
 
   items.push({
     title: `${props.airline.iata} / ${props.airline.icao}`,
     description: 'IATA / ICAO',
     icon: 'hugeicons:airplane-01',
-    orientation: 'horizontal',
   })
 
   if (props.airline.alliance) {
@@ -75,7 +73,6 @@ const features = computed(() => {
       title: props.airline.alliance,
       description: 'Alliance',
       icon: 'hugeicons:airplane-mode',
-      orientation: 'horizontal',
     })
   }
 
@@ -90,7 +87,6 @@ const links = computed(() => {
       icon: 'hugeicons:link-01',
       to: props.airline.website,
       target: '_blank',
-      color: 'neutral',
     },
   ]
 })

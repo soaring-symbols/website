@@ -19,12 +19,7 @@
         >
           Flag Carrier
         </UBadge>
-        <UBadge
-          v-if="airline.alliance"
-          size="sm"
-          color="neutral"
-          variant="subtle"
-        >
+        <UBadge v-if="airline.alliance" size="sm" variant="subtle">
           {{ airline.alliance }}
         </UBadge>
       </div>

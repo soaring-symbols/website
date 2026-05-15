@@ -7,7 +7,7 @@
           {
             label: 'Contribution Guidelines',
             icon: 'hugeicons:github',
-            to: 'https://github.com/anhthang/soaring-symbols/blob/main/CONTRIBUTING.md',
+            to: 'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md',
             target: '_blank',
             variant: 'soft',
             color: 'info',

@@ -39,7 +39,6 @@
             "
             label="Reset"
             variant="ghost"
-            color="neutral"
             icon="hugeicons:cancel-01"
             size="sm"
             @click="resetFilters"

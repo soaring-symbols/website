@@ -10,6 +10,7 @@
           to: '/browse',
           icon: 'hugeicons:airplane-01',
           trailingIcon: 'hugeicons:arrow-right-01',
+          color: 'primary',
         },
       ]"
     />
