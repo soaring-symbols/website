@@ -25,10 +25,10 @@
     </template> -->
 
     <template #footer>
-      <UBadge v-if="airline.flag_carrier" color="primary" variant="subtle">
+      <UBadge v-if="airline.flag_carrier" color="primary">
         {{ countryFlag(airline.country) }} Flag Carrier
       </UBadge>
-      <UBadge v-if="airline.alliance" variant="subtle">
+      <UBadge v-if="airline.alliance">
         {{ airline.alliance }}
       </UBadge>
     </template>

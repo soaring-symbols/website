@@ -70,13 +70,7 @@
       </UCard>
 
       <template v-if="paginated.length">
-        <UPageList v-if="viewMode === 'list'" divide>
-          <AirlineCard
-            v-for="airline in paginated"
-            :key="airline.slug"
-            :airline="airline"
-          />
-        </UPageList>
+        <AirlineTable v-if="viewMode === 'list'" :airlines="paginated" />
 
         <UPageGrid v-else>
           <AirlineGridCard

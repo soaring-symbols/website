@@ -10,7 +10,7 @@
     <!-- Logo Panel -->
     <div
       class="flex flex-col items-center justify-center gap-6 rounded-xl p-6 ml-auto h-full w-sm"
-      :style="{ backgroundColor: brandColor + '18' }"
+      :style="{ backgroundColor: brandColor + '12' }"
     >
       <img
         :src="logoSrc"
