@@ -9,7 +9,7 @@
   >
     <!-- Logo Panel -->
     <div
-      class="flex flex-col items-center justify-center gap-6 rounded-xl p-12"
+      class="flex flex-col items-center justify-center gap-6 rounded-xl p-6 ml-auto h-full w-sm"
       :style="{ backgroundColor: brandColor + '18' }"
     >
       <img

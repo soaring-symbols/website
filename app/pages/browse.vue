@@ -1,18 +1,24 @@
 <template>
   <UDashboardPanel>
     <template #body>
-      <UPageHeader v-bind="meta">
-        <div class="flex flex-wrap items-center gap-4 mt-8">
-          <UInput
-            v-model="search"
-            placeholder="Search airlines..."
-            icon="hugeicons:search-01"
-            class="w-64"
-          />
+      <UPageHeader v-bind="meta" />
 
-          <UCheckbox v-model="flagCarrierOnly" label="Flag Carriers" />
-
-          <USeparator orientation="vertical" class="h-5" />
+      <UCard>
+        <div class="flex flex-row flex-wrap items-center gap-3">
+          <UFieldGroup>
+            <UButton
+              icon="hugeicons:grid-view"
+              :variant="viewMode === 'grid' ? 'subtle' : 'outline'"
+              :color="viewMode === 'grid' ? 'primary' : 'neutral'"
+              @click="viewMode = 'grid'"
+            />
+            <UButton
+              icon="hugeicons:list-view"
+              :variant="viewMode === 'list' ? 'subtle' : 'outline'"
+              :color="viewMode === 'list' ? 'primary' : 'neutral'"
+              @click="viewMode = 'list'"
+            />
+          </UFieldGroup>
 
           <USelect
             v-model="selectedAlliances"
@@ -30,6 +36,8 @@
             class="w-48"
           />
 
+          <UCheckbox v-model="flagCarrierOnly" label="Flag Carriers" />
+
           <UButton
             v-if="
               search ||
@@ -43,22 +51,55 @@
             size="sm"
             @click="resetFilters"
           />
+
+          <div class="flex items-center gap-2 ms-auto">
+            <UInput
+              v-model="search"
+              placeholder="Search airlines..."
+              icon="hugeicons:search-01"
+              class="w-64"
+            />
+          </div>
+
+          <USeparator orientation="vertical" class="h-5" />
+
+          <span class="text-sm text-muted"
+            >{{ filtered.length }} of {{ total }} airlines</span
+          >
         </div>
-      </UPageHeader>
+      </UCard>
 
-      <UPageList v-if="filtered.length" divide>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          {{ filtered.length }} of {{ total }} airlines
-        </p>
+      <template v-if="paginated.length">
+        <UPageList v-if="viewMode === 'list'" divide>
+          <AirlineCard
+            v-for="airline in paginated"
+            :key="airline.slug"
+            :airline="airline"
+          />
+        </UPageList>
 
-        <AirlineCard
-          v-for="airline in filtered"
-          :key="airline.slug"
-          :airline="airline"
-        />
-      </UPageList>
+        <UPageGrid v-else>
+          <AirlineGridCard
+            v-for="airline in paginated"
+            :key="airline.slug"
+            :airline="airline"
+          />
+        </UPageGrid>
+      </template>
 
       <UPageSection v-else title="No Airlines Found" />
+
+      <div
+        v-if="filtered.length > itemsPerPage"
+        class="flex justify-center py-6"
+      >
+        <UPagination
+          v-model:page="page"
+          :total="filtered.length"
+          :items-per-page="itemsPerPage"
+          show-edges
+        />
+      </div>
     </template>
   </UDashboardPanel>
 </template>
@@ -85,6 +126,9 @@ const search = ref('')
 const selectedAlliances = ref([])
 const selectedCountries = ref([])
 const flagCarrierOnly = ref(false)
+const viewMode = ref('grid')
+const page = ref(1)
+const itemsPerPage = 20
 
 const allianceOptions = [
   ...[...new Set(airlines.map((a) => a.alliance).filter(Boolean))]
@@ -130,6 +174,15 @@ const filtered = computed(() => {
   }
 
   return list
+})
+
+const paginated = computed(() => {
+  const start = (page.value - 1) * itemsPerPage
+  return filtered.value.slice(start, start + itemsPerPage)
+})
+
+watch(filtered, () => {
+  page.value = 1
 })
 
 function resetFilters() {
