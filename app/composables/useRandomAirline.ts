@@ -16,8 +16,12 @@ export function useRandomAirline() {
     featured.value = next
   }
 
-  // Randomize on client only, after hydration
-  onMounted(refresh)
+  // Randomize on client only, after hydration; then auto-rotate every 30 seconds
+  onMounted(() => {
+    refresh()
+    const timer = setInterval(refresh, 30_000)
+    onUnmounted(() => clearInterval(timer))
+  })
 
   return {
     featured: readonly(featured),
