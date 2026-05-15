@@ -1,26 +1,43 @@
 <template>
   <UPageSection
-    :headline="airline.flag_carrier ? 'Flag Carrier' : undefined"
+    :headline="headline ?? (airline.flag_carrier ? 'Flag Carrier' : undefined)"
     :title="airline.name"
     :description="airline.branding?.tagline"
     orientation="horizontal"
     :features="features"
     :links="links"
   >
-    <!-- Logo Panel -->
-    <div
-      class="flex flex-col items-center justify-center gap-6 rounded-xl p-6 ml-auto h-full w-sm"
-      :style="{ backgroundColor: brandColor + '12' }"
-    >
-      <img
-        :src="logoSrc"
-        :alt="airline.name"
-        class="h-auto object-contain"
-        @error="onLogoError"
-      />
-
-      <!-- Brand Color Swatches -->
-      <div v-if="brandColors.length" class="flex gap-2">
+    <!-- Asset Cards -->
+    <div class="flex flex-col gap-3 ml-auto">
+      <div class="flex gap-3">
+        <div
+          class="flex-1 rounded-xl p-8 flex items-center justify-center aspect-square"
+          :style="{ backgroundColor: brandColor + '12' }"
+        >
+          <img
+            :src="`/airlines/${airline.slug}/logo.svg`"
+            :alt="`${airline.name} Logo`"
+            class="h-full w-full object-contain"
+            @error="$event.target.style.display = 'none'"
+          />
+        </div>
+        <div
+          class="flex-1 rounded-xl p-8 flex items-center justify-center aspect-square"
+          :style="{ backgroundColor: brandColor + '12' }"
+        >
+          <img
+            :src="`/airlines/${airline.slug}/icon.svg`"
+            :alt="`${airline.name} Icon`"
+            class="h-3/5 w-3/5 object-contain"
+            @error="$event.target.style.display = 'none'"
+          />
+        </div>
+      </div>
+      <div class="flex">
+        <span class="flex-1 text-center text-sm text-muted">Logo</span>
+        <span class="flex-1 text-center text-sm text-muted">Icon</span>
+      </div>
+      <div v-if="brandColors.length" class="flex justify-center gap-2">
         <div
           v-for="color in brandColors"
           :key="color"
@@ -38,6 +55,10 @@ const props = defineProps({
   airline: {
     type: Object,
     required: true,
+  },
+  headline: {
+    type: String,
+    default: undefined,
   },
 })
 
@@ -90,20 +111,6 @@ const links = computed(() => {
     },
   ]
 })
-
-const logoSrc = ref(`/airlines/${props.airline.slug}/logo.svg`)
-watch(
-  () => props.airline.slug,
-  (slug) => {
-    logoSrc.value = `/airlines/${slug}/logo.svg`
-  },
-)
-
-function onLogoError() {
-  if (logoSrc.value.endsWith('/logo.svg')) {
-    logoSrc.value = `/airlines/${props.airline.slug}/icon.svg`
-  }
-}
 
 function countryFlag(iso) {
   return [...iso.toUpperCase()]

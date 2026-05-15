@@ -23,9 +23,19 @@ export function useRandomAirline() {
     onUnmounted(() => clearInterval(timer))
   })
 
+  const stats = {
+    total: airlines.length,
+    countries: new Set(airlines.map((a) => a.country)).size,
+    alliances: new Set(
+      airlines.filter((a) => a.alliance).map((a) => a.alliance!),
+    ).size,
+    assets: airlines.length * 2,
+  }
+
   return {
     featured: readonly(featured),
     total: airlines.length,
     refresh,
+    stats,
   }
 }
