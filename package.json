@@ -25,26 +25,26 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/ui": "^4.7.1",
+    "@nuxt/ui": "^4.12.0",
     "@vercel/analytics": "2.0.1",
     "@vercel/speed-insights": "2.0.0",
-    "nuxt": "^4.4.5",
-    "soaring-symbols": "^0.1.0-alpha.10"
+    "nuxt": "^4.6.2",
+    "soaring-symbols": "^0.1.0-alpha.13"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.0.0",
-    "@commitlint/config-conventional": "^21.0.0",
-    "@iconify-json/hugeicons": "^1.2.27",
-    "@nuxt/eslint-config": "^1.15.2",
-    "@nuxt/image": "^2.0.0",
-    "@tailwindcss/typography": "^0.5.19",
-    "eslint": "^10.3.0",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@iconify-json/hugeicons": "^1.2.35",
+    "@nuxt/eslint-config": "^1.17.0",
+    "@nuxt/image": "^2.2.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-vue": "^10.9.1",
+    "eslint-plugin-prettier": "^5.5.7",
+    "eslint-plugin-vue": "^10.11.1",
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.4",
-    "prettier": "^3.8.3",
-    "typescript": "^6.0.3"
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "typescript": "^7.0.2"
   }
 }
