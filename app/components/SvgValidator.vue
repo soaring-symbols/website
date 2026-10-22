@@ -14,8 +14,27 @@
       />
     </UFileUpload>
 
-    <template v-if="candidate.file.value">
-      <!-- The SVG and its guideline checks -->
+    <!-- Comparing: both previews, the comparison, then the guideline checks -->
+    <template v-if="candidate.file.value && reference.file.value">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <CompareSide label="Reference" :image="reference" />
+        <CompareSide label="SVG" color="primary" :image="candidate" />
+      </div>
+      <CompareResult
+        v-if="reference.ready.value && candidate.ready.value"
+        :reference="reference"
+        :candidate="candidate"
+      />
+      <ValidatorPanel
+        :groups="groupedChecks"
+        :all-pass="allPass"
+        :total="allChecks.length"
+        :passed="passedCount"
+      />
+    </template>
+
+    <!-- Validating only: the SVG next to its checks, and a reference dropzone -->
+    <template v-else-if="candidate.file.value">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         <ValidatorPreviewCard
           :preview-url="candidate.previewUrl.value"
@@ -32,23 +51,14 @@
         />
       </div>
 
-      <!-- Optional comparison with the original artwork -->
-      <div class="flex flex-col gap-1 pt-2">
-        <h2 class="font-semibold">Compare with a reference</h2>
-        <p class="text-sm text-muted">
-          Optional: add the original PNG, JPEG or WebP, or the previous SVG, to
-          check that vectorizing, optimizing or merging paths did not change how
-          it looks.
-        </p>
-      </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-        <CompareSide label="Reference" :image="reference" />
-        <CompareResult
-          v-if="reference.ready.value && candidate.ready.value"
-          :reference="reference"
-          :candidate="candidate"
-        />
-      </div>
+      <UFileUpload
+        v-model="reference.file.value"
+        accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp"
+        icon="hugeicons:git-compare"
+        label="Compare with a reference (optional)"
+        description="Drop the original PNG, JPEG or WebP, or the previous SVG, to check that vectorizing, optimizing or merging paths did not change how it looks."
+        class="min-h-36"
+      />
     </template>
   </div>
 </template>

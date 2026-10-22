@@ -31,7 +31,10 @@
         </p>
       </template>
 
-      <div v-show="result && !loading" class="flex flex-col gap-4">
+      <div
+        v-show="result && !loading"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start"
+      >
         <!-- Difference map / overlay -->
         <div class="flex flex-col items-center gap-3">
           <UFieldGroup>
