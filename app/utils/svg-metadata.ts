@@ -18,7 +18,8 @@ export function parseSvg(content: string): SVGSVGElement | null {
 
 export function getSvgColors(svg: SVGSVGElement): Set<string> {
   const colors = new Set<string>()
-  svg.querySelectorAll('*').forEach((el) => {
+  // Include the root: single-color assets set their fill on <svg> itself
+  ;[svg, ...svg.querySelectorAll('*')].forEach((el) => {
     const fill = el.getAttribute('fill')
     const stroke = el.getAttribute('stroke')
     if (fill && fill !== 'none' && fill !== 'currentColor')
