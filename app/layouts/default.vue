@@ -15,6 +15,12 @@
           variant="ghost"
         />
         <UButton
+          to="/compare"
+          label="Compare"
+          icon="hugeicons:git-compare"
+          variant="ghost"
+        />
+        <UButton
           to="https://github.com/soaring-symbols/soaring-symbols"
           target="_blank"
           icon="hugeicons:github"
