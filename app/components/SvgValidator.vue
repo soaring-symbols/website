@@ -3,25 +3,28 @@
     <!-- Toolbar with file upload -->
     <UFileUpload
       v-slot="{ open }"
-      v-model="file"
+      v-model="candidate.file.value"
       accept=".svg,image/svg+xml"
       :preview="false"
     >
       <ValidatorToolbar
         :type="type"
+        :detected-from="detectedFrom"
         @update:type="onTypeChange"
         @upload="open()"
       />
     </UFileUpload>
 
-    <!-- Two-column layout when file loaded -->
-    <div v-if="file" class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-      <ValidatorPreviewCard
-        :preview-url="previewUrl"
-        :file-name="file.name"
-        :metadata="svgMetadata"
-        :all-pass="allPass"
-        @remove="resetFile"
+    <!-- Comparing: both previews, the comparison, then the guideline checks -->
+    <template v-if="candidate.file.value && reference.file.value">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <CompareSide label="Reference" :image="reference" />
+        <CompareSide label="SVG" color="primary" :image="candidate" />
+      </div>
+      <CompareResult
+        v-if="reference.ready.value && candidate.ready.value"
+        :reference="reference"
+        :candidate="candidate"
       />
       <ValidatorPanel
         :groups="groupedChecks"
@@ -29,16 +32,42 @@
         :total="allChecks.length"
         :passed="passedCount"
       />
-    </div>
+    </template>
+
+    <!-- Validating only: the SVG next to its checks, and a reference dropzone -->
+    <template v-else-if="candidate.file.value">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <ValidatorPreviewCard
+          :preview-url="candidate.previewUrl.value"
+          :file-name="candidate.file.value.name"
+          :metadata="candidate.metadata.value"
+          :all-pass="allPass"
+          @remove="candidate.file.value = null"
+        />
+        <ValidatorPanel
+          :groups="groupedChecks"
+          :all-pass="allPass"
+          :total="allChecks.length"
+          :passed="passedCount"
+        />
+      </div>
+
+      <UFileUpload
+        v-model="reference.file.value"
+        accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp"
+        icon="hugeicons:git-compare"
+        label="Compare with a reference (optional)"
+        description="Drop the original PNG, JPEG or WebP, or the previous SVG, to check that vectorizing, optimizing or merging paths did not change how it looks."
+        class="min-h-36"
+      />
+    </template>
   </div>
 </template>
 
 <script setup>
 const type = ref('logo')
-const file = ref(null)
-const svgContent = ref(null)
-const svgBBox = ref(null)
-const previewUrl = ref(null)
+const candidate = useImageFile()
+const reference = useImageFile()
 
 const STRUCTURE_LABELS = [
   'Required attributes',
@@ -47,61 +76,34 @@ const STRUCTURE_LABELS = [
 ]
 const GEOMETRY_LABELS = ['Fills viewBox', 'Fits viewBox', 'Centered']
 
-// --- Handlers ---
+const detectedFrom = ref(null)
 
+// Picking a type by hand overrides the detected one and re-runs the checks
 function onTypeChange(newType) {
   type.value = newType
-  resetFile()
+  detectedFrom.value = null
 }
 
-function resetFile() {
-  file.value = null
-  svgContent.value = null
-  svgBBox.value = null
-  if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value)
-    previewUrl.value = null
-  }
-}
-
-// --- Watchers ---
-
-watch(file, (newFile, oldFile) => {
-  if (oldFile && previewUrl.value) URL.revokeObjectURL(previewUrl.value)
-  if (!newFile) {
-    svgContent.value = null
-    svgBBox.value = null
-    previewUrl.value = null
-    return
-  }
-  previewUrl.value = URL.createObjectURL(newFile)
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    svgContent.value = e.target.result
-  }
-  reader.readAsText(newFile)
-})
-
-watch(svgContent, async () => {
-  svgBBox.value = null
-  if (!svgContent.value || !import.meta.client) return
-  await nextTick()
-  if (!parsedSvg.value) return
-  svgBBox.value = computeSvgBBox(parsedSvg.value)
-})
-
-// --- Computed ---
-
-const parsedSvg = computed(() => {
-  if (!svgContent.value || !import.meta.client) return null
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(svgContent.value, 'image/svg+xml')
-  return doc.querySelector('svg')
-})
+// Pick the type from each new upload; keep the current one if it can't tell
+watch(
+  () => candidate.parsed.value,
+  (svg) => {
+    detectedFrom.value = null
+    if (!svg) return
+    const detected = detectAssetType(svg, candidate.file.value?.name ?? '')
+    if (!detected) return
+    type.value = detected.type
+    detectedFrom.value = detected.source
+  },
+)
 
 const allChecks = computed(() => {
-  if (!parsedSvg.value) return []
-  return runSvgValidations(parsedSvg.value, type.value, svgBBox.value)
+  if (!candidate.parsed.value) return []
+  return runSvgValidations(
+    candidate.parsed.value,
+    type.value,
+    candidate.bbox.value,
+  )
 })
 
 const groupedChecks = computed(() => {
@@ -121,35 +123,4 @@ const groupedChecks = computed(() => {
 
 const allPass = computed(() => allChecks.value.every((c) => c.pass))
 const passedCount = computed(() => allChecks.value.filter((c) => c.pass).length)
-
-const svgMetadata = computed(() => {
-  if (!parsedSvg.value || !file.value) return null
-  const svg = parsedSvg.value
-  const viewBox = svg.getAttribute('viewBox') ?? 'missing'
-  const paths = svg.querySelectorAll('path').length
-  const elements = svg.querySelectorAll('*')
-  const colors = new Set()
-  elements.forEach((el) => {
-    const fill = el.getAttribute('fill')
-    const stroke = el.getAttribute('stroke')
-    if (fill && fill !== 'none' && fill !== 'currentColor')
-      colors.add(fill.toLowerCase())
-    if (stroke && stroke !== 'none' && stroke !== 'currentColor')
-      colors.add(stroke.toLowerCase())
-  })
-
-  const bbox = svgBBox.value
-  const r = (n) => Math.round(n * 1000) / 1000
-  const dimensions = bbox
-    ? `${r(bbox.width)} × ${r(bbox.height)}`
-    : viewBox !== 'missing'
-      ? viewBox.split(' ').slice(2).join(' × ')
-      : '—'
-
-  const bytes = file.value.size
-  const fileSize =
-    bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`
-
-  return { dimensions, paths, colors: colors.size || 0, fileSize, viewBox }
-})
 </script>

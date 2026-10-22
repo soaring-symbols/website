@@ -21,12 +21,13 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  // Strings let raster images show "—" for SVG-only stats
   paths: {
-    type: Number,
+    type: [Number, String],
     default: 0,
   },
   colors: {
-    type: Number,
+    type: [Number, String],
     default: 0,
   },
   fileSize: {

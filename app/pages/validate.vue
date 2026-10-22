@@ -24,7 +24,7 @@
 const meta = {
   title: 'SVG Validator',
   description:
-    'Validate your airline SVG assets against the Soaring Symbols contribution guidelines.',
+    'Validate your airline SVG assets against the Soaring Symbols contribution guidelines, and compare them with the original artwork.',
 }
 
 useSeoMeta({
