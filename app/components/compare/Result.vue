@@ -31,10 +31,7 @@
         </p>
       </template>
 
-      <div
-        v-show="result && !loading"
-        class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start"
-      >
+      <div v-show="result && !loading" class="flex flex-col gap-4">
         <!-- Difference map / overlay -->
         <div class="flex flex-col items-center gap-3">
           <UFieldGroup>
@@ -89,9 +86,9 @@
             </span>
           </div>
           <div v-else class="flex items-center gap-3 w-full max-w-80 text-xs">
-            <span class="text-muted">Before</span>
+            <span class="text-muted">Reference</span>
             <USlider v-model="afterOpacity" :min="0" :max="100" />
-            <span class="text-muted">After</span>
+            <span class="text-muted">SVG</span>
           </div>
         </div>
 
@@ -100,8 +97,8 @@
           <thead>
             <tr class="text-muted text-left border-b border-default">
               <th class="py-2 font-normal" />
-              <th class="py-2 font-normal">Before</th>
-              <th class="py-2 font-normal">After</th>
+              <th class="py-2 font-normal">Reference</th>
+              <th class="py-2 font-normal">SVG</th>
               <th class="py-2 font-normal">Change</th>
             </tr>
           </thead>
@@ -127,8 +124,9 @@
 
 <script setup>
 const props = defineProps({
-  before: { type: Object, required: true },
-  after: { type: Object, required: true },
+  // The original artwork (PNG or a previous SVG) and the SVG being validated
+  reference: { type: Object, required: true },
+  candidate: { type: Object, required: true },
 })
 
 // Keep in sync with EDGE_TOLERANCE in utils/svg-compare.ts
@@ -166,8 +164,8 @@ const rgb = ([r, g, b]) => `rgb(${r} ${g} ${b})`
 const legend = computed(() =>
   result.value?.mode === 'outline'
     ? [
-        { label: 'Only in Before', color: colors.value.diff },
-        { label: 'Only in After', color: colors.value.extra },
+        { label: 'Only in reference', color: colors.value.diff },
+        { label: 'Only in SVG', color: colors.value.extra },
         { label: 'Both', color: colors.value.shape },
       ]
     : [
@@ -248,10 +246,10 @@ const delta = (x, y) =>
       : `${y - x > 0 ? '+' : ''}${y - x}`
 
 const fileRows = computed(() => {
-  const b = props.before.metadata.value ?? {}
-  const a = props.after.metadata.value ?? {}
-  const bytesB = props.before.file.value?.size ?? 0
-  const bytesA = props.after.file.value?.size ?? 0
+  const b = props.reference.metadata.value ?? {}
+  const a = props.candidate.metadata.value ?? {}
+  const bytesB = props.reference.file.value?.size ?? 0
+  const bytesA = props.candidate.file.value?.size ?? 0
   const sizeChange = bytesB
     ? `${bytesA - bytesB > 0 ? '+' : ''}${(((bytesA - bytesB) / bytesB) * 100).toFixed(1)}%`
     : '—'
@@ -311,13 +309,13 @@ const resultRows = computed(() => {
   return [
     { label: 'Outline match', before: '', after: '', change: percent(r.match) },
     {
-      label: 'Only in Before',
+      label: 'Only in reference',
       before: '',
       after: '',
       change: percent(r.onlyBefore),
     },
     {
-      label: 'Only in After',
+      label: 'Only in SVG',
       before: '',
       after: '',
       change: percent(r.onlyAfter),
@@ -350,20 +348,20 @@ const toSource = (image) =>
     : { kind: 'raster', url: image.previewUrl.value }
 
 async function run() {
-  if (!props.before.ready.value || !props.after.ready.value) return
+  if (!props.reference.ready.value || !props.candidate.ready.value) return
   loading.value = true
   error.value = null
   try {
     result.value =
-      props.before.isSvg.value && props.after.isSvg.value
+      props.reference.isSvg.value && props.candidate.isSvg.value
         ? await compareSvgs(
-            props.before.content.value,
-            props.after.content.value,
+            props.reference.content.value,
+            props.candidate.content.value,
             colors.value,
           )
         : await compareOutlines(
-            toSource(props.before),
-            toSource(props.after),
+            toSource(props.reference),
+            toSource(props.candidate),
             colors.value,
           )
   } catch (e) {
@@ -389,9 +387,9 @@ function draw() {
 
 watch(
   [
-    () => props.before.previewUrl.value,
-    () => props.after.previewUrl.value,
-    () => props.before.ready.value && props.after.ready.value,
+    () => props.reference.previewUrl.value,
+    () => props.candidate.previewUrl.value,
+    () => props.reference.ready.value && props.candidate.ready.value,
     colors,
   ],
   run,

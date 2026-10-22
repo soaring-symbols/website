@@ -63,5 +63,5 @@ export function useImageFile() {
     if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   })
 
-  return { file, content, previewUrl, isSvg, parsed, metadata, ready }
+  return { file, content, previewUrl, bbox, isSvg, parsed, metadata, ready }
 }

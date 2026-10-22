@@ -3,7 +3,7 @@
     <!-- Toolbar with file upload -->
     <UFileUpload
       v-slot="{ open }"
-      v-model="file"
+      v-model="candidate.file.value"
       accept=".svg,image/svg+xml"
       :preview="false"
     >
@@ -14,31 +14,49 @@
       />
     </UFileUpload>
 
-    <!-- Two-column layout when file loaded -->
-    <div v-if="file" class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-      <ValidatorPreviewCard
-        :preview-url="previewUrl"
-        :file-name="file.name"
-        :metadata="svgMetadata"
-        :all-pass="allPass"
-        @remove="resetFile"
-      />
-      <ValidatorPanel
-        :groups="groupedChecks"
-        :all-pass="allPass"
-        :total="allChecks.length"
-        :passed="passedCount"
-      />
-    </div>
+    <template v-if="candidate.file.value">
+      <!-- The SVG and its guideline checks -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <ValidatorPreviewCard
+          :preview-url="candidate.previewUrl.value"
+          :file-name="candidate.file.value.name"
+          :metadata="candidate.metadata.value"
+          :all-pass="allPass"
+          @remove="candidate.file.value = null"
+        />
+        <ValidatorPanel
+          :groups="groupedChecks"
+          :all-pass="allPass"
+          :total="allChecks.length"
+          :passed="passedCount"
+        />
+      </div>
+
+      <!-- Optional comparison with the original artwork -->
+      <div class="flex flex-col gap-1 pt-2">
+        <h2 class="font-semibold">Compare with a reference</h2>
+        <p class="text-sm text-muted">
+          Optional: add the original PNG, JPEG or WebP, or the previous SVG, to
+          check that vectorizing, optimizing or merging paths did not change how
+          it looks.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <CompareSide label="Reference" :image="reference" />
+        <CompareResult
+          v-if="reference.ready.value && candidate.ready.value"
+          :reference="reference"
+          :candidate="candidate"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup>
 const type = ref('logo')
-const file = ref(null)
-const svgContent = ref(null)
-const svgBBox = ref(null)
-const previewUrl = ref(null)
+const candidate = useImageFile()
+const reference = useImageFile()
 
 const STRUCTURE_LABELS = [
   'Required attributes',
@@ -47,59 +65,19 @@ const STRUCTURE_LABELS = [
 ]
 const GEOMETRY_LABELS = ['Fills viewBox', 'Fits viewBox', 'Centered']
 
-// --- Handlers ---
-
+// The expected viewBox depends on the type, so start over with a new file
 function onTypeChange(newType) {
   type.value = newType
-  resetFile()
+  candidate.file.value = null
 }
-
-function resetFile() {
-  file.value = null
-  svgContent.value = null
-  svgBBox.value = null
-  if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value)
-    previewUrl.value = null
-  }
-}
-
-// --- Watchers ---
-
-watch(file, (newFile, oldFile) => {
-  if (oldFile && previewUrl.value) URL.revokeObjectURL(previewUrl.value)
-  if (!newFile) {
-    svgContent.value = null
-    svgBBox.value = null
-    previewUrl.value = null
-    return
-  }
-  previewUrl.value = URL.createObjectURL(newFile)
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    svgContent.value = e.target.result
-  }
-  reader.readAsText(newFile)
-})
-
-watch(svgContent, async () => {
-  svgBBox.value = null
-  if (!svgContent.value || !import.meta.client) return
-  await nextTick()
-  if (!parsedSvg.value) return
-  svgBBox.value = computeSvgBBox(parsedSvg.value)
-})
-
-// --- Computed ---
-
-const parsedSvg = computed(() => {
-  if (!svgContent.value || !import.meta.client) return null
-  return parseSvg(svgContent.value)
-})
 
 const allChecks = computed(() => {
-  if (!parsedSvg.value) return []
-  return runSvgValidations(parsedSvg.value, type.value, svgBBox.value)
+  if (!candidate.parsed.value) return []
+  return runSvgValidations(
+    candidate.parsed.value,
+    type.value,
+    candidate.bbox.value,
+  )
 })
 
 const groupedChecks = computed(() => {
@@ -119,9 +97,4 @@ const groupedChecks = computed(() => {
 
 const allPass = computed(() => allChecks.value.every((c) => c.pass))
 const passedCount = computed(() => allChecks.value.filter((c) => c.pass).length)
-
-const svgMetadata = computed(() => {
-  if (!parsedSvg.value || !file.value) return null
-  return getSvgMetadata(parsedSvg.value, file.value.size, svgBBox.value)
-})
 </script>
