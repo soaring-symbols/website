@@ -94,9 +94,7 @@ watch(svgContent, async () => {
 
 const parsedSvg = computed(() => {
   if (!svgContent.value || !import.meta.client) return null
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(svgContent.value, 'image/svg+xml')
-  return doc.querySelector('svg')
+  return parseSvg(svgContent.value)
 })
 
 const allChecks = computed(() => {
@@ -124,32 +122,6 @@ const passedCount = computed(() => allChecks.value.filter((c) => c.pass).length)
 
 const svgMetadata = computed(() => {
   if (!parsedSvg.value || !file.value) return null
-  const svg = parsedSvg.value
-  const viewBox = svg.getAttribute('viewBox') ?? 'missing'
-  const paths = svg.querySelectorAll('path').length
-  const elements = svg.querySelectorAll('*')
-  const colors = new Set()
-  elements.forEach((el) => {
-    const fill = el.getAttribute('fill')
-    const stroke = el.getAttribute('stroke')
-    if (fill && fill !== 'none' && fill !== 'currentColor')
-      colors.add(fill.toLowerCase())
-    if (stroke && stroke !== 'none' && stroke !== 'currentColor')
-      colors.add(stroke.toLowerCase())
-  })
-
-  const bbox = svgBBox.value
-  const r = (n) => Math.round(n * 1000) / 1000
-  const dimensions = bbox
-    ? `${r(bbox.width)} × ${r(bbox.height)}`
-    : viewBox !== 'missing'
-      ? viewBox.split(' ').slice(2).join(' × ')
-      : '—'
-
-  const bytes = file.value.size
-  const fileSize =
-    bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`
-
-  return { dimensions, paths, colors: colors.size || 0, fileSize, viewBox }
+  return getSvgMetadata(parsedSvg.value, file.value.size, svgBBox.value)
 })
 </script>
