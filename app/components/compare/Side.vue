@@ -5,19 +5,19 @@
     </div>
 
     <ValidatorPreviewCard
-      v-if="svg.file.value"
-      :preview-url="svg.previewUrl.value"
-      :file-name="svg.file.value.name"
-      :metadata="svg.metadata.value"
-      @remove="svg.file.value = null"
+      v-if="image.file.value"
+      :preview-url="image.previewUrl.value"
+      :file-name="image.file.value.name"
+      :metadata="image.metadata.value"
+      @remove="image.file.value = null"
     />
     <UFileUpload
       v-else
-      v-model="svg.file.value"
-      accept=".svg,image/svg+xml"
+      v-model="image.file.value"
+      accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp"
       icon="hugeicons:upload-04"
-      :label="`Drop the ${label.toLowerCase()} SVG here`"
-      description="or click to browse"
+      :label="`Drop the ${label.toLowerCase()} file here`"
+      description="SVG, or a PNG, JPEG or WebP reference"
       class="min-h-80"
     />
   </div>
@@ -27,6 +27,6 @@
 defineProps({
   label: { type: String, required: true },
   color: { type: String, default: 'neutral' },
-  svg: { type: Object, required: true },
+  image: { type: Object, required: true },
 })
 </script>

@@ -1,9 +1,24 @@
 export interface SvgMetadata {
   dimensions: string
-  paths: number
-  colors: number
+  paths: number | string
+  colors: number | string
   fileSize: string
   viewBox: string
+}
+
+// Raster images have no paths, colors list or viewBox to report
+export function getRasterMetadata(
+  width: number,
+  height: number,
+  bytes: number,
+): SvgMetadata {
+  return {
+    dimensions: `${width} × ${height}`,
+    paths: '—',
+    colors: '—',
+    fileSize: formatBytes(bytes),
+    viewBox: '—',
+  }
 }
 
 export function formatBytes(bytes: number): string {

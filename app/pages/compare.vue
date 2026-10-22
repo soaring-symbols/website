@@ -12,7 +12,7 @@
 const meta = {
   title: 'SVG Compare',
   description:
-    'Compare two versions of an airline SVG pixel by pixel to make sure optimizing or merging paths did not change how it looks.',
+    'Compare two versions of an airline SVG, or an SVG against its PNG reference, to make sure optimizing, merging paths or vectorizing did not change how it looks.',
 }
 
 useSeoMeta({
