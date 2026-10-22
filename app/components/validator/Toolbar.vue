@@ -7,6 +7,12 @@
         orientation="horizontal"
         @update:model-value="$emit('update:type', $event)"
       />
+      <UBadge
+        v-if="detectedFrom"
+        :label="`Detected from the ${detectedFrom}`"
+        icon="hugeicons:magic-wand-01"
+        size="sm"
+      />
 
       <div class="flex items-center gap-2 ms-auto">
         <UButton
@@ -23,6 +29,8 @@
 <script setup>
 defineProps({
   type: String,
+  // Where the type was detected from, cleared once the user picks one
+  detectedFrom: { type: String, default: null },
 })
 
 defineEmits(['update:type', 'upload'])

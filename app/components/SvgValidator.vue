@@ -9,6 +9,7 @@
     >
       <ValidatorToolbar
         :type="type"
+        :detected-from="detectedFrom"
         @update:type="onTypeChange"
         @upload="open()"
       />
@@ -75,11 +76,26 @@ const STRUCTURE_LABELS = [
 ]
 const GEOMETRY_LABELS = ['Fills viewBox', 'Fits viewBox', 'Centered']
 
-// The expected viewBox depends on the type, so start over with a new file
+const detectedFrom = ref(null)
+
+// Picking a type by hand overrides the detected one and re-runs the checks
 function onTypeChange(newType) {
   type.value = newType
-  candidate.file.value = null
+  detectedFrom.value = null
 }
+
+// Pick the type from each new upload; keep the current one if it can't tell
+watch(
+  () => candidate.parsed.value,
+  (svg) => {
+    detectedFrom.value = null
+    if (!svg) return
+    const detected = detectAssetType(svg, candidate.file.value?.name ?? '')
+    if (!detected) return
+    type.value = detected.type
+    detectedFrom.value = detected.source
+  },
+)
 
 const allChecks = computed(() => {
   if (!candidate.parsed.value) return []
