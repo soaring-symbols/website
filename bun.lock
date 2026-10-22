@@ -9,7 +9,7 @@
         "@vercel/analytics": "2.0.1",
         "@vercel/speed-insights": "2.0.0",
         "nuxt": "^4.6.2",
-        "soaring-symbols": "^0.1.0-alpha.13",
+        "soaring-symbols": "^0.1.0-alpha.14",
       },
       "devDependencies": {
         "@commitlint/cli": "^21.2.4",
@@ -1708,7 +1708,7 @@
 
     "smob": ["smob@1.6.2", "", {}, "sha512-RQsvleCbF8cVHEv+xuDGaA4pOizFqJ0GgjtMSRo6oP8pnN7WsigHgVGey6aILRBKv4W2YOMHLqbKdnB6hpB9fw=="],
 
-    "soaring-symbols": ["soaring-symbols@0.1.0-alpha.13", "", { "dependencies": { "slugify": "^1.6.6" } }, "sha512-4WCgEySYkdtKs5Hy44EWQchfMkOsdyF7qp227IBQjKgWQT5B2Lfr8zEwN4uYsFbKX+N3hlhA5V/LvTvMVBL6TA=="],
+    "soaring-symbols": ["soaring-symbols@0.1.0-alpha.14", "", { "dependencies": { "slugify": "^1.6.6" } }, "sha512-XiVIS+KviDWlnuF9J6FZ/1ODgxm6ZqfvUA0+2cu4lQez+1QQA9zjp09RHYu0sGjhr0Ayje5zneeWrWnCaFiyGg=="],
 
     "source-map": ["source-map@0.7.6", "", {}, "sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ=="],
 

@@ -29,7 +29,7 @@
     "@vercel/analytics": "2.0.1",
     "@vercel/speed-insights": "2.0.0",
     "nuxt": "^4.6.2",
-    "soaring-symbols": "^0.1.0-alpha.13"
+    "soaring-symbols": "^0.1.0-alpha.14"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
