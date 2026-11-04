@@ -33,6 +33,9 @@ npx wrangler --cwd .output dev
 - [x] Airline detail pages at `/airlines/[slug]`, so each airline has a link to share and a page search engines can index; link to them from the Browse slideover and the homepage icon wall
 - [x] Prerender the pages at build time, since the airline data is static
 - [x] Sitemap, Open Graph images and canonical URLs
+- [x] Favicon and brand mark in the split-flap style (logo files for the GitHub org and Raycast in `brand/`)
+- [ ] Fix the hydration mismatch the homepage logs on load
+- [ ] Drop the `@nuxt/fonts` 1.x entry in `nuxt.config.ts` once `@nuxt/ui` ships with it (the social cards need 1.x for Overpass)
 - [ ] Run ESLint again, once typescript-eslint supports TypeScript 7 (or pin TypeScript 6 for linting)
 
 ### Ecosystem
