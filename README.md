@@ -2,7 +2,7 @@
 
 The site for [Soaring Symbols](https://github.com/soaring-symbols/soaring-symbols), a curated collection of airline logos, icons and brand colors in SVG. Browse the collection, download any mark, and check new SVGs against the contribution guidelines.
 
-Live at <https://soaring-symbols.anhthang.workers.dev>.
+Live at <https://soaringsymbols.org>.
 
 ## Development
 

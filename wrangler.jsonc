@@ -7,6 +7,8 @@
   "name": "soaring-symbols",
   // Keep plain-text variables set in the dashboard
   "keep_vars": true,
+  // Served on soaringsymbols.org; workers.dev stays on for previews
+  "routes": [{ "pattern": "soaringsymbols.org", "custom_domain": true }],
   "workers_dev": true,
   "preview_urls": true,
   "observability": {
