@@ -76,6 +76,15 @@
             </dd>
           </div>
         </dl>
+
+        <ULink
+          v-if="pageLink"
+          :to="`/airlines/${airline.slug}`"
+          class="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+        >
+          All files and details
+          <UIcon name="hugeicons:arrow-right-02" class="size-4" />
+        </ULink>
       </div>
 
       <div class="flex flex-col gap-5">
@@ -118,14 +127,6 @@
             icon="hugeicons:download-04"
             :variant="download.variant === 'logo' ? 'solid' : 'outline'"
             :class="download.variant === 'logo' ? 'btn-signal' : undefined"
-            :ui="{ label: 'block' }"
-          />
-          <UButton
-            v-if="pageLink"
-            :to="`/airlines/${airline.slug}`"
-            label="Airline page"
-            trailing-icon="hugeicons:arrow-right-02"
-            variant="outline"
             :ui="{ label: 'block' }"
           />
         </div>
