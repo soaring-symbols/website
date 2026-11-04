@@ -134,11 +134,11 @@
 
       <pre
         class="overflow-x-auto rounded-xl bg-board p-5 font-mono text-[0.8125rem] leading-relaxed text-flap-ink"
-      ><code><span class="text-flap-ink/50">import</span> { getAirline, getAssets } <span class="text-flap-ink/50">from</span> 'soaring-symbols'
+      ><code><span class="text-flap-ink/50">import</span> { getAirline, getAssetPath } <span class="text-flap-ink/50">from</span> 'soaring-symbols'
 
 getAirline('{{ lookupCode }}')
-getAssets('{{ lookupCode }}').logo.color
-<span class="text-flap-ink/50">// '{{ `assets/${airline.slug}/logo.svg` }}'</span></code></pre>
+getAssetPath('{{ lookupCode }}', '{{ snippetVariant }}')
+<span class="text-flap-ink/50">// {{ snippetPath }}</span></code></pre>
     </section>
   </div>
 </template>
@@ -188,6 +188,12 @@ const marks = [
       ],
     }
   })
+
+// The package snippet shows the first color file the airline ships
+const snippetVariant = marks[0]?.variant ?? 'logo'
+const snippetPath = marks.length
+  ? `'soaring-symbols/assets/${airline.slug}/${snippetVariant}.svg'`
+  : 'undefined'
 
 function cdnUrl(variant) {
   return `https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/${airline.slug}/${variant}.svg`

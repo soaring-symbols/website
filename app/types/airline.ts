@@ -1,12 +1,14 @@
+// Mirrors the Airline type of the soaring-symbols package
 export interface AirlineBranding {
   primary_color?: string
   tagline?: string
   guidelines?: string
-  colors: {
-    icon?: readonly string[]
-    logo?: readonly string[]
-    tail?: readonly string[]
-  }
+}
+
+export interface AssetInfo {
+  color: boolean
+  mono: boolean
+  colors: readonly string[]
 }
 
 export interface AirlineMeta {
@@ -19,4 +21,9 @@ export interface AirlineMeta {
   alliance?: string
   slug: string
   branding?: AirlineBranding
+  assets: {
+    icon?: AssetInfo
+    logo?: AssetInfo
+    tail?: AssetInfo
+  }
 }

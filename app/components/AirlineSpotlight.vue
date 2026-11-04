@@ -149,10 +149,12 @@ const toast = useToast()
 const tint = computed(() => brandTint(props.airline))
 
 const colors = computed(() => {
-  const c = props.airline.branding?.colors
+  const { logo, icon } = props.airline.assets
   return [
     ...new Set(
-      [...(c?.logo ?? []), ...(c?.icon ?? [])].map((x) => x.toLowerCase()),
+      [...(logo?.colors ?? []), ...(icon?.colors ?? [])].map((x) =>
+        x.toLowerCase(),
+      ),
     ),
   ]
 })
