@@ -107,17 +107,38 @@
           or name.
         </p>
 
-        <div
-          class="mt-6 flex items-center justify-between gap-3 rounded-lg bg-board py-2 ps-4 pe-2 text-flap-ink"
-        >
-          <code class="truncate font-mono text-sm">{{ installCommand }}</code>
-          <UButton
-            :icon="copied ? 'hugeicons:tick-02' : 'hugeicons:copy-01'"
-            :aria-label="copied ? 'Copied' : 'Copy install command'"
-            variant="ghost"
-            class="text-flap-ink hover:bg-white/10"
-            @click="copyInstall"
-          />
+        <div class="mt-6 rounded-lg bg-board text-flap-ink">
+          <div
+            class="flex gap-1 border-b border-white/10 px-2 pt-2"
+            role="group"
+            aria-label="Package manager"
+          >
+            <button
+              v-for="manager in packageManagers"
+              :key="manager.name"
+              type="button"
+              class="-mb-px cursor-pointer border-b-2 px-3 py-1.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-signal-500"
+              :class="
+                manager.name === packageManager
+                  ? 'border-signal-500 text-flap-ink'
+                  : 'border-transparent text-flap-ink/55 hover:text-flap-ink'
+              "
+              :aria-pressed="manager.name === packageManager"
+              @click="packageManager = manager.name"
+            >
+              {{ manager.name }}
+            </button>
+          </div>
+          <div class="flex items-center justify-between gap-3 py-2 ps-4 pe-2">
+            <code class="truncate font-mono text-sm">{{ installCommand }}</code>
+            <UButton
+              :icon="copied ? 'hugeicons:tick-02' : 'hugeicons:copy-01'"
+              :aria-label="copied ? 'Copied' : 'Copy install command'"
+              variant="ghost"
+              class="text-flap-ink hover:bg-white/10"
+              @click="copyInstall"
+            />
+          </div>
         </div>
 
         <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
@@ -203,11 +224,20 @@ function search() {
   navigateTo({ path: '/browse', query: q ? { q } : {} })
 }
 
-const installCommand = 'npm install soaring-symbols'
+const packageManagers = [
+  { name: 'npm', command: 'npm install soaring-symbols' },
+  { name: 'yarn', command: 'yarn add soaring-symbols' },
+  { name: 'pnpm', command: 'pnpm add soaring-symbols' },
+  { name: 'bun', command: 'bun add soaring-symbols' },
+]
+const packageManager = ref('npm')
+const installCommand = computed(
+  () => packageManagers.find((m) => m.name === packageManager.value).command,
+)
 const copied = ref(false)
 
 async function copyInstall() {
-  await navigator.clipboard.writeText(installCommand)
+  await navigator.clipboard.writeText(installCommand.value)
   copied.value = true
   setTimeout(() => (copied.value = false), 1500)
 }
