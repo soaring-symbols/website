@@ -1,45 +1,54 @@
 <template>
-  <UTable :data="airlines" :columns="columns">
+  <UTable
+    :data="airlines"
+    :columns="columns"
+    class="rounded-xl bg-surface"
+    :ui="{ tr: 'cursor-pointer', td: 'py-3' }"
+    @select="(_, row) => $emit('open', row.original)"
+  >
     <template #name-cell="{ row }">
-      <UUser
-        :name="row.original.name"
-        :description="cleanUrl(row.original.website)"
-        size="xl"
-      >
-        <template #avatar>
-          <div class="rounded-lg aspect-square h-8 w-8">
-            <img
-              :src="`/airlines/${row.original.slug}/icon.svg`"
-              :alt="`${row.original.name} Icon`"
-              class="h-8 w-8"
-              @error="$event.target.style.display = 'none'"
-            />
-          </div>
-        </template>
-      </UUser>
+      <div class="flex items-center gap-3">
+        <div class="grid size-9 shrink-0 place-items-center">
+          <img
+            v-if="hasAsset(row.original, 'icon')"
+            :src="assetUrl(row.original, 'icon')"
+            alt=""
+            loading="lazy"
+            class="size-8 object-contain"
+          />
+        </div>
+        <div class="min-w-0">
+          <button
+            type="button"
+            class="cursor-pointer font-bold text-highlighted hover:underline focus-visible:outline-2 focus-visible:outline-primary"
+            @click.stop="$emit('open', row.original)"
+          >
+            {{ row.original.name }}
+          </button>
+          <p v-if="row.original.website" class="text-xs text-muted">
+            {{ cleanUrl(row.original.website) }}
+          </p>
+        </div>
+      </div>
     </template>
 
-    <template #alliance-cell="{ row }">
-      <UBadge v-if="row.original.alliance">
-        {{ row.original.alliance }}
-      </UBadge>
+    <template #iata-cell="{ row }">
+      <FlapText :text="row.original.iata ?? ''" :length="2" class="code" />
     </template>
   </UTable>
 </template>
 
 <script setup>
 defineProps({
-  airlines: {
-    type: Array,
-    required: true,
-  },
+  airlines: { type: Array, required: true },
 })
 
+defineEmits(['open'])
+
 const columns = [
-  {
-    accessorKey: 'name',
-    header: 'Airline',
-  },
+  { accessorKey: 'iata', header: 'IATA' },
+  { accessorKey: 'name', header: 'Airline' },
+  { accessorKey: 'icao', header: 'ICAO' },
   {
     accessorKey: 'country',
     header: 'Country',
@@ -47,20 +56,15 @@ const columns = [
       `${countryFlag(row.original.country)} ${countryName(row.original.country)}`,
   },
   {
-    accessorKey: 'iata',
-    header: 'IATA',
-  },
-  {
-    accessorKey: 'icao',
-    header: 'ICAO',
-  },
-  {
     accessorKey: 'alliance',
     header: 'Alliance',
+    cell: ({ row }) => row.original.alliance ?? '',
   },
 ]
-
-function cleanUrl(url) {
-  return url.replace(/^https?:\/\//, '').replace(/\/$/, '')
-}
 </script>
+
+<style scoped>
+.code {
+  --flap: 1rem;
+}
+</style>

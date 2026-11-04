@@ -1,42 +1,64 @@
 <template>
-  <div class="flex flex-col min-h-screen">
-    <UHeader title="Soaring Symbols" to="/">
+  <div class="flex min-h-screen flex-col">
+    <UHeader to="/" :ui="{ root: 'bg-default/85 backdrop-blur' }">
+      <template #title>
+        <span class="flex items-center gap-2.5">
+          <FlapText text="SS" :length="2" class="brand-mark" />
+          <span class="text-lg font-extrabold tracking-tight text-highlighted">
+            Soaring Symbols
+          </span>
+        </span>
+      </template>
+
+      <UNavigationMenu :items="nav" variant="link" />
+
       <template #right>
-        <UButton
-          to="/browse"
-          label="Browse"
-          icon="hugeicons:airplane-01"
-          variant="ghost"
-        />
-        <UButton
-          to="/validate"
-          label="Validate"
-          icon="hugeicons:checkmark-circle-02"
-          variant="ghost"
-        />
         <UButton
           to="https://github.com/soaring-symbols/soaring-symbols"
           target="_blank"
           icon="hugeicons:github"
           variant="ghost"
-          aria-label="GitHub"
+          aria-label="Soaring Symbols on GitHub"
         />
         <UColorModeButton />
+      </template>
+
+      <template #body>
+        <UNavigationMenu :items="nav" orientation="vertical" class="-mx-2.5" />
       </template>
     </UHeader>
 
     <main class="flex-1">
-      <UContainer class="py-8">
+      <UContainer>
         <slot />
       </UContainer>
     </main>
 
-    <UFooter>
-      <template #left>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          © {{ new Date().getFullYear() }} Soaring Symbols
+    <footer class="border-t border-default">
+      <UContainer
+        class="flex flex-col gap-6 py-10 text-sm text-muted md:flex-row md:justify-between"
+      >
+        <p class="max-w-xl text-pretty">
+          Logos and icons are shown for reference. The trademarks belong to
+          their airlines; Soaring Symbols claims no ownership of them.
         </p>
-      </template>
-    </UFooter>
+        <p class="shrink-0">© {{ year }} Soaring Symbols</p>
+      </UContainer>
+    </footer>
   </div>
 </template>
+
+<script setup>
+const year = new Date().getFullYear()
+
+const nav = [
+  { label: 'Browse', to: '/browse', icon: 'hugeicons:airplane-01' },
+  { label: 'Validate', to: '/validate', icon: 'hugeicons:checkmark-circle-02' },
+]
+</script>
+
+<style scoped>
+.brand-mark {
+  --flap: 1.1rem;
+}
+</style>

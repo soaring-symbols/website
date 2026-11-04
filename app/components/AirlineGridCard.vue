@@ -1,49 +1,50 @@
 <template>
-  <UPageCard
-    :title="airline.name"
-    :description="`${airline.iata} / ${airline.icao}`"
-    reverse
-    :ui="{
-      body: 'w-full',
-      container: 'h-full grid grid-rows-[auto_minmax(0,1fr)]',
-      description: 'text-sm',
-    }"
+  <button
+    type="button"
+    class="group flex w-full cursor-pointer flex-col gap-3 rounded-xl p-2 text-left hover:bg-surface focus-visible:outline-2 focus-visible:outline-primary"
+    @click="$emit('open', airline)"
   >
     <div
-      class="rounded-lg p-4 aspect-square"
-      :style="{ backgroundColor: brandColor + '12' }"
+      class="flex aspect-[2/1] w-full sm:aspect-[4/3] items-center justify-center overflow-hidden rounded-lg bg-white p-6"
+      :style="{ backgroundImage: brandTint(airline) }"
     >
       <img
-        :src="`/airlines/${airline.slug}/logo.svg`"
-        :alt="`${airline.name} Logo`"
-        @error="$event.target.style.display = 'none'"
+        :src="assetUrl(airline, 'logo')"
+        :alt="`${airline.name} logo`"
+        loading="lazy"
+        class="size-full object-contain"
       />
     </div>
 
-    <!-- <template #leading>
-      {{ countryFlag(airline.country) }} {{ countryName(airline.country) }}
-    </template> -->
-
-    <template #footer>
-      <UBadge v-if="airline.flag_carrier" color="primary">
-        {{ countryFlag(airline.country) }} Flag Carrier
-      </UBadge>
-      <UBadge v-if="airline.alliance">
-        {{ airline.alliance }}
-      </UBadge>
-    </template>
-  </UPageCard>
+    <div class="flex items-start gap-3 px-1 pb-1">
+      <FlapText :text="airline.iata ?? ''" :length="2" class="code" />
+      <div class="min-w-0">
+        <h2 class="truncate font-bold text-highlighted">{{ airline.name }}</h2>
+        <p class="truncate text-sm text-muted">
+          {{ countryFlag(airline.country) }}
+          {{
+            [countryName(airline.country), airline.alliance]
+              .filter(Boolean)
+              .join(', ')
+          }}
+        </p>
+      </div>
+    </div>
+  </button>
 </template>
 
 <script setup>
-const props = defineProps({
-  airline: {
-    type: Object,
-    required: true,
-  },
+defineProps({
+  airline: { type: Object, required: true },
 })
 
-const brandColor = computed(
-  () => props.airline.branding?.primary_color ?? '#6b7280',
-)
+defineEmits(['open'])
 </script>
+
+<style scoped>
+.code {
+  --flap: 1.15rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+</style>
