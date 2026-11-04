@@ -38,7 +38,7 @@
       <UContainer
         class="flex flex-col gap-6 py-10 text-sm text-muted md:flex-row md:justify-between"
       >
-        <p class="max-w-xl text-pretty">
+        <p class="text-pretty">
           Logos and icons are shown for reference. The trademarks belong to
           their airlines; Soaring Symbols claims no ownership of them.
         </p>

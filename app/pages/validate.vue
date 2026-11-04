@@ -1,27 +1,26 @@
 <template>
   <div class="pt-8 pb-16 sm:pt-12">
-    <div
-      class="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
-    >
-      <div class="max-w-2xl">
+    <div class="mb-8">
+      <!-- The action sits on the title row; the description runs beneath -->
+      <div class="flex items-center justify-between gap-4">
         <h1
-          class="text-4xl font-extrabold tracking-tight text-highlighted sm:text-5xl"
+          class="min-w-0 text-4xl font-extrabold tracking-tight text-highlighted sm:text-5xl"
         >
           {{ meta.title }}
         </h1>
-        <p class="mt-3 text-lg text-toned text-pretty">
-          {{ meta.description }}
-        </p>
+        <UButton
+          label="Contribution guidelines"
+          icon="hugeicons:github"
+          to="https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md"
+          target="_blank"
+          aria-label="Contribution guidelines"
+          variant="outline"
+          class="shrink-0"
+        />
       </div>
-      <UButton
-        label="Contribution guidelines"
-        icon="hugeicons:github"
-        to="https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md"
-        target="_blank"
-        variant="outline"
-        class="shrink-0 self-start md:self-auto"
-        :ui="{ label: 'block' }"
-      />
+      <p class="mt-3 text-lg text-toned text-pretty">
+        {{ meta.description }}
+      </p>
     </div>
 
     <SvgValidator />

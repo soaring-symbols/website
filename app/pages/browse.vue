@@ -1,6 +1,6 @@
 <template>
   <div class="pt-8 pb-16 sm:pt-12">
-    <div class="max-w-2xl">
+    <div>
       <h1
         class="text-4xl font-extrabold tracking-tight text-highlighted sm:text-5xl"
       >

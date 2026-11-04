@@ -11,7 +11,7 @@
           >
             Airline logos and icons, drawn as clean SVG.
           </h1>
-          <p class="mt-5 max-w-2xl text-lg text-toned text-pretty">
+          <p class="mt-5 text-lg text-toned text-pretty">
             Soaring Symbols collects the logos, icons and brand colors of
             {{ stats.total }} airlines from {{ stats.countries }} countries.
             Browse them, download them, or install the whole set from npm.
@@ -51,26 +51,26 @@
 
     <!-- The whole collection at a glance -->
     <section class="border-t border-default py-16 lg:py-24">
-      <div class="flex flex-wrap items-end justify-between gap-6">
-        <div class="max-w-2xl">
-          <h2
-            class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
-          >
-            {{ withIcons.length }} icons, one canvas
-          </h2>
-          <p class="mt-3 text-toned text-pretty">
-            Every icon is drawn on the same 24×24 grid and keeps the airline’s
-            official colors, so a row of them lines up wherever you use it.
-          </p>
-        </div>
+      <div class="flex items-center justify-between gap-4">
+        <h2
+          class="min-w-0 text-3xl font-extrabold tracking-tight text-highlighted text-balance"
+        >
+          {{ withIcons.length }} icons, one canvas
+        </h2>
         <UButton
           to="/browse"
           label="Browse all airlines"
+          aria-label="Browse all airlines"
+          trailing-icon="hugeicons:arrow-right-02"
           variant="outline"
           size="lg"
-          :ui="{ label: 'block' }"
+          class="shrink-0"
         />
       </div>
+      <p class="mt-3 text-toned text-pretty">
+        Every icon is drawn on the same 24×24 grid and keeps the airline’s
+        official colors, so a row of them lines up wherever you use it.
+      </p>
 
       <ul class="icon-wall mt-10">
         <li v-for="airline in withIcons" :key="airline.slug">
@@ -95,7 +95,7 @@
       id="use"
       class="grid items-start gap-10 border-t border-default py-16 lg:grid-cols-2 lg:py-24"
     >
-      <div class="max-w-xl">
+      <div>
         <h2
           class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
         >
@@ -175,7 +175,7 @@ getAssets('VN').logo.color
 
     <!-- Other tools that ship the same marks -->
     <section class="border-t border-default py-16 lg:py-24">
-      <div class="max-w-2xl">
+      <div>
         <h2
           class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
         >
@@ -199,7 +199,7 @@ getAssets('VN').logo.color
           </div>
           <div class="min-w-0">
             <h3 class="font-bold text-highlighted">{{ entry.name }}</h3>
-            <p class="mt-1 max-w-2xl text-sm text-toned text-pretty">
+            <p class="mt-1 text-sm text-toned text-pretty">
               {{ entry.description }}
             </p>
             <code
@@ -233,7 +233,7 @@ getAssets('VN').logo.color
 
     <!-- Contributing -->
     <section class="border-t border-default py-16 lg:py-24">
-      <div class="max-w-2xl">
+      <div>
         <h2
           class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
         >
