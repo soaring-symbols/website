@@ -149,16 +149,8 @@ const toast = useToast()
 const tint = computed(() => brandTint(props.airline))
 
 const colors = computed(() => {
-  // soaring-symbols releases before the assets field kept these colors in
-  // branding.colors
-  const { assets, branding } = props.airline
-  const colorsOf = (type) =>
-    assets?.[type]?.colors ?? branding?.colors?.[type] ?? []
-  return [
-    ...new Set(
-      [...colorsOf('logo'), ...colorsOf('icon')].map((x) => x.toLowerCase()),
-    ),
-  ]
+  const { logo, icon } = props.airline.assets
+  return [...new Set([...(logo?.colors ?? []), ...(icon?.colors ?? [])])]
 })
 
 // Gradient-heavy logos list dozens of stops; show a handful until asked

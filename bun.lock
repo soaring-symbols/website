@@ -7,7 +7,7 @@
       "dependencies": {
         "@nuxt/ui": "^4.12.0",
         "nuxt": "^4.6.4",
-        "soaring-symbols": "^0.1.0-alpha.14",
+        "soaring-symbols": "^0.2.0",
       },
       "devDependencies": {
         "@commitlint/cli": "^21.2.4",
@@ -1825,11 +1825,9 @@
 
     "slash": ["slash@5.1.0", "", {}, "sha512-ZA6oR3T/pEyuqwMgAKT0/hAv8oAXckzbkmR0UkUosQ+Mc4RxGoJkRmwHgHufaenlyAgE1Mxgpdcrf75y6XcnDg=="],
 
-    "slugify": ["slugify@1.6.9", "", {}, "sha512-vZ7rfeehZui7wQs438JXBckYLkIIdfHOXsaVEUMyS5fHo1483l1bMdo0EDSWYclY0yZKFOipDy4KHuKs6ssvdg=="],
-
     "smob": ["smob@1.6.2", "", {}, "sha512-RQsvleCbF8cVHEv+xuDGaA4pOizFqJ0GgjtMSRo6oP8pnN7WsigHgVGey6aILRBKv4W2YOMHLqbKdnB6hpB9fw=="],
 
-    "soaring-symbols": ["soaring-symbols@0.1.0-alpha.14", "", { "dependencies": { "slugify": "^1.6.6" } }, "sha512-XiVIS+KviDWlnuF9J6FZ/1ODgxm6ZqfvUA0+2cu4lQez+1QQA9zjp09RHYu0sGjhr0Ayje5zneeWrWnCaFiyGg=="],
+    "soaring-symbols": ["soaring-symbols@0.2.0", "", {}, "sha512-QB4q50I0eWsaUPrZifAQXXgGELDwjbWWHUhGou0SznVjpBEOVVTPAtmsTXEFdYaSTPDnov7Injob3VTJwAJdog=="],
 
     "source-map": ["source-map@0.7.6", "", {}, "sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ=="],
 

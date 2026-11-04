@@ -65,13 +65,9 @@
                   <p class="truncate font-mono text-xs text-muted">
                     {{ file.variant }}.svg
                   </p>
-                  <p v-if="file.derived" class="mt-1 text-xs text-muted">
-                    Made here from the color file, not in the package
-                  </p>
                 </div>
                 <div class="flex shrink-0 gap-1">
                   <UButton
-                    v-if="!file.derived"
                     icon="hugeicons:link-04"
                     variant="ghost"
                     :aria-label="`Copy the CDN link to ${file.variant}.svg`"
@@ -179,12 +175,8 @@ const marks = [
     return {
       ...mark,
       files: [
-        { kind: 'color', variant: mark.variant, derived: false },
-        {
-          kind: 'mono',
-          variant: hasAsset(airline, mono) ? mono : null,
-          derived: isDerivedAsset(airline, mono),
-        },
+        { kind: 'color', variant: mark.variant },
+        { kind: 'mono', variant: hasAsset(airline, mono) ? mono : null },
       ],
     }
   })
