@@ -22,5 +22,16 @@
   },
   "placement": {
     "mode": "smart"
+  },
+  // Pull requests deploy with `wrangler preview`, which requires this block.
+  // Assets, compatibility settings and placement carry over from the top
+  // level; bindings and observability do not.
+  "previews": {
+    "observability": {
+      "logs": {
+        "enabled": true,
+        "invocation_logs": true
+      }
+    }
   }
 }
