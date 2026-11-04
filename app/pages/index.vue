@@ -2,49 +2,50 @@
   <div>
     <!-- Hero: what this is, a way in, and the board -->
     <section class="pt-6 pb-16 sm:pt-12 lg:pb-24">
-      <div class="max-w-3xl">
-        <h1
-          class="text-4xl font-extrabold tracking-tight text-highlighted text-balance sm:text-6xl sm:leading-[1.05]"
-        >
-          Airline logos and icons, drawn as clean SVG.
-        </h1>
-        <p class="mt-5 max-w-2xl text-lg text-toned text-pretty">
-          Soaring Symbols collects the logos, icons and brand colors of
-          {{ stats.total }} airlines from {{ stats.countries }} countries.
-          Browse them, download them, or install the whole set from npm.
-        </p>
+      <div
+        class="grid items-center gap-12 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-14"
+      >
+        <div>
+          <h1
+            class="text-4xl font-extrabold tracking-tight text-highlighted text-balance sm:text-6xl sm:leading-[1.05]"
+          >
+            Airline logos and icons, drawn as clean SVG.
+          </h1>
+          <p class="mt-5 max-w-2xl text-lg text-toned text-pretty">
+            Soaring Symbols collects the logos, icons and brand colors of
+            {{ stats.total }} airlines from {{ stats.countries }} countries.
+            Browse them, download them, or install the whole set from npm.
+          </p>
 
-        <form
-          class="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row"
-          role="search"
-          @submit.prevent="search"
-        >
-          <UInput
-            v-model="query"
-            size="xl"
-            icon="hugeicons:search-01"
-            placeholder="Airline name, IATA or ICAO code"
-            aria-label="Find an airline"
-            class="flex-1"
-            :ui="{ base: 'bg-surface' }"
-          />
-          <UButton
-            type="submit"
-            size="xl"
-            label="Find airline"
-            class="btn-signal justify-center"
-            :ui="{ label: 'block' }"
-          />
-        </form>
+          <form
+            class="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row"
+            role="search"
+            @submit.prevent="search"
+          >
+            <UInput
+              v-model="query"
+              size="xl"
+              icon="hugeicons:search-01"
+              placeholder="Airline name, IATA or ICAO code"
+              aria-label="Find an airline"
+              class="flex-1"
+              :ui="{ base: 'bg-surface' }"
+            />
+            <UButton
+              type="submit"
+              size="xl"
+              label="Find airline"
+              class="btn-signal justify-center"
+              :ui="{ label: 'block' }"
+            />
+          </form>
+        </div>
+
+        <DepartureBoard v-model:selected="selectedSlug" :airlines="airlines" />
       </div>
 
-      <div
-        class="mt-12 grid items-start gap-8 lg:mt-16 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]"
-      >
-        <DepartureBoard v-model:selected="selectedSlug" :airlines="airlines" />
-        <div class="rounded-xl bg-surface p-5 sm:p-6" aria-live="polite">
-          <AirlineSpotlight v-if="selected" :airline="selected" />
-        </div>
+      <div class="mt-8 rounded-xl bg-surface p-5 sm:p-6" aria-live="polite">
+        <AirlineSpotlight v-if="selected" :airline="selected" />
       </div>
     </section>
 

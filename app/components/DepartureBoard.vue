@@ -137,7 +137,7 @@ onMounted(() => {
   --flap: clamp(
     0.8rem,
     calc((100cqi - 0.75rem - 2.25rem - 21 * var(--flap-gap)) / 25),
-    1.6rem
+    2.25rem
   );
 }
 
