@@ -1,4 +1,10 @@
-import { readdirSync, readFileSync } from 'node:fs'
+import {
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import { addTemplate } from '@nuxt/kit'
@@ -15,22 +21,65 @@ const airlines: { slug: string }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
 )
 
-// Which SVG variants (logo, icon, logo-mono, tail, ...) each airline ships,
-// so pages only link to files that exist
-function airlineAssetsModule(_options: unknown, nuxt: any) {
-  const manifest = Object.fromEntries(
-    readdirSync(assetsDir, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => [
-        entry.name,
-        readdirSync(resolve(assetsDir, entry.name))
-          .filter((file) => file.endsWith('.svg'))
-          .map((file) => file.replace(/\.svg$/, '')),
-      ]),
+// Hex colors an SVG paints with, from fill and stroke attributes and styles
+const RE_PAINT = /(fill|stroke|stop-color)\s*[:=]\s*["']?(#[0-9a-f]{3,8})\b/gi
+
+function paintColors(svg: string) {
+  return new Set(
+    [...svg.matchAll(RE_PAINT)].map(([, , color]) => color!.toLowerCase()),
   )
+}
+
+// The package ships *-mono.svg only for multi-color marks. A single-color
+// mark is its own monochrome version in another color, so derive one the
+// way the package draws them: every paint set to currentColor.
+function toMono(svg: string) {
+  return svg.replace(RE_PAINT, (match, prop: string, color: string) =>
+    match.replace(color, 'currentColor'),
+  )
+}
+
+const monoDir = resolve(import.meta.dirname, 'node_modules/.cache/airline-mono')
+
+// Which SVG variants (logo, icon, logo-mono, tail, ...) each airline ships,
+// so pages only link to files that exist, plus the mono files derived above
+function airlineAssetsModule(_options: unknown, nuxt: any) {
+  rmSync(monoDir, { recursive: true, force: true })
+
+  const manifest: Record<string, string[]> = {}
+  const derived: Record<string, string[]> = {}
+
+  for (const entry of readdirSync(assetsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue
+    const slug = entry.name
+    const files = readdirSync(resolve(assetsDir, slug))
+      .filter((file) => file.endsWith('.svg'))
+      .map((file) => file.replace(/\.svg$/, ''))
+    manifest[slug] = files
+
+    for (const variant of ['logo', 'icon', 'tail']) {
+      if (!files.includes(variant) || files.includes(`${variant}-mono`))
+        continue
+      const svg = readFileSync(
+        resolve(assetsDir, slug, `${variant}.svg`),
+        'utf8',
+      )
+      if (paintColors(svg).size !== 1) continue
+
+      mkdirSync(resolve(monoDir, slug), { recursive: true })
+      writeFileSync(resolve(monoDir, slug, `${variant}-mono.svg`), toMono(svg))
+      manifest[slug].push(`${variant}-mono`)
+      ;(derived[slug] ??= []).push(`${variant}-mono`)
+    }
+  }
+
   const template = addTemplate({
     filename: 'airline-assets.mjs',
-    getContents: () => `export default ${JSON.stringify(manifest)}`,
+    getContents: () =>
+      [
+        `export default ${JSON.stringify(manifest)}`,
+        `export const derived = ${JSON.stringify(derived)}`,
+      ].join('\n'),
     write: true,
   })
   nuxt.options.alias['#airline-assets'] = template.dst
@@ -116,6 +165,12 @@ export default defineNuxtConfig({
         baseURL: '/airlines',
         dir: assetsDir,
         // Airline pages live under the same prefix as the SVGs
+        fallthrough: true,
+      },
+      {
+        // Mono versions of single-color marks, made by airlineAssetsModule
+        baseURL: '/airlines',
+        dir: monoDir,
         fallthrough: true,
       },
     ],

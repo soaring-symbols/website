@@ -11,62 +11,108 @@
       >
         Files
       </h2>
-      <p class="mt-2 max-w-2xl text-toned text-pretty">
+      <p class="mt-2 text-toned text-pretty">
         Download a file, or link it straight from the npm package through
-        jsDelivr.
+        jsDelivr. Monochrome files use currentColor, so they take the color of
+        the text around them.
       </p>
 
-      <ul class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        <li
-          v-for="file in files"
-          :key="file.variant"
-          class="flex flex-col gap-4 rounded-xl bg-surface p-4"
-        >
-          <div
-            class="flex aspect-[2/1] items-center justify-center overflow-hidden rounded-lg bg-white p-6"
-            :style="{ backgroundImage: tint }"
-          >
-            <img
-              :src="assetUrl(airline, file.variant)"
-              :alt="`${airline.name} ${file.label.toLowerCase()}`"
-              loading="lazy"
-              class="size-full object-contain"
-            />
-          </div>
+      <!-- One row per mark, its color file beside its monochrome one, so
+           every row is full whichever marks the airline has -->
+      <div
+        class="mt-8 hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)]"
+        aria-hidden="true"
+      >
+        <span />
+        <span>Color</span>
+        <span>Monochrome</span>
+      </div>
 
-          <div class="flex items-center justify-between gap-3">
-            <div class="min-w-0">
-              <h3 class="font-bold text-highlighted">{{ file.label }}</h3>
-              <p class="truncate font-mono text-xs text-muted">
-                {{ file.variant }}.svg
-              </p>
+      <div class="mt-8 flex flex-col gap-10 lg:mt-3 lg:gap-6">
+        <section
+          v-for="mark in marks"
+          :key="mark.variant"
+          class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-6"
+        >
+          <h3
+            class="font-bold text-highlighted sm:col-span-2 lg:col-span-1 lg:pt-2"
+          >
+            {{ mark.label }}
+          </h3>
+
+          <template v-for="file in mark.files" :key="file.kind">
+            <div
+              v-if="file.variant"
+              class="flex flex-col gap-4 rounded-xl bg-surface p-4"
+            >
+              <div
+                class="flex aspect-[5/2] items-center justify-center overflow-hidden rounded-lg bg-white p-6"
+                :style="{ backgroundImage: tint }"
+              >
+                <img
+                  :src="assetUrl(airline, file.variant)"
+                  :alt="`${airline.name} ${file.kind} ${mark.label.toLowerCase()}`"
+                  loading="lazy"
+                  class="size-full object-contain"
+                />
+              </div>
+
+              <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="font-semibold text-highlighted lg:sr-only">
+                    {{ file.kind === 'mono' ? 'Monochrome' : 'Color' }}
+                  </p>
+                  <p class="truncate font-mono text-xs text-muted">
+                    {{ file.variant }}.svg
+                  </p>
+                  <p v-if="file.derived" class="mt-1 text-xs text-muted">
+                    Made here from the color file, not in the package
+                  </p>
+                </div>
+                <div class="flex shrink-0 gap-1">
+                  <UButton
+                    v-if="!file.derived"
+                    icon="hugeicons:link-04"
+                    variant="ghost"
+                    :aria-label="`Copy the CDN link to ${file.variant}.svg`"
+                    @click="copy(cdnUrl(file.variant), 'CDN link')"
+                  />
+                  <UButton
+                    :to="assetUrl(airline, file.variant)"
+                    external
+                    :download="`${airline.slug}-${file.variant}.svg`"
+                    icon="hugeicons:download-04"
+                    variant="outline"
+                    :aria-label="`Download ${file.variant}.svg`"
+                  />
+                </div>
+              </div>
             </div>
-            <div class="flex shrink-0 gap-1">
-              <UButton
-                icon="hugeicons:link-04"
-                variant="ghost"
-                :aria-label="`Copy the CDN link to the ${file.label.toLowerCase()}`"
-                @click="copy(cdnUrl(file.variant), 'CDN link')"
-              />
-              <UButton
-                :to="assetUrl(airline, file.variant)"
-                external
-                :download="`${airline.slug}-${file.variant}.svg`"
-                icon="hugeicons:download-04"
-                variant="outline"
-                :aria-label="`Download the ${file.label.toLowerCase()}`"
-              />
+
+            <!-- Multi-color marks need a hand-drawn mono version -->
+            <div
+              v-else
+              class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-accented p-6 text-center text-sm text-muted"
+            >
+              <p>No monochrome {{ mark.label.toLowerCase() }} yet.</p>
+              <ULink
+                to="https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md"
+                target="_blank"
+                class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+              >
+                Contribute one
+              </ULink>
             </div>
-          </div>
-        </li>
-      </ul>
+          </template>
+        </section>
+      </div>
     </section>
 
     <!-- The same data from the package -->
     <section
       class="mt-16 grid items-start gap-10 border-t border-default pt-12 lg:grid-cols-2"
     >
-      <div class="max-w-xl">
+      <div>
         <h2
           class="text-2xl font-extrabold tracking-tight text-highlighted text-balance"
         >
@@ -119,15 +165,29 @@ const breadcrumb = [
   { label: airline.name },
 ]
 
-const VARIANTS = [
+// Each mark the airline has, with its color file and its monochrome one;
+// the mono slot stays empty (variant null) when neither exists
+const marks = [
   { variant: 'logo', label: 'Logo' },
-  { variant: 'logo-mono', label: 'Monochrome logo' },
   { variant: 'icon', label: 'Icon' },
-  { variant: 'icon-mono', label: 'Monochrome icon' },
   { variant: 'tail', label: 'Tail' },
-  { variant: 'tail-mono', label: 'Monochrome tail' },
 ]
-const files = VARIANTS.filter((f) => hasAsset(airline, f.variant))
+  .filter((mark) => hasAsset(airline, mark.variant))
+  .map((mark) => {
+    const mono = `${mark.variant}-mono`
+
+    return {
+      ...mark,
+      files: [
+        { kind: 'color', variant: mark.variant, derived: false },
+        {
+          kind: 'mono',
+          variant: hasAsset(airline, mono) ? mono : null,
+          derived: isDerivedAsset(airline, mono),
+        },
+      ],
+    }
+  })
 
 function cdnUrl(variant) {
   return `https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/${airline.slug}/${variant}.svg`

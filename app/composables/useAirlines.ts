@@ -1,6 +1,6 @@
 import type { AirlineMeta } from '~/types/airline'
 import airlinesData from '#airlines-data'
-import airlineAssets from '#airline-assets'
+import airlineAssets, { derived } from '#airline-assets'
 
 const airlines = airlinesData as unknown as AirlineMeta[]
 
@@ -13,6 +13,11 @@ const stats = {
 
 export function hasAsset(airline: AirlineMeta, variant: string) {
   return airlineAssets[airline.slug]?.includes(variant) ?? false
+}
+
+// Made by the site from the color file, so not on the package's CDN
+export function isDerivedAsset(airline: AirlineMeta, variant: string) {
+  return derived[airline.slug]?.includes(variant) ?? false
 }
 
 export function assetUrl(airline: AirlineMeta, variant: string) {
