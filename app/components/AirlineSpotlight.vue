@@ -76,6 +76,15 @@
             </dd>
           </div>
         </dl>
+
+        <ULink
+          v-if="pageLink"
+          :to="`/airlines/${airline.slug}`"
+          class="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+        >
+          All files and details
+          <UIcon name="hugeicons:arrow-right-02" class="size-4" />
+        </ULink>
       </div>
 
       <div class="flex flex-col gap-5">
@@ -130,6 +139,8 @@
 const props = defineProps({
   airline: { type: Object, required: true },
   headingTag: { type: String, default: 'h2' },
+  // Off on the airline's own page, which this would link back to
+  pageLink: { type: Boolean, default: true },
 })
 
 const toast = useToast()

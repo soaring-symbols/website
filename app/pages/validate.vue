@@ -41,4 +41,6 @@ useSeoMeta({
   ogTitle: meta.title,
   ogDescription: meta.description,
 })
+
+defineOgImage('Site', { title: meta.title, description: meta.description })
 </script>

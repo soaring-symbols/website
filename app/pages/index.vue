@@ -75,7 +75,7 @@
       <ul class="icon-wall mt-10">
         <li v-for="airline in withIcons" :key="airline.slug">
           <NuxtLink
-            :to="{ path: '/browse', query: { q: airline.iata } }"
+            :to="`/airlines/${airline.slug}`"
             :title="airline.name"
             class="grid aspect-square place-items-center rounded-lg bg-white p-3 hover:bg-slate-100 dark:bg-slate-100 dark:hover:bg-white focus-visible:outline-2 focus-visible:outline-primary"
           >
@@ -270,6 +270,8 @@ import { ecosystem } from '~/data/ecosystem'
 
 const { airlines, stats } = useAirlines()
 const toast = useToast()
+
+defineOgImage('Site')
 
 const withIcons = airlines.filter((a) => hasAsset(a, 'icon'))
 

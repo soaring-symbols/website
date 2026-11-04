@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import { addTemplate } from '@nuxt/kit'
@@ -10,6 +10,10 @@ const soaringSymbolsDir = resolve(
   '..',
 )
 const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
+const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
+const airlines: { slug: string }[] = JSON.parse(
+  readFileSync(airlinesFile, 'utf8'),
+)
 
 // Which SVG variants (logo, icon, logo-mono, tail, ...) each airline ships,
 // so pages only link to files that exist
@@ -37,8 +41,12 @@ export default defineNuxtConfig({
   css: ['~/assets/main.css'],
 
   modules: [
+    // Ahead of @nuxt/ui, which would otherwise install its own 0.x copy:
+    // nuxt-og-image needs 1.x to hand the site fonts to the social cards
+    '@nuxt/fonts',
     '@nuxt/ui',
     '@nuxt/image',
+    'nuxt-og-image',
     airlineAssetsModule,
   ],
 
@@ -52,8 +60,23 @@ export default defineNuxtConfig({
     },
   },
 
+  // Read by nuxt-og-image for absolute image URLs, and by the sitemap
+  site: {
+    url: app.homepage,
+    name: app.displayName,
+  },
+
+  ogImage: {
+    // Every page with a social card is prerendered, so the images are built
+    // once at build time and the Worker ships no renderer
+    zeroRuntime: true,
+    defaults: {
+      height: 630,
+    },
+  },
+
   alias: {
-    '#airlines-data': resolve(soaringSymbolsDir, 'dist/airlines.json'),
+    '#airlines-data': airlinesFile,
   },
 
   runtimeConfig: {
@@ -63,6 +86,20 @@ export default defineNuxtConfig({
         description: app.description,
         homepage: app.homepage,
       },
+    },
+  },
+
+  hooks: {
+    // nuxt-og-image reads local images from public/ while prerendering, and
+    // the SVGs are served from the package instead; mount them where it looks
+    'nitro:init'(nitro) {
+      nitro.hooks.hook('prerender:config', (config) => {
+        config.storage ||= {}
+        config.storage['root:public:airlines'] = {
+          driver: 'fs-lite',
+          base: assetsDir,
+        }
+      })
     },
   },
 
@@ -78,7 +115,26 @@ export default defineNuxtConfig({
       {
         baseURL: '/airlines',
         dir: assetsDir,
+        // Airline pages live under the same prefix as the SVGs
+        fallthrough: true,
       },
     ],
+    // The airline data only changes with a package release, so every page
+    // is built ahead of time and served as a static file
+    prerender: {
+      // Write /browse.html rather than /browse/index.html: Workers serves a
+      // folder index only at its trailing-slash URL and redirects to it,
+      // which would put every page one redirect away from its canonical URL
+      autoSubfolderIndex: false,
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/browse',
+        '/validate',
+        '/sitemap.xml',
+        ...airlines.map((airline) => `/airlines/${airline.slug}`),
+      ],
+      failOnError: true,
+    },
   },
 })
