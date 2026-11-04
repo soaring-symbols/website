@@ -149,12 +149,8 @@ const toast = useToast()
 const tint = computed(() => brandTint(props.airline))
 
 const colors = computed(() => {
-  const c = props.airline.branding?.colors
-  return [
-    ...new Set(
-      [...(c?.logo ?? []), ...(c?.icon ?? [])].map((x) => x.toLowerCase()),
-    ),
-  ]
+  const { logo, icon } = props.airline.assets
+  return [...new Set([...(logo?.colors ?? []), ...(icon?.colors ?? [])])]
 })
 
 // Gradient-heavy logos list dozens of stops; show a handful until asked

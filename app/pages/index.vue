@@ -157,7 +157,7 @@
 
       <pre
         class="overflow-x-auto rounded-xl bg-board p-5 font-mono text-[0.8125rem] leading-relaxed text-flap-ink"
-      ><code><span class="text-flap-ink/50">import</span> { getAirline, getAssets } <span class="text-flap-ink/50">from</span> 'soaring-symbols'
+      ><code><span class="text-flap-ink/50">import</span> { getAirline, getAssetPath } <span class="text-flap-ink/50">from</span> 'soaring-symbols'
 
 getAirline('VN')
 <span class="text-flap-ink/50">// {
@@ -169,8 +169,8 @@ getAirline('VN')
 //   branding: { primary_color: '#d99e09', ... }
 // }</span>
 
-getAssets('VN').logo.color
-<span class="text-flap-ink/50">// 'assets/vietnam-airlines/logo.svg'</span></code></pre>
+getAssetPath('VN', 'logo')
+<span class="text-flap-ink/50">// 'soaring-symbols/assets/vietnam-airlines/logo.svg'</span></code></pre>
     </section>
 
     <!-- Other tools that ship the same marks -->
