@@ -24,7 +24,10 @@ useHead({
     lang: 'en',
   },
   link: [
-    { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+    // Browsers that read SVG take the sharp one; the rest fall back to .ico
+    { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+    { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+    { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
     { rel: 'canonical', href: canonical },
   ],
 })
