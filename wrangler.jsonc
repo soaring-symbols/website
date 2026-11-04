@@ -20,7 +20,16 @@
     },
     "traces": {
       "enabled": false
+    },
+    // Group exceptions, 5xx responses and logged errors into issues
+    "issues": {
+      "enabled": true
     }
+  },
+  // Workers Paid: CPU time per request, kept here so a dashboard change
+  // cannot drop it (the 30 s default; up to 300000 for 5 min)
+  "limits": {
+    "cpu_ms": 30000
   },
   "placement": {
     "mode": "smart"
