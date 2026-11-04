@@ -11,7 +11,7 @@ export interface EcosystemEntry {
 export const ecosystem: EcosystemEntry[] = [
   {
     name: 'Raycast extension',
-    icon: 'hugeicons:command',
+    icon: 'brand:raycast',
     description:
       'Search airlines from your launcher, see their codes, country and website, and grab their SVGs.',
     link: {
@@ -21,7 +21,7 @@ export const ecosystem: EcosystemEntry[] = [
   },
   {
     name: 'jsDelivr CDN',
-    icon: 'hugeicons:cloud-server',
+    icon: 'brand:jsdelivr',
     description:
       'Link any mark straight from the npm package, with nothing to install. The slug is the airline’s name in lowercase with hyphens, like vietnam-airlines; swap logo for icon or tail to get the other marks.',
     snippet: {
