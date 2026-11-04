@@ -1,0 +1,37 @@
+// Workers Builds deploys the wrangler.json that Nitro generates in
+// .output/server, and `wrangler deploy` replaces the Worker's settings with
+// it: bindings and settings made only in the dashboard are dropped on every
+// deploy. Nitro merges this file into the generated config, so keep them
+// here.
+{
+  "name": "soaring-symbols",
+  // Keep plain-text variables set in the dashboard
+  "keep_vars": true,
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    },
+    "traces": {
+      "enabled": false
+    }
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  // Pull requests deploy with `wrangler preview`, which requires this block.
+  // Assets, compatibility settings and placement carry over from the top
+  // level; bindings and observability do not.
+  "previews": {
+    "observability": {
+      "logs": {
+        "enabled": true,
+        "invocation_logs": true
+      }
+    }
+  }
+}

@@ -1,71 +1,362 @@
 <template>
-  <UDashboardPanel>
-    <UPageSection
-      headline="Airline Branding Archive"
-      title="Soaring Symbols"
-      :description="`A curated collection of airline branding — logos, icons, and tail designs from ${stats.total} airlines across the globe, all in SVG format.`"
-      :links="[
-        {
-          label: 'Browse Airlines',
-          to: '/browse',
-          icon: 'hugeicons:airplane-01',
-          trailingIcon: 'hugeicons:arrow-right-01',
-          color: 'primary',
-        },
-      ]"
-    />
+  <div>
+    <!-- Hero: what this is, a way in, and the board -->
+    <section class="pt-6 pb-16 sm:pt-12 lg:pb-24">
+      <div
+        class="grid items-center gap-12 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-14"
+      >
+        <div>
+          <h1
+            class="text-4xl font-extrabold tracking-tight text-highlighted text-balance sm:text-6xl sm:leading-[1.05]"
+          >
+            Airline logos and icons, drawn as clean SVG.
+          </h1>
+          <p class="mt-5 max-w-2xl text-lg text-toned text-pretty">
+            Soaring Symbols collects the logos, icons and brand colors of
+            {{ stats.total }} airlines from {{ stats.countries }} countries.
+            Browse them, download them, or install the whole set from npm.
+          </p>
 
-    <UPageSection>
-      <div class="flex flex-row gap-12 mx-auto">
-        <UUser
-          v-for="stat in statItems"
-          :key="stat.label"
-          :name="stat.value"
-          :description="stat.label"
-          :avatar="{
-            icon: stat.icon,
-            ui: {
-              icon: 'text-primary',
-            },
-          }"
-          size="xl"
-          class="flex items-center gap-3"
+          <form
+            class="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row"
+            role="search"
+            @submit.prevent="search"
+          >
+            <UInput
+              v-model="query"
+              size="xl"
+              icon="hugeicons:search-01"
+              placeholder="Airline name, IATA or ICAO code"
+              aria-label="Find an airline"
+              class="flex-1"
+              :ui="{ base: 'bg-surface' }"
+            />
+            <UButton
+              type="submit"
+              size="xl"
+              label="Find airline"
+              class="btn-signal justify-center"
+              :ui="{ label: 'block' }"
+            />
+          </form>
+        </div>
+
+        <DepartureBoard v-model:selected="selectedSlug" :airlines="airlines" />
+      </div>
+
+      <div class="mt-8 rounded-xl bg-surface p-5 sm:p-6" aria-live="polite">
+        <AirlineSpotlight v-if="selected" :airline="selected" />
+      </div>
+    </section>
+
+    <!-- The whole collection at a glance -->
+    <section class="border-t border-default py-16 lg:py-24">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div class="max-w-2xl">
+          <h2
+            class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
+          >
+            {{ withIcons.length }} icons, one canvas
+          </h2>
+          <p class="mt-3 text-toned text-pretty">
+            Every icon is drawn on the same 24×24 grid and keeps the airline’s
+            official colors, so a row of them lines up wherever you use it.
+          </p>
+        </div>
+        <UButton
+          to="/browse"
+          label="Browse all airlines"
+          variant="outline"
+          size="lg"
+          :ui="{ label: 'block' }"
         />
       </div>
-    </UPageSection>
 
-    <Transition name="fade" mode="out-in">
-      <AirlineFeature
-        :key="featured.slug"
-        :airline="featured"
-        headline="Featured Airline"
-      />
-    </Transition>
-  </UDashboardPanel>
+      <ul class="icon-wall mt-10">
+        <li v-for="airline in withIcons" :key="airline.slug">
+          <NuxtLink
+            :to="{ path: '/browse', query: { q: airline.iata } }"
+            :title="airline.name"
+            class="grid aspect-square place-items-center rounded-lg bg-white p-3 hover:bg-slate-100 dark:bg-slate-100 dark:hover:bg-white focus-visible:outline-2 focus-visible:outline-primary"
+          >
+            <img
+              :src="assetUrl(airline, 'icon')"
+              :alt="airline.name"
+              loading="lazy"
+              class="size-full object-contain"
+            />
+          </NuxtLink>
+        </li>
+      </ul>
+    </section>
+
+    <!-- For developers -->
+    <section
+      id="use"
+      class="grid items-start gap-10 border-t border-default py-16 lg:grid-cols-2 lg:py-24"
+    >
+      <div class="max-w-xl">
+        <h2
+          class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
+        >
+          Use them in your project
+        </h2>
+        <p class="mt-3 text-toned text-pretty">
+          The npm package ships every SVG with its airline’s codes, country,
+          alliance and brand colors. Look an airline up by IATA code, ICAO code
+          or name.
+        </p>
+
+        <div class="mt-6 rounded-lg bg-board text-flap-ink">
+          <div
+            class="flex gap-1 border-b border-white/10 px-2 pt-2"
+            role="group"
+            aria-label="Package manager"
+          >
+            <button
+              v-for="manager in packageManagers"
+              :key="manager.name"
+              type="button"
+              class="-mb-px cursor-pointer border-b-2 px-3 py-1.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-signal-500"
+              :class="
+                manager.name === packageManager
+                  ? 'border-signal-500 text-flap-ink'
+                  : 'border-transparent text-flap-ink/55 hover:text-flap-ink'
+              "
+              :aria-pressed="manager.name === packageManager"
+              @click="packageManager = manager.name"
+            >
+              {{ manager.name }}
+            </button>
+          </div>
+          <div class="flex items-center justify-between gap-3 py-2 ps-4 pe-2">
+            <code class="truncate font-mono text-sm">{{ installCommand }}</code>
+            <UButton
+              :icon="copied ? 'hugeicons:tick-02' : 'hugeicons:copy-01'"
+              :aria-label="copied ? 'Copied' : 'Copy install command'"
+              variant="ghost"
+              class="text-flap-ink hover:bg-white/10"
+              @click="copyInstall"
+            />
+          </div>
+        </div>
+
+        <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+          <li v-for="link in packageLinks" :key="link.to">
+            <ULink
+              :to="link.to"
+              target="_blank"
+              class="inline-flex items-center gap-1.5 text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+            >
+              <UIcon :name="link.icon" class="size-4" />
+              {{ link.label }}
+            </ULink>
+          </li>
+        </ul>
+      </div>
+
+      <pre
+        class="overflow-x-auto rounded-xl bg-board p-5 font-mono text-[0.8125rem] leading-relaxed text-flap-ink"
+      ><code><span class="text-flap-ink/50">import</span> { getAirline, getAssets } <span class="text-flap-ink/50">from</span> 'soaring-symbols'
+
+getAirline('VN')
+<span class="text-flap-ink/50">// {
+//   name: 'Vietnam Airlines',
+//   iata: 'VN',
+//   icao: 'HVN',
+//   country: 'VN',
+//   alliance: 'SkyTeam',
+//   branding: { primary_color: '#d99e09', ... }
+// }</span>
+
+getAssets('VN').logo.color
+<span class="text-flap-ink/50">// 'assets/vietnam-airlines/logo.svg'</span></code></pre>
+    </section>
+
+    <!-- Other tools that ship the same marks -->
+    <section class="border-t border-default py-16 lg:py-24">
+      <div class="max-w-2xl">
+        <h2
+          class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
+        >
+          Ecosystem
+        </h2>
+        <p class="mt-3 text-toned text-pretty">
+          The same marks, ready in the tools you already use.
+        </p>
+      </div>
+
+      <ul class="mt-10 divide-y divide-default border-y border-default">
+        <li
+          v-for="entry in ecosystem"
+          :key="entry.name"
+          class="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-4 gap-y-4 py-6 md:grid-cols-[2.5rem_minmax(0,1fr)_auto] md:items-center"
+        >
+          <div
+            class="grid size-10 place-items-center rounded-md bg-board text-flap-ink"
+          >
+            <UIcon :name="entry.icon" class="size-5" />
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-bold text-highlighted">{{ entry.name }}</h3>
+            <p class="mt-1 max-w-2xl text-sm text-toned text-pretty">
+              {{ entry.description }}
+            </p>
+            <code
+              v-if="entry.snippet"
+              class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md bg-elevated px-3 py-2 font-mono text-xs whitespace-nowrap text-highlighted"
+              >{{ entry.snippet.code }}</code
+            >
+          </div>
+          <div class="col-start-2 md:col-start-3">
+            <UButton
+              v-if="entry.link"
+              :to="entry.link.to"
+              target="_blank"
+              :label="entry.link.label"
+              trailing-icon="hugeicons:arrow-up-right-01"
+              variant="outline"
+              :ui="{ label: 'block' }"
+            />
+            <UButton
+              v-else-if="entry.snippet"
+              :label="entry.snippet.label"
+              icon="hugeicons:copy-01"
+              variant="outline"
+              :ui="{ label: 'block' }"
+              @click="copySnippet(entry.snippet)"
+            />
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Contributing -->
+    <section class="border-t border-default py-16 lg:py-24">
+      <div class="max-w-2xl">
+        <h2
+          class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
+        >
+          Add an airline
+        </h2>
+        <p class="mt-3 text-toned text-pretty">
+          Missing a carrier, or spotted an outdated logo? Contributions go
+          through GitHub in three steps.
+        </p>
+      </div>
+
+      <ol class="mt-10 grid gap-8 md:grid-cols-3">
+        <li v-for="(step, i) in steps" :key="step.title" class="flex gap-4">
+          <FlapText :text="String(i + 1)" :length="1" class="step-number" />
+          <div>
+            <h3 class="font-bold text-highlighted">{{ step.title }}</h3>
+            <p class="mt-1 text-sm text-toned">{{ step.description }}</p>
+            <ULink
+              :to="step.to"
+              :target="step.external ? '_blank' : undefined"
+              class="mt-3 inline-block text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+            >
+              {{ step.action }}
+            </ULink>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </div>
 </template>
 
 <script setup>
-const { featured, stats } = useRandomAirline()
+import { ecosystem } from '~/data/ecosystem'
 
-const statItems = [
-  { icon: 'hugeicons:airplane-01', value: stats.total, label: 'Airlines' },
-  { icon: 'hugeicons:global', value: stats.countries, label: 'Countries' },
-  { icon: 'hugeicons:star', value: stats.alliances, label: 'Alliances' },
+const { airlines, stats } = useAirlines()
+const toast = useToast()
+
+const withIcons = airlines.filter((a) => hasAsset(a, 'icon'))
+
+const selectedSlug = ref()
+const selected = computed(() =>
+  airlines.find((a) => a.slug === selectedSlug.value),
+)
+
+const query = ref('')
+
+function search() {
+  const q = query.value.trim()
+  navigateTo({ path: '/browse', query: q ? { q } : {} })
+}
+
+const packageManagers = [
+  { name: 'npm', command: 'npm install soaring-symbols' },
+  { name: 'yarn', command: 'yarn add soaring-symbols' },
+  { name: 'pnpm', command: 'pnpm add soaring-symbols' },
+  { name: 'bun', command: 'bun add soaring-symbols' },
+]
+const packageManager = ref('npm')
+const installCommand = computed(
+  () => packageManagers.find((m) => m.name === packageManager.value).command,
+)
+const copied = ref(false)
+
+async function copyInstall() {
+  await navigator.clipboard.writeText(installCommand.value)
+  copied.value = true
+  setTimeout(() => (copied.value = false), 1500)
+}
+
+async function copySnippet(snippet) {
+  await navigator.clipboard.writeText(snippet.code)
+  toast.add({ title: 'Copied', duration: 1500 })
+}
+
+const packageLinks = [
   {
-    icon: 'hugeicons:paint-brush-01',
-    value: stats.assets,
-    label: 'Brand Assets',
+    label: 'npm package',
+    icon: 'hugeicons:package',
+    to: 'https://www.npmjs.com/package/soaring-symbols',
+  },
+  {
+    label: 'Source on GitHub',
+    icon: 'hugeicons:github',
+    to: 'https://github.com/soaring-symbols/soaring-symbols',
+  },
+]
+
+const steps = [
+  {
+    title: 'Draw the SVG',
+    description:
+      'Trace the logo on a 64×64 canvas and the icon on 24×24, using the official colors.',
+    action: 'Read the guidelines',
+    to: 'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md',
+    external: true,
+  },
+  {
+    title: 'Check it',
+    description:
+      'The validator flags transforms, stray scripts and artwork that does not fill the canvas.',
+    action: 'Open the validator',
+    to: '/validate',
+  },
+  {
+    title: 'Open a pull request',
+    description:
+      'Add the files and the airline’s details. A maintainer reviews it before release.',
+    action: 'Go to GitHub',
+    to: 'https://github.com/soaring-symbols/soaring-symbols/pulls',
+    external: true,
   },
 ]
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
+.icon-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3.5rem, 1fr));
+  gap: 0.5rem;
 }
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+
+.step-number {
+  --flap: 2rem;
+  flex-shrink: 0;
 }
 </style>
