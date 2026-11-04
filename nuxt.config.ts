@@ -39,8 +39,6 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/ui',
     '@nuxt/image',
-    '@vercel/analytics',
-    '@vercel/speed-insights',
     airlineAssetsModule,
   ],
 
