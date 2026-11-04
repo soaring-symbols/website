@@ -46,11 +46,6 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  icon: {
-    // Brand marks from Simple Icons (CC0), for the tools in the ecosystem list
-    customCollections: [{ prefix: 'brand', dir: './app/assets/icons/brand' }],
-  },
-
   fonts: {
     defaults: {
       weights: [400, 600, 800],
