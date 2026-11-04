@@ -3,6 +3,12 @@ export interface AirlineBranding {
   primary_color?: string
   tagline?: string
   guidelines?: string
+  /** Releases before `assets` existed: colors per type with a color file */
+  colors?: {
+    icon?: readonly string[]
+    logo?: readonly string[]
+    tail?: readonly string[]
+  }
 }
 
 export interface AssetInfo {
@@ -21,7 +27,8 @@ export interface AirlineMeta {
   alliance?: string
   slug: string
   branding?: AirlineBranding
-  assets: {
+  /** Missing in releases before 0.1.0-alpha.15 */
+  assets?: {
     icon?: AssetInfo
     logo?: AssetInfo
     tail?: AssetInfo
