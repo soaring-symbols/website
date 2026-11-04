@@ -19,8 +19,12 @@ export function assetUrl(airline: AirlineMeta, variant: string) {
   return `/airlines/${airline.slug}/${variant}.svg`
 }
 
+// Always six hex digits, so callers can append an alpha channel: a short
+// #rgb plus '14' would read as an invalid five-digit color
 export function brandColor(airline: AirlineMeta) {
-  return airline.branding?.primary_color ?? '#64748b'
+  const color = airline.branding?.primary_color || '#64748b'
+
+  return color.replace(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i, '#$1$1$2$2$3$3')
 }
 
 // A faint wash of the airline's own color, laid over a white tile so logos

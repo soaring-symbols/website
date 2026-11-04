@@ -157,13 +157,17 @@ useSeoMeta({
   ogDescription: meta.description,
 })
 
+defineOgImage('Site', { title: meta.title, description: meta.description })
+
 const { airlines, stats } = useAirlines()
 const total = stats.total
 
 const route = useRoute()
 const router = useRouter()
 
-const search = ref(typeof route.query.q === 'string' ? route.query.q : '')
+// The prerendered page has no query string, so read ?q once it is live
+// rather than during setup, keeping the server and client lists the same
+const search = ref('')
 const selectedAlliances = ref([])
 const selectedCountries = ref([])
 const flagCarrierOnly = ref(false)
@@ -171,9 +175,18 @@ const viewMode = ref('grid')
 const page = ref(1)
 const itemsPerPage = 24
 
-// Keep the search in the URL so a result list can be shared
+onMounted(() => {
+  if (typeof route.query.q === 'string') search.value = route.query.q
+})
+
+// Keep the search in the URL so a result list can be shared. force, since
+// hydrating a prerendered page leaves the route holding ?q while the address
+// bar has dropped it, and the router would skip the replace as a duplicate.
 watch(search, (q) => {
-  router.replace({ query: { ...route.query, q: q.trim() || undefined } })
+  router.replace({
+    query: { ...route.query, q: q.trim() || undefined },
+    force: true,
+  })
 })
 
 const allianceOptions = [

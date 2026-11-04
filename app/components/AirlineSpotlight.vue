@@ -120,6 +120,14 @@
             :class="download.variant === 'logo' ? 'btn-signal' : undefined"
             :ui="{ label: 'block' }"
           />
+          <UButton
+            v-if="pageLink"
+            :to="`/airlines/${airline.slug}`"
+            label="Airline page"
+            trailing-icon="hugeicons:arrow-right-02"
+            variant="outline"
+            :ui="{ label: 'block' }"
+          />
         </div>
       </div>
     </div>
@@ -130,6 +138,8 @@
 const props = defineProps({
   airline: { type: Object, required: true },
   headingTag: { type: String, default: 'h2' },
+  // Off on the airline's own page, which this would link back to
+  pageLink: { type: Boolean, default: true },
 })
 
 const toast = useToast()
