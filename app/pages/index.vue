@@ -142,7 +142,7 @@
         </div>
 
         <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
-          <li v-for="link in ecosystem" :key="link.to">
+          <li v-for="link in packageLinks" :key="link.to">
             <ULink
               :to="link.to"
               target="_blank"
@@ -171,6 +171,64 @@ getAirline('VN')
 
 getAssets('VN').logo.color
 <span class="text-flap-ink/50">// 'assets/vietnam-airlines/logo.svg'</span></code></pre>
+    </section>
+
+    <!-- Other tools that ship the same marks -->
+    <section class="border-t border-default py-16 lg:py-24">
+      <div class="max-w-2xl">
+        <h2
+          class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
+        >
+          Ecosystem
+        </h2>
+        <p class="mt-3 text-toned text-pretty">
+          The same marks, ready in the tools you already use.
+        </p>
+      </div>
+
+      <ul class="mt-10 divide-y divide-default border-y border-default">
+        <li
+          v-for="entry in ecosystem"
+          :key="entry.name"
+          class="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-4 gap-y-4 py-6 md:grid-cols-[2.5rem_minmax(0,1fr)_auto] md:items-center"
+        >
+          <div
+            class="grid size-10 place-items-center rounded-md bg-board text-flap-ink"
+          >
+            <UIcon :name="entry.icon" class="size-5" />
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-bold text-highlighted">{{ entry.name }}</h3>
+            <p class="mt-1 max-w-2xl text-sm text-toned text-pretty">
+              {{ entry.description }}
+            </p>
+            <code
+              v-if="entry.snippet"
+              class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md bg-elevated px-3 py-2 font-mono text-xs whitespace-nowrap text-highlighted"
+              >{{ entry.snippet.code }}</code
+            >
+          </div>
+          <div class="col-start-2 md:col-start-3">
+            <UButton
+              v-if="entry.link"
+              :to="entry.link.to"
+              target="_blank"
+              :label="entry.link.label"
+              trailing-icon="hugeicons:arrow-up-right-01"
+              variant="outline"
+              :ui="{ label: 'block' }"
+            />
+            <UButton
+              v-else-if="entry.snippet"
+              :label="entry.snippet.label"
+              icon="hugeicons:copy-01"
+              variant="outline"
+              :ui="{ label: 'block' }"
+              @click="copySnippet(entry.snippet)"
+            />
+          </div>
+        </li>
+      </ul>
     </section>
 
     <!-- Contributing -->
@@ -208,7 +266,10 @@ getAssets('VN').logo.color
 </template>
 
 <script setup>
+import { ecosystem } from '~/data/ecosystem'
+
 const { airlines, stats } = useAirlines()
+const toast = useToast()
 
 const withIcons = airlines.filter((a) => hasAsset(a, 'icon'))
 
@@ -242,16 +303,16 @@ async function copyInstall() {
   setTimeout(() => (copied.value = false), 1500)
 }
 
-const ecosystem = [
+async function copySnippet(snippet) {
+  await navigator.clipboard.writeText(snippet.code)
+  toast.add({ title: 'Copied', duration: 1500 })
+}
+
+const packageLinks = [
   {
     label: 'npm package',
     icon: 'hugeicons:package',
     to: 'https://www.npmjs.com/package/soaring-symbols',
-  },
-  {
-    label: 'Raycast extension',
-    icon: 'hugeicons:command',
-    to: 'https://www.raycast.com/anhthang/soaring-symbols',
   },
   {
     label: 'Source on GitHub',
