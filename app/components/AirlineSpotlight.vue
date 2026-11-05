@@ -22,11 +22,18 @@
             <component
               :is="headingTag"
               class="text-2xl font-extrabold tracking-tight text-highlighted text-balance"
+              :class="steady && 'line-clamp-2 min-h-[2lh]'"
             >
               {{ airline.name }}
             </component>
-            <p v-if="airline.branding?.tagline" class="mt-1 text-muted">
-              “{{ airline.branding.tagline }}”
+            <p
+              v-if="steady || airline.branding?.tagline"
+              class="mt-1 text-muted"
+              :class="steady && 'line-clamp-1 min-h-[1lh]'"
+            >
+              <template v-if="airline.branding?.tagline">
+                “{{ airline.branding.tagline }}”
+              </template>
             </p>
           </div>
           <div
@@ -45,20 +52,29 @@
         <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
           <div>
             <dt class="text-muted">Country</dt>
-            <dd class="font-semibold text-highlighted">
+            <dd
+              class="font-semibold text-highlighted"
+              :class="steady && 'truncate'"
+            >
               {{ countryFlag(airline.country) }}
               {{ countryName(airline.country) }}
             </dd>
           </div>
           <div>
             <dt class="text-muted">IATA and ICAO codes</dt>
-            <dd class="font-semibold text-highlighted">
+            <dd
+              class="font-semibold text-highlighted"
+              :class="steady && 'truncate'"
+            >
               {{ airline.iata }} and {{ airline.icao }}
             </dd>
           </div>
           <div>
             <dt class="text-muted">Alliance</dt>
-            <dd class="font-semibold text-highlighted">
+            <dd
+              class="font-semibold text-highlighted"
+              :class="steady && 'truncate'"
+            >
               {{ airline.alliance ?? 'None' }}
             </dd>
           </div>
@@ -88,9 +104,15 @@
       </div>
 
       <div class="flex flex-col gap-5">
-        <div v-if="colors.length" class="flex flex-col gap-2">
+        <div v-if="steady || colors.length" class="flex flex-col gap-2">
           <p class="text-sm text-muted">Brand colors, click to copy</p>
-          <ul class="flex flex-wrap gap-2">
+          <ul
+            :class="
+              steady
+                ? 'grid grid-cols-2 grid-rows-[repeat(3,1.75rem)] gap-2'
+                : 'flex flex-wrap gap-2'
+            "
+          >
             <li v-for="color in shownColors" :key="color">
               <button
                 type="button"
@@ -116,7 +138,26 @@
           </ul>
         </div>
 
-        <div class="flex flex-wrap gap-2">
+        <div v-if="steady" class="flex flex-col gap-2">
+          <p class="text-sm text-muted">Download SVG</p>
+          <div class="flex gap-2">
+            <UButton
+              v-for="download in downloads"
+              :key="download.variant"
+              :to="assetUrl(airline, download.variant)"
+              external
+              :download="`${airline.slug}-${download.variant}.svg`"
+              :label="download.short"
+              :aria-label="download.label"
+              icon="hugeicons:download-04"
+              :variant="download.variant === 'logo' ? 'solid' : 'outline'"
+              :class="download.variant === 'logo' ? 'btn-signal' : undefined"
+              :ui="{ label: 'block' }"
+            />
+          </div>
+        </div>
+
+        <div v-else class="flex flex-wrap gap-2">
           <UButton
             v-for="download in downloads"
             :key="download.variant"
@@ -141,6 +182,9 @@ const props = defineProps({
   headingTag: { type: String, default: 'h2' },
   // Off on the airline's own page, which this would link back to
   pageLink: { type: Boolean, default: true },
+  // Keeps the same height for every airline, for places that swap airlines
+  // on their own like the home page, so the page below does not jump
+  steady: { type: Boolean, default: false },
 })
 
 const toast = useToast()
@@ -153,15 +197,16 @@ const colors = computed(() => {
   return [...new Set([...(logo?.colors ?? []), ...(icon?.colors ?? [])])]
 })
 
-// Gradient-heavy logos list dozens of stops; show a handful until asked
-const COLOR_LIMIT = 6
+// Gradient-heavy logos list dozens of stops; show a handful until asked.
+// A steady spotlight fills three rows of two, the last one left for "more".
+const COLOR_LIMIT = computed(() => (props.steady ? 5 : 6))
 const showAllColors = ref(false)
 watch(
   () => props.airline.slug,
   () => (showAllColors.value = false),
 )
 const shownColors = computed(() =>
-  showAllColors.value ? colors.value : colors.value.slice(0, COLOR_LIMIT),
+  showAllColors.value ? colors.value : colors.value.slice(0, COLOR_LIMIT.value),
 )
 const hiddenCount = computed(
   () => colors.value.length - shownColors.value.length,
@@ -169,9 +214,9 @@ const hiddenCount = computed(
 
 const downloads = computed(() =>
   [
-    { variant: 'logo', label: 'Download logo' },
-    { variant: 'icon', label: 'Download icon' },
-    { variant: 'tail', label: 'Download tail' },
+    { variant: 'logo', label: 'Download logo', short: 'Logo' },
+    { variant: 'icon', label: 'Download icon', short: 'Icon' },
+    { variant: 'tail', label: 'Download tail', short: 'Tail' },
   ].filter((d) => hasAsset(props.airline, d.variant)),
 )
 

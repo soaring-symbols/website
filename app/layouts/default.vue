@@ -4,7 +4,11 @@
       <template #title>
         <span class="flex items-center gap-2.5">
           <FlapText text="SS" :length="2" class="brand-mark" />
-          <span class="text-lg font-extrabold tracking-tight text-highlighted">
+          <!-- Overpass sits its capitals high in the line box; nudge them
+               down so they line up with the buttons -->
+          <span
+            class="translate-y-[0.1em] text-lg font-extrabold tracking-tight text-highlighted"
+          >
             Soaring Symbols
           </span>
         </span>

@@ -110,13 +110,70 @@ export default defineAppConfig({
     },
     pageHeader: {
       slots: {
-        root: 'pt-0',
-        description: 'text-md text-justify',
+        root: 'border-none py-0',
+        wrapper: 'sm:flex-row sm:items-center sm:justify-between',
+        // Overpass sits its capitals high in the line box; the nudge lines
+        // the title up with the links beside it
+        title:
+          'min-w-0 translate-y-[0.1em] font-extrabold tracking-tight text-highlighted text-balance',
+        description: 'text-toned text-pretty',
+        links: 'shrink-0',
+      },
+      variants: {
+        title: {
+          true: { description: 'mt-3' },
+        },
       },
     },
+    // Sections sit inside the layout's container, one under another with a
+    // rule between them, headed on the left like the rest of the site
     pageSection: {
       slots: {
-        container: 'py-8 sm:py-12 lg:py-16',
+        root: 'border-t border-default',
+        container:
+          'px-0 sm:px-0 lg:px-0 py-16 sm:py-16 lg:py-24 gap-10 sm:gap-10',
+        features: 'grid-cols-1',
+        title: 'text-3xl sm:text-3xl lg:text-3xl font-extrabold text-balance',
+        description: 'text-base sm:text-base text-toned',
+      },
+      variants: {
+        orientation: {
+          vertical: {
+            headline: 'justify-start',
+            leading: 'justify-start',
+            title: 'text-start',
+            description: 'text-start text-pretty',
+            links: 'justify-start',
+            features: 'sm:grid-cols-2 lg:grid-cols-3 gap-8',
+          },
+        },
+        title: {
+          true: { description: 'mt-3' },
+        },
+      },
+      compoundVariants: [
+        { orientation: 'vertical', title: true, class: { body: 'mt-10' } },
+        {
+          orientation: 'vertical',
+          description: true,
+          class: { body: 'mt-10' },
+        },
+      ],
+    },
+    // Board-colored tiles, as behind the airline marks
+    pageFeature: {
+      slots: {
+        root: 'min-w-0',
+        wrapper: 'min-w-0',
+        leading: 'size-10 shrink-0 rounded-md bg-board',
+        leadingIcon: 'text-flap-ink',
+        title: 'font-bold',
+        description: 'text-sm text-toned',
+      },
+      variants: {
+        orientation: {
+          horizontal: { root: 'gap-4', leading: 'p-0' },
+        },
       },
     },
     marquee: {

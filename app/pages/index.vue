@@ -45,34 +45,32 @@
       </div>
 
       <div class="mt-8 rounded-xl bg-surface p-5 sm:p-6" aria-live="polite">
-        <AirlineSpotlight v-if="selected" :airline="selected" />
+        <AirlineSpotlight v-if="selected" :airline="selected" steady />
       </div>
     </section>
 
     <!-- The whole collection at a glance -->
-    <section class="border-t border-default py-16 lg:py-24">
-      <div class="flex items-center justify-between gap-4">
-        <h2
-          class="min-w-0 text-3xl font-extrabold tracking-tight text-highlighted text-balance"
-        >
-          {{ withIcons.length }} icons, one canvas
-        </h2>
-        <UButton
-          to="/browse"
-          label="Browse all airlines"
-          aria-label="Browse all airlines"
-          trailing-icon="hugeicons:arrow-right-02"
-          variant="outline"
-          size="lg"
-          class="shrink-0"
+    <UPageSection>
+      <!-- A page header, so the link sits on the title row -->
+      <template #header>
+        <UPageHeader
+          :as="{ title: 'h2' }"
+          :title="`${withIcons.length} icons, one canvas`"
+          description="Every icon is drawn on the same 24×24 grid and keeps the airline’s official colors, so a row of them lines up wherever you use it."
+          :links="[
+            {
+              to: '/browse',
+              label: 'Browse all airlines',
+              trailingIcon: 'hugeicons:arrow-right-02',
+              size: 'lg',
+              ui: { label: 'block' },
+            },
+          ]"
+          :ui="{ title: 'text-3xl sm:text-3xl' }"
         />
-      </div>
-      <p class="mt-3 text-toned text-pretty">
-        Every icon is drawn on the same 24×24 grid and keeps the airline’s
-        official colors, so a row of them lines up wherever you use it.
-      </p>
+      </template>
 
-      <ul class="icon-wall mt-10">
+      <ul class="icon-wall">
         <li v-for="airline in withIcons" :key="airline.slug">
           <NuxtLink
             :to="`/airlines/${airline.slug}`"
@@ -88,26 +86,18 @@
           </NuxtLink>
         </li>
       </ul>
-    </section>
+    </UPageSection>
 
     <!-- For developers -->
-    <section
+    <UPageSection
       id="use"
-      class="grid items-start gap-10 border-t border-default py-16 lg:grid-cols-2 lg:py-24"
+      title="Use them in your project"
+      description="The npm package ships every SVG with its airline’s codes, country, alliance and brand colors. Look an airline up by IATA code, ICAO code or name."
+      orientation="horizontal"
+      :ui="{ container: 'lg:items-start', body: 'mt-6' }"
     >
-      <div>
-        <h2
-          class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
-        >
-          Use them in your project
-        </h2>
-        <p class="mt-3 text-toned text-pretty">
-          The npm package ships every SVG with its airline’s codes, country,
-          alliance and brand colors. Look an airline up by IATA code, ICAO code
-          or name.
-        </p>
-
-        <div class="mt-6 rounded-lg bg-board text-flap-ink">
+      <template #body>
+        <div class="rounded-lg bg-board text-flap-ink">
           <div
             class="flex gap-1 border-b border-white/10 px-2 pt-2"
             role="group"
@@ -153,7 +143,7 @@
             </ULink>
           </li>
         </ul>
-      </div>
+      </template>
 
       <pre
         class="overflow-x-auto rounded-xl bg-board p-5 font-mono text-[0.8125rem] leading-relaxed text-flap-ink"
@@ -171,44 +161,30 @@ getAirline('VN')
 
 getAssetPath('VN', 'logo')
 <span class="text-flap-ink/50">// 'soaring-symbols/assets/vietnam-airlines/logo.svg'</span></code></pre>
-    </section>
+    </UPageSection>
 
     <!-- Other tools that ship the same marks -->
-    <section class="border-t border-default py-16 lg:py-24">
-      <div>
-        <h2
-          class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
-        >
-          Ecosystem
-        </h2>
-        <p class="mt-3 text-toned text-pretty">
-          The same marks, ready in the tools you already use.
-        </p>
-      </div>
-
-      <ul class="mt-10 divide-y divide-default border-y border-default">
-        <li
+    <UPageSection
+      title="Ecosystem"
+      description="The same marks, ready in the tools you already use."
+      :ui="{ features: 'lg:grid-cols-2' }"
+    >
+      <template #features>
+        <UPageFeature
           v-for="entry in ecosystem"
           :key="entry.name"
-          class="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-4 gap-y-4 py-6 md:grid-cols-[2.5rem_minmax(0,1fr)_auto] md:items-center"
+          as="li"
+          :icon="entry.icon"
+          :title="entry.name"
+          orientation="horizontal"
         >
-          <div
-            class="grid size-10 place-items-center rounded-md bg-board text-flap-ink"
-          >
-            <UIcon :name="entry.icon" class="size-5" />
-          </div>
-          <div class="min-w-0">
-            <h3 class="font-bold text-highlighted">{{ entry.name }}</h3>
-            <p class="mt-1 text-sm text-toned text-pretty">
-              {{ entry.description }}
-            </p>
+          <template #description>
+            <p>{{ entry.description }}</p>
             <code
               v-if="entry.snippet"
               class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md bg-elevated px-3 py-2 font-mono text-xs whitespace-nowrap text-highlighted"
               >{{ entry.snippet.code }}</code
             >
-          </div>
-          <div class="col-start-2 md:col-start-3">
             <UButton
               v-if="entry.link"
               :to="entry.link.to"
@@ -216,6 +192,7 @@ getAssetPath('VN', 'logo')
               :label="entry.link.label"
               trailing-icon="hugeicons:arrow-up-right-01"
               variant="outline"
+              class="mt-4"
               :ui="{ label: 'block' }"
             />
             <UButton
@@ -223,45 +200,45 @@ getAssetPath('VN', 'logo')
               :label="entry.snippet.label"
               icon="hugeicons:copy-01"
               variant="outline"
+              class="mt-4"
               :ui="{ label: 'block' }"
               @click="copySnippet(entry.snippet)"
             />
-          </div>
-        </li>
-      </ul>
-    </section>
+          </template>
+        </UPageFeature>
+      </template>
+    </UPageSection>
 
     <!-- Contributing -->
-    <section class="border-t border-default py-16 lg:py-24">
-      <div>
-        <h2
-          class="text-3xl font-extrabold tracking-tight text-highlighted text-balance"
+    <UPageSection
+      title="Add an airline"
+      description="Missing a carrier, or spotted an outdated logo? Contributions go through GitHub in three steps."
+    >
+      <template #features>
+        <UPageFeature
+          v-for="(step, i) in steps"
+          :key="step.title"
+          as="li"
+          :title="step.title"
+          orientation="horizontal"
+          :ui="{ leading: 'size-auto bg-transparent' }"
         >
-          Add an airline
-        </h2>
-        <p class="mt-3 text-toned text-pretty">
-          Missing a carrier, or spotted an outdated logo? Contributions go
-          through GitHub in three steps.
-        </p>
-      </div>
-
-      <ol class="mt-10 grid gap-8 md:grid-cols-3">
-        <li v-for="(step, i) in steps" :key="step.title" class="flex gap-4">
-          <FlapText :text="String(i + 1)" :length="1" class="step-number" />
-          <div>
-            <h3 class="font-bold text-highlighted">{{ step.title }}</h3>
-            <p class="mt-1 text-sm text-toned">{{ step.description }}</p>
+          <template #leading>
+            <FlapText :text="String(i + 1)" :length="1" class="step-number" />
+          </template>
+          <template #description>
+            <p>{{ step.description }}</p>
             <ULink
               :to="step.to"
               :target="step.external ? '_blank' : undefined"
-              class="mt-3 inline-block text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+              class="mt-3 inline-block font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
             >
               {{ step.action }}
             </ULink>
-          </div>
-        </li>
-      </ol>
-    </section>
+          </template>
+        </UPageFeature>
+      </template>
+    </UPageSection>
   </div>
 </template>
 
@@ -359,6 +336,5 @@ const steps = [
 
 .step-number {
   --flap: 2rem;
-  flex-shrink: 0;
 }
 </style>

@@ -5,22 +5,16 @@
     <AirlineSpotlight :airline="airline" heading-tag="h1" :page-link="false" />
 
     <!-- Every SVG the airline ships, with where to get it -->
-    <section class="mt-16 border-t border-default pt-12">
-      <h2
-        class="text-2xl font-extrabold tracking-tight text-highlighted text-balance"
-      >
-        Files
-      </h2>
-      <p class="mt-2 text-toned text-pretty">
-        Download a file, or link it straight from the npm package through
-        jsDelivr. Monochrome files use currentColor, so they take the color of
-        the text around them.
-      </p>
-
+    <UPageSection
+      title="Files"
+      description="Download a file, or link it straight from the npm package through jsDelivr. Monochrome files use currentColor, so they take the color of the text around them."
+      class="mt-16"
+      :ui="sectionUi"
+    >
       <!-- One row per mark, its color file beside its monochrome one, so
            every row is full whichever marks the airline has -->
       <div
-        class="mt-8 hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)]"
+        class="hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)]"
         aria-hidden="true"
       >
         <span />
@@ -28,7 +22,7 @@
         <span>Monochrome</span>
       </div>
 
-      <div class="mt-8 flex flex-col gap-10 lg:mt-3 lg:gap-6">
+      <div class="flex flex-col gap-10 lg:-mt-5 lg:gap-6">
         <section
           v-for="mark in marks"
           :key="mark.variant"
@@ -102,32 +96,29 @@
           </template>
         </section>
       </div>
-    </section>
+    </UPageSection>
 
     <!-- The same data from the package -->
-    <section
-      class="mt-16 grid items-start gap-10 border-t border-default pt-12 lg:grid-cols-2"
+    <UPageSection
+      title="In your project"
+      :description="`Look ${airline.name} up in the npm package by its IATA code, ICAO code or name.`"
+      orientation="horizontal"
+      :links="[
+        {
+          to: '/#use',
+          label: 'Install the package',
+          trailingIcon: 'hugeicons:arrow-right-02',
+          variant: 'outline',
+          size: 'md',
+          ui: { label: 'block' },
+        },
+      ]"
+      :ui="{
+        ...sectionUi,
+        container: `${sectionUi.container} lg:items-start`,
+        footer: 'mt-6',
+      }"
     >
-      <div>
-        <h2
-          class="text-2xl font-extrabold tracking-tight text-highlighted text-balance"
-        >
-          In your project
-        </h2>
-        <p class="mt-2 text-toned text-pretty">
-          Look {{ airline.name }} up in the npm package by its IATA code, ICAO
-          code or name.
-        </p>
-        <UButton
-          to="/#use"
-          label="Install the package"
-          trailing-icon="hugeicons:arrow-right-02"
-          variant="outline"
-          class="mt-6"
-          :ui="{ label: 'block' }"
-        />
-      </div>
-
       <pre
         class="overflow-x-auto rounded-xl bg-board p-5 font-mono text-[0.8125rem] leading-relaxed text-flap-ink"
       ><code><span class="text-flap-ink/50">import</span> { getAirline, getAssetPath } <span class="text-flap-ink/50">from</span> 'soaring-symbols'
@@ -135,7 +126,7 @@
 getAirline('{{ lookupCode }}')
 getAssetPath('{{ lookupCode }}', '{{ snippetVariant }}')
 <span class="text-flap-ink/50">// {{ snippetPath }}</span></code></pre>
-    </section>
+    </UPageSection>
   </div>
 </template>
 
@@ -154,6 +145,13 @@ if (!airline) {
 }
 
 const tint = brandTint(airline)
+
+// Sections here sit closer together, under smaller titles, than on the home page
+const sectionUi = {
+  container: 'py-12 sm:py-12 lg:py-12 gap-8 sm:gap-8',
+  title: 'text-2xl sm:text-2xl lg:text-2xl',
+  description: 'mt-2',
+}
 const lookupCode = airline.iata || airline.icao
 
 const breadcrumb = [

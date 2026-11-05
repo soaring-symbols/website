@@ -1,27 +1,20 @@
 <template>
   <div class="pt-8 pb-16 sm:pt-12">
-    <div class="mb-8">
-      <!-- The action sits on the title row; the description runs beneath -->
-      <div class="flex items-center justify-between gap-4">
-        <h1
-          class="min-w-0 text-4xl font-extrabold tracking-tight text-highlighted sm:text-5xl"
-        >
-          {{ meta.title }}
-        </h1>
-        <UButton
-          label="Contribution guidelines"
-          icon="hugeicons:github"
-          to="https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md"
-          target="_blank"
-          aria-label="Contribution guidelines"
-          variant="outline"
-          class="shrink-0"
-        />
-      </div>
-      <p class="mt-3 text-lg text-toned text-pretty">
-        {{ meta.description }}
-      </p>
-    </div>
+    <UPageHeader
+      :title="meta.title"
+      :description="meta.description"
+      :links="[
+        {
+          label: 'Contribution guidelines',
+          icon: 'hugeicons:github',
+          to: 'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md',
+          target: '_blank',
+          ui: { label: 'block' },
+        },
+      ]"
+      :ui="{ title: 'text-4xl sm:text-5xl', description: 'text-lg' }"
+      class="mb-8"
+    />
 
     <SvgValidator />
   </div>
