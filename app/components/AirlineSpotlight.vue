@@ -18,22 +18,22 @@
 
       <div class="flex flex-col gap-5">
         <div class="flex items-start justify-between gap-4">
-          <div class="min-w-0">
+          <!-- A steady spotlight keeps room for a two-line name and a tagline
+               under the pair, so the tagline still sits right below the name -->
+          <div class="min-w-0" :class="steady && 'min-h-[5.75rem]'">
             <component
               :is="headingTag"
               class="text-2xl font-extrabold tracking-tight text-highlighted text-balance"
-              :class="steady && 'line-clamp-2 min-h-[2lh]'"
+              :class="steady && 'line-clamp-2'"
             >
               {{ airline.name }}
             </component>
             <p
-              v-if="steady || airline.branding?.tagline"
+              v-if="airline.branding?.tagline"
               class="mt-1 text-muted"
-              :class="steady && 'line-clamp-1 min-h-[1lh]'"
+              :class="steady && 'line-clamp-1'"
             >
-              <template v-if="airline.branding?.tagline">
-                “{{ airline.branding.tagline }}”
-              </template>
+              “{{ airline.branding.tagline }}”
             </p>
           </div>
           <div
