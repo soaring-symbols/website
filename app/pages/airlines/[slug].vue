@@ -34,7 +34,22 @@
             {{ mark.label }}
           </h3>
 
-          <template v-for="file in mark.files" :key="file.kind">
+          <!-- Neither file yet: one call for contributions across the row -->
+          <div
+            v-if="mark.files.every((file) => !file.variant)"
+            class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-accented p-6 text-center text-sm text-muted sm:col-span-2"
+          >
+            <p>No {{ mark.label.toLowerCase() }} yet.</p>
+            <ULink
+              :to="contributingUrl"
+              target="_blank"
+              class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+            >
+              Contribute one
+            </ULink>
+          </div>
+
+          <template v-for="file in mark.files" v-else :key="file.kind">
             <div
               v-if="file.variant"
               class="flex flex-col gap-4 rounded-xl bg-surface p-4"
@@ -79,14 +94,18 @@
               </div>
             </div>
 
-            <!-- Multi-color marks need a hand-drawn mono version -->
+            <!-- One file missing, like the hand-drawn mono of a multi-color mark -->
             <div
               v-else
               class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-accented p-6 text-center text-sm text-muted"
             >
-              <p>No monochrome {{ mark.label.toLowerCase() }} yet.</p>
+              <p>
+                No
+                {{ file.kind === 'mono' ? 'monochrome' : 'color' }}
+                {{ mark.label.toLowerCase() }} yet.
+              </p>
               <ULink
-                to="https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md"
+                :to="contributingUrl"
                 target="_blank"
                 class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
               >
@@ -124,7 +143,7 @@
       ><code><span class="text-flap-ink/50">import</span> { getAirline, getAssetPath } <span class="text-flap-ink/50">from</span> 'soaring-symbols'
 
 getAirline('{{ lookupCode }}')
-getAssetPath('{{ lookupCode }}', '{{ snippetVariant }}')
+getAssetPath('{{ lookupCode }}', '{{ snippetVariant ?? 'logo' }}')
 <span class="text-flap-ink/50">// {{ snippetPath }}</span></code></pre>
     </UPageSection>
   </div>
@@ -159,29 +178,34 @@ const breadcrumb = [
   { label: airline.name },
 ]
 
-// Each mark the airline has, with its color file and its monochrome one;
-// the mono slot stays empty (variant null) when neither exists
+// Every mark, with its color file and its monochrome one; a slot is empty
+// (variant null) when the airline does not ship that file yet, so every
+// airline page lists the same rows and asks for what is missing
 const marks = [
   { variant: 'logo', label: 'Logo' },
   { variant: 'icon', label: 'Icon' },
   { variant: 'tail', label: 'Tail' },
-]
-  .filter((mark) => hasAsset(airline, mark.variant))
-  .map((mark) => {
-    const mono = `${mark.variant}-mono`
+].map((mark) => {
+  const mono = `${mark.variant}-mono`
 
-    return {
-      ...mark,
-      files: [
-        { kind: 'color', variant: mark.variant },
-        { kind: 'mono', variant: hasAsset(airline, mono) ? mono : null },
-      ],
-    }
-  })
+  return {
+    ...mark,
+    files: [
+      {
+        kind: 'color',
+        variant: hasAsset(airline, mark.variant) ? mark.variant : null,
+      },
+      { kind: 'mono', variant: hasAsset(airline, mono) ? mono : null },
+    ],
+  }
+})
+
+const contributingUrl =
+  'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md'
 
 // The package snippet shows the first color file the airline ships
-const snippetVariant = marks[0]?.variant ?? 'logo'
-const snippetPath = marks.length
+const snippetVariant = marks.find((mark) => mark.files[0].variant)?.variant
+const snippetPath = snippetVariant
   ? `'soaring-symbols/assets/${airline.slug}/${snippetVariant}.svg'`
   : 'undefined'
 
