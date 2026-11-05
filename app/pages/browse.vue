@@ -42,7 +42,11 @@
           :items="countryOptions"
           class="w-full sm:w-44"
           :ui="{ base: 'bg-surface' }"
-        />
+        >
+          <template #item-leading="{ item }">
+            <CountryFlags :iso="item.value" />
+          </template>
+        </USelect>
 
         <USwitch v-model="flagCarrierOnly" label="Flag carriers only" />
 
@@ -206,7 +210,7 @@ const countryOptions = [...new Set(airlines.map((a) => a.country))]
   .sort((a, b) => countryName(a).localeCompare(countryName(b)))
   .map((code) => ({
     value: code,
-    label: countryFlag(code) + ' ' + countryName(code),
+    label: countryName(code),
   }))
 
 const hasFilters = computed(

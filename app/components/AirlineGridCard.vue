@@ -20,13 +20,13 @@
       <FlapText :text="airline.iata ?? ''" :length="2" class="code" />
       <div class="min-w-0">
         <h2 class="truncate font-bold text-highlighted">{{ airline.name }}</h2>
-        <p class="truncate text-sm text-muted">
-          {{ countryFlag(airline.country) }}
-          {{
+        <p class="flex items-center gap-1.5 text-sm text-muted">
+          <CountryFlags :iso="airline.country" />
+          <span class="min-w-0 truncate">{{
             [countryName(airline.country), airline.alliance]
               .filter(Boolean)
               .join(', ')
-          }}
+          }}</span>
         </p>
       </div>
     </div>

@@ -10,9 +10,20 @@ const soaringSymbolsDir = resolve(
 )
 const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
 const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
-const airlines: { slug: string }[] = JSON.parse(
+const airlines: { slug: string; country: string }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
 )
+
+// Every flag the site can show, bundled so none is fetched at runtime
+const flagIcons = [
+  ...new Set(
+    airlines.flatMap((airline) =>
+      airline.country
+        .split(',')
+        .map((code) => `flag:${code.trim().toLowerCase()}-4x3`),
+    ),
+  ),
+]
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -30,6 +41,12 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
   devtools: { enabled: true },
+
+  icon: {
+    clientBundle: {
+      icons: flagIcons,
+    },
+  },
 
   fonts: {
     defaults: {

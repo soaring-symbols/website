@@ -12,6 +12,7 @@
       "devDependencies": {
         "@commitlint/cli": "^21.2.4",
         "@commitlint/config-conventional": "^21.2.4",
+        "@iconify-json/flag": "^1.2.15",
         "@iconify-json/hugeicons": "^1.2.35",
         "@iconify-json/simple-icons": "^1.2.101",
         "@nuxt/eslint-config": "^1.17.0",
@@ -246,6 +247,8 @@
     "@humanwhocodes/retry": ["@humanwhocodes/retry@0.4.3", "", {}, "sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ=="],
 
     "@iconify-json/carbon": ["@iconify-json/carbon@1.2.29", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-whk3BOU2jXFtweigCrrrYXT7NzWXGUT1q268vEnySzhfdnwZhQhVlFjhkgZH86JRRx21/CziTmzpAJMe5V2yKQ=="],
+
+    "@iconify-json/flag": ["@iconify-json/flag@1.2.15", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-MeZVaDPgi3+ivIbBl2hi5G8DKgksY8iKZQPzKw5/kMh50kLCM8xrDOD4rjQ+FKtXV/N60C0Yy1HiCKWHLLcYPQ=="],
 
     "@iconify-json/hugeicons": ["@iconify-json/hugeicons@1.2.35", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-c06tY90JZnKhOLBAKoQ1z2pqXMRdATuYXslTKwaaIAjLzKsTIsE+GGknY6+qo/SP0U/NG9xQjr4N+zfDqOeQiQ=="],
 

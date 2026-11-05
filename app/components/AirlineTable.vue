@@ -32,6 +32,13 @@
       </div>
     </template>
 
+    <template #country-cell="{ row }">
+      <span class="inline-flex items-center gap-2">
+        <CountryFlags :iso="row.original.country" />
+        {{ countryName(row.original.country) }}
+      </span>
+    </template>
+
     <template #iata-cell="{ row }">
       <FlapText :text="row.original.iata ?? ''" :length="2" class="code" />
     </template>
@@ -49,12 +56,7 @@ const columns = [
   { accessorKey: 'iata', header: 'IATA' },
   { accessorKey: 'name', header: 'Airline' },
   { accessorKey: 'icao', header: 'ICAO' },
-  {
-    accessorKey: 'country',
-    header: 'Country',
-    cell: ({ row }) =>
-      `${countryFlag(row.original.country)} ${countryName(row.original.country)}`,
-  },
+  { accessorKey: 'country', header: 'Country' },
   {
     accessorKey: 'alliance',
     header: 'Alliance',

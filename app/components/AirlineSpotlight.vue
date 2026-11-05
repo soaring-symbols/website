@@ -51,22 +51,22 @@
 
         <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
           <div>
-            <dt class="text-muted">Country</dt>
-            <dd
-              class="font-semibold text-highlighted"
-              :class="steady && 'truncate'"
-            >
-              {{ countryFlag(airline.country) }}
-              {{ countryName(airline.country) }}
-            </dd>
+            <dt class="text-muted">IATA code</dt>
+            <dd class="font-semibold text-highlighted">{{ airline.iata }}</dd>
           </div>
           <div>
-            <dt class="text-muted">IATA and ICAO codes</dt>
+            <dt class="text-muted">ICAO code</dt>
+            <dd class="font-semibold text-highlighted">{{ airline.icao }}</dd>
+          </div>
+          <div>
+            <dt class="text-muted">Country</dt>
             <dd
-              class="font-semibold text-highlighted"
-              :class="steady && 'truncate'"
+              class="flex items-center gap-1.5 font-semibold text-highlighted"
             >
-              {{ airline.iata }} and {{ airline.icao }}
+              <CountryFlags :iso="airline.country" />
+              <span class="min-w-0" :class="steady && 'truncate'">
+                {{ countryName(airline.country) }}
+              </span>
             </dd>
           </div>
           <div>
@@ -78,7 +78,7 @@
               {{ airline.alliance ?? 'None' }}
             </dd>
           </div>
-          <div v-if="airline.website">
+          <div v-if="airline.website" class="col-span-2">
             <dt class="text-muted">Website</dt>
             <dd class="truncate font-semibold">
               <a
@@ -138,38 +138,23 @@
           </ul>
         </div>
 
-        <div v-if="steady" class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2">
           <p class="text-sm text-muted">Download SVG</p>
-          <div class="flex gap-2">
+          <div class="flex flex-wrap gap-2">
             <UButton
               v-for="download in downloads"
               :key="download.variant"
               :to="assetUrl(airline, download.variant)"
               external
               :download="`${airline.slug}-${download.variant}.svg`"
-              :label="download.short"
-              :aria-label="download.label"
+              :label="download.label"
+              :aria-label="`Download ${download.label.toLowerCase()}`"
               icon="hugeicons:download-04"
               :variant="download.variant === 'logo' ? 'solid' : 'outline'"
               :class="download.variant === 'logo' ? 'btn-signal' : undefined"
               :ui="{ label: 'block' }"
             />
           </div>
-        </div>
-
-        <div v-else class="flex flex-wrap gap-2">
-          <UButton
-            v-for="download in downloads"
-            :key="download.variant"
-            :to="assetUrl(airline, download.variant)"
-            external
-            :download="`${airline.slug}-${download.variant}.svg`"
-            :label="download.label"
-            icon="hugeicons:download-04"
-            :variant="download.variant === 'logo' ? 'solid' : 'outline'"
-            :class="download.variant === 'logo' ? 'btn-signal' : undefined"
-            :ui="{ label: 'block' }"
-          />
         </div>
       </div>
     </div>
@@ -214,9 +199,9 @@ const hiddenCount = computed(
 
 const downloads = computed(() =>
   [
-    { variant: 'logo', label: 'Download logo', short: 'Logo' },
-    { variant: 'icon', label: 'Download icon', short: 'Icon' },
-    { variant: 'tail', label: 'Download tail', short: 'Tail' },
+    { variant: 'logo', label: 'Logo' },
+    { variant: 'icon', label: 'Icon' },
+    { variant: 'tail', label: 'Tail' },
   ].filter((d) => hasAsset(props.airline, d.variant)),
 )
 
