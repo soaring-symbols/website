@@ -63,7 +63,10 @@ const props = defineProps({
 // Slug of the airline shown next to the board
 const selected = defineModel('selected', { type: String })
 
-// A fixed first board so the server and client render the same rows
+// A fixed first board so the server and client render the same rows. The
+// page starts with the first one selected: setting it from here would land
+// before the page renders on the server but after it hydrates in the
+// browser, and the two would disagree
 const OPENING = [
   'vietnam-airlines',
   'lufthansa',
@@ -78,7 +81,6 @@ const rows = ref(
     Boolean,
   ),
 )
-selected.value ??= rows.value[0]?.slug
 
 const hovering = ref(false)
 const paused = ref(false)

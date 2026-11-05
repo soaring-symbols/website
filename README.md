@@ -34,7 +34,11 @@ npx wrangler --cwd .output dev
 - [x] Prerender the pages at build time, since the airline data is static
 - [x] Sitemap, Open Graph images and canonical URLs
 - [x] Favicon and brand mark in the split-flap style (logo files for the GitHub org and Raycast in `brand/`)
-- [ ] Fix the hydration mismatch the homepage logs on load
+- [x] Serve the site on <https://soaringsymbols.org>
+- [x] List every mark on the airline page, color and monochrome side by side, and ask for the files that are missing
+- [x] Country flags as SVG
+- [x] Ecosystem section on the homepage, including the launchers that run Raycast extensions
+- [x] Fix the hydration mismatches: the homepage spotlight, and error pages that rendered only in the browser (now `app/error.vue`)
 - [ ] Drop the `@nuxt/fonts` 1.x entry in `nuxt.config.ts` once `@nuxt/ui` ships with it (the social cards need 1.x for Overpass)
 - [ ] Run ESLint again, once typescript-eslint supports TypeScript 7 (or pin TypeScript 6 for linting)
 

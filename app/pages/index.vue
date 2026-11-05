@@ -253,7 +253,9 @@ defineOgImage('Site')
 
 const withIcons = airlines.filter((a) => hasAsset(a, 'icon'))
 
-const selectedSlug = ref()
+// The first row of the departure board, set here so the spotlight renders
+// the same on the server and in the browser
+const selectedSlug = ref('vietnam-airlines')
 const selected = computed(() =>
   airlines.find((a) => a.slug === selectedSlug.value),
 )
