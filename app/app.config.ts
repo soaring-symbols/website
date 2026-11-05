@@ -112,11 +112,10 @@ export default defineAppConfig({
       slots: {
         root: 'border-none py-0',
         wrapper: 'sm:flex-row sm:items-center sm:justify-between',
-        // Overpass sits its capitals high in the line box; the nudge lines
-        // the title up with the links beside it
+        // Page titles; a section heading on a page header sets its own size
         title:
-          'min-w-0 translate-y-[0.1em] font-extrabold tracking-tight text-highlighted text-balance',
-        description: 'text-toned text-pretty',
+          'cap-center min-w-0 text-4xl sm:text-5xl font-extrabold tracking-tight text-balance',
+        description: 'text-lg text-toned',
         links: 'shrink-0',
       },
       variants: {
@@ -130,11 +129,11 @@ export default defineAppConfig({
     pageSection: {
       slots: {
         root: 'border-t border-default',
-        container:
-          'px-0 sm:px-0 lg:px-0 py-16 sm:py-16 lg:py-24 gap-10 sm:gap-10',
+        container: 'px-0 sm:px-0 lg:px-0 sm:py-16 lg:py-24 gap-10 sm:gap-10',
+        // A one-column template, so a long line in a feature cannot widen it
         features: 'grid-cols-1',
-        title: 'text-3xl sm:text-3xl lg:text-3xl font-extrabold text-balance',
-        description: 'text-base sm:text-base text-toned',
+        title: 'sm:text-3xl lg:text-3xl font-extrabold text-balance',
+        description: 'sm:text-base text-toned',
       },
       variants: {
         orientation: {
@@ -144,8 +143,9 @@ export default defineAppConfig({
             title: 'text-start',
             description: 'text-start text-pretty',
             links: 'justify-start',
-            features: 'sm:grid-cols-2 lg:grid-cols-3 gap-8',
           },
+          // Text and its companion start level rather than centered
+          horizontal: { container: 'lg:items-start' },
         },
         title: {
           true: { description: 'mt-3' },

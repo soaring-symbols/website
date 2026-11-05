@@ -1,7 +1,7 @@
-// Iconify names of the flags for one country code, or several joined by
-// commas; the set is bundled in nuxt.config so no flag loads at runtime
-export function countryFlagIcons(iso: string): string[] {
-  return iso.split(',').map((code) => `flag:${code.trim().toLowerCase()}-4x3`)
+// Flag files for one country code, or several joined by commas; nuxt.config
+// serves them from the flag-icons package
+export function countryFlagUrls(iso: string): string[] {
+  return iso.split(',').map((code) => `/flags/${code.trim().toLowerCase()}.svg`)
 }
 
 const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })

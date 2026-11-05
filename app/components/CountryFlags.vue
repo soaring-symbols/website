@@ -1,11 +1,16 @@
 <template>
   <!-- SVG flags, since Windows draws flag emoji as bare letters -->
-  <span class="inline-flex shrink-0 gap-1 align-[-0.1em]" aria-hidden="true">
-    <UIcon
-      v-for="name in countryFlagIcons(iso)"
-      :key="name"
-      :name="name"
-      class="h-[0.9em] w-[1.2em] rounded-[2px] ring-1 ring-black/10 ring-inset dark:ring-white/20"
+  <span class="inline-flex shrink-0 gap-1" aria-hidden="true">
+    <img
+      v-for="src in countryFlagUrls(iso)"
+      :key="src"
+      :src="src"
+      alt=""
+      width="16"
+      height="12"
+      loading="lazy"
+      decoding="async"
+      class="h-[0.9em] w-[1.2em] rounded-[2px] object-cover ring-1 ring-black/10 dark:ring-white/20"
     />
   </span>
 </template>

@@ -1,13 +1,6 @@
 <template>
   <div class="pt-8 pb-16 sm:pt-12">
-    <div>
-      <h1
-        class="text-4xl font-extrabold tracking-tight text-highlighted sm:text-5xl"
-      >
-        {{ meta.title }}
-      </h1>
-      <p class="mt-3 text-lg text-toned text-pretty">{{ meta.description }}</p>
-    </div>
+    <UPageHeader :title="meta.title" :description="meta.description" />
 
     <!-- Filters stay in reach while the list scrolls; on phones the bar
          would cover a third of the screen, so it scrolls away there -->

@@ -10,20 +10,16 @@ const soaringSymbolsDir = resolve(
 )
 const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
 const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
-const airlines: { slug: string; country: string }[] = JSON.parse(
+const airlines: { slug: string }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
 )
-
-// Every flag the site can show, bundled so none is fetched at runtime
-const flagIcons = [
-  ...new Set(
-    airlines.flatMap((airline) =>
-      airline.country
-        .split(',')
-        .map((code) => `flag:${code.trim().toLowerCase()}-4x3`),
-    ),
-  ),
-]
+// Country flags, served as files so each loads once, cached, and only where
+// it is shown: a few carry detailed arms that would weigh down every page
+const flagsDir = resolve(
+  require.resolve('flag-icons/package.json'),
+  '..',
+  'flags/4x3',
+)
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -41,12 +37,6 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
   devtools: { enabled: true },
-
-  icon: {
-    clientBundle: {
-      icons: flagIcons,
-    },
-  },
 
   fonts: {
     defaults: {
@@ -112,6 +102,7 @@ export default defineNuxtConfig({
         // Airline pages live under the same prefix as the SVGs
         fallthrough: true,
       },
+      { baseURL: '/flags', dir: flagsDir, maxAge: 60 * 60 * 24 * 365 },
     ],
     // The airline data only changes with a package release, so every page
     // is built ahead of time and served as a static file

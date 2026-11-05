@@ -7,12 +7,11 @@
         {
           label: 'Contribution guidelines',
           icon: 'hugeicons:github',
-          to: 'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md',
+          to: CONTRIBUTING_URL,
           target: '_blank',
           ui: { label: 'block' },
         },
       ]"
-      :ui="{ title: 'text-4xl sm:text-5xl', description: 'text-lg' }"
       class="mb-8"
     />
 

@@ -66,7 +66,7 @@
               ui: { label: 'block' },
             },
           ]"
-          :ui="{ title: 'text-3xl sm:text-3xl' }"
+          :ui="{ title: 'text-3xl sm:text-3xl', description: 'text-base' }"
         />
       </template>
 
@@ -94,7 +94,7 @@
       title="Use them in your project"
       description="The npm package ships every SVG with its airline’s codes, country, alliance and brand colors. Look an airline up by IATA code, ICAO code or name."
       orientation="horizontal"
-      :ui="{ container: 'lg:items-start', body: 'mt-6' }"
+      :ui="{ body: 'mt-6' }"
     >
       <template #body>
         <div class="rounded-lg bg-board text-flap-ink">
@@ -306,7 +306,7 @@ const steps = [
     description:
       'Trace the logo on a 64×64 canvas and the icon on 24×24, using the official colors.',
     action: 'Read the guidelines',
-    to: 'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md',
+    to: CONTRIBUTING_URL,
     external: true,
   },
   {

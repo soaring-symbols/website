@@ -13,107 +13,91 @@
     >
       <!-- One row per mark, its color file beside its monochrome one, so
            every row is full whichever marks the airline has -->
-      <div
-        class="hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)]"
-        aria-hidden="true"
-      >
-        <span />
-        <span>Color</span>
-        <span>Monochrome</span>
-      </div>
-
-      <div class="flex flex-col gap-10 lg:-mt-5 lg:gap-6">
-        <section
-          v-for="mark in marks"
-          :key="mark.variant"
-          class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-6"
+      <div class="flex flex-col gap-3">
+        <div
+          class="hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)]"
+          aria-hidden="true"
         >
-          <h3
-            class="font-bold text-highlighted sm:col-span-2 lg:col-span-1 lg:pt-2"
-          >
-            {{ mark.label }}
-          </h3>
+          <span />
+          <span>Color</span>
+          <span>Monochrome</span>
+        </div>
 
-          <!-- Neither file yet: one call for contributions across the row -->
-          <div
-            v-if="mark.files.every((file) => !file.variant)"
-            class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-accented p-6 text-center text-sm text-muted sm:col-span-2"
+        <div class="flex flex-col gap-10 lg:gap-6">
+          <section
+            v-for="mark in marks"
+            :key="mark.variant"
+            class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-6"
           >
-            <p>No {{ mark.label.toLowerCase() }} yet.</p>
-            <ULink
-              :to="contributingUrl"
-              target="_blank"
-              class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+            <h3
+              class="font-bold text-highlighted sm:col-span-2 lg:col-span-1 lg:pt-2"
             >
-              Contribute one
-            </ULink>
-          </div>
+              {{ mark.label }}
+            </h3>
 
-          <template v-for="file in mark.files" v-else :key="file.kind">
-            <div
-              v-if="file.variant"
-              class="flex flex-col gap-4 rounded-xl bg-surface p-4"
-            >
+            <template v-for="file in mark.files" :key="file.kind">
               <div
-                class="flex aspect-[5/2] items-center justify-center overflow-hidden rounded-lg bg-white p-6"
-                :style="{ backgroundImage: tint }"
+                v-if="file.variant"
+                class="flex flex-col gap-4 rounded-xl bg-surface p-4"
               >
-                <img
-                  :src="assetUrl(airline, file.variant)"
-                  :alt="`${airline.name} ${file.kind} ${mark.label.toLowerCase()}`"
-                  loading="lazy"
-                  class="size-full object-contain"
-                />
-              </div>
-
-              <div class="flex items-center justify-between gap-3">
-                <div class="min-w-0">
-                  <p class="font-semibold text-highlighted lg:sr-only">
-                    {{ file.kind === 'mono' ? 'Monochrome' : 'Color' }}
-                  </p>
-                  <p class="truncate font-mono text-xs text-muted">
-                    {{ file.variant }}.svg
-                  </p>
-                </div>
-                <div class="flex shrink-0 gap-1">
-                  <UButton
-                    icon="hugeicons:link-04"
-                    variant="ghost"
-                    :aria-label="`Copy the CDN link to ${file.variant}.svg`"
-                    @click="copy(cdnUrl(file.variant), 'CDN link')"
-                  />
-                  <UButton
-                    :to="assetUrl(airline, file.variant)"
-                    external
-                    :download="`${airline.slug}-${file.variant}.svg`"
-                    icon="hugeicons:download-04"
-                    variant="outline"
-                    :aria-label="`Download ${file.variant}.svg`"
+                <div
+                  class="flex aspect-[5/2] items-center justify-center overflow-hidden rounded-lg bg-white p-6"
+                  :style="{ backgroundImage: tint }"
+                >
+                  <img
+                    :src="assetUrl(airline, file.variant)"
+                    :alt="`${airline.name} ${file.kind} ${mark.label.toLowerCase()}`"
+                    loading="lazy"
+                    class="size-full object-contain"
                   />
                 </div>
-              </div>
-            </div>
 
-            <!-- One file missing, like the hand-drawn mono of a multi-color mark -->
-            <div
-              v-else
-              class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-accented p-6 text-center text-sm text-muted"
-            >
-              <p>
-                No
-                {{ file.kind === 'mono' ? 'monochrome' : 'color' }}
-                {{ mark.label.toLowerCase() }} yet.
-              </p>
-              <ULink
-                :to="contributingUrl"
-                target="_blank"
-                class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+                <div class="flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <p class="font-semibold text-highlighted lg:sr-only">
+                      {{ file.kind === 'mono' ? 'Monochrome' : 'Color' }}
+                    </p>
+                    <p class="truncate font-mono text-xs text-muted">
+                      {{ file.variant }}.svg
+                    </p>
+                  </div>
+                  <div class="flex shrink-0 gap-1">
+                    <UButton
+                      icon="hugeicons:link-04"
+                      variant="ghost"
+                      :aria-label="`Copy the CDN link to ${file.variant}.svg`"
+                      @click="copy(cdnUrl(file.variant), 'CDN link')"
+                    />
+                    <UButton
+                      :to="assetUrl(airline, file.variant)"
+                      external
+                      :download="`${airline.slug}-${file.variant}.svg`"
+                      icon="hugeicons:download-04"
+                      variant="outline"
+                      :aria-label="`Download ${file.variant}.svg`"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- A missing file, or the whole mark, asks for a contribution -->
+              <div
+                v-else
+                class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-accented p-6 text-center text-sm text-muted"
+                :class="file.kind === 'none' && 'min-h-40 sm:col-span-2'"
               >
-                Contribute one
-              </ULink>
-            </div>
-          </template>
-        </section>
+                <p>{{ file.missing }}</p>
+                <ULink
+                  :to="CONTRIBUTING_URL"
+                  target="_blank"
+                  class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+                >
+                  Contribute one
+                </ULink>
+              </div>
+            </template>
+          </section>
+        </div>
       </div>
     </UPageSection>
 
@@ -132,11 +116,7 @@
           ui: { label: 'block' },
         },
       ]"
-      :ui="{
-        ...sectionUi,
-        container: `${sectionUi.container} lg:items-start`,
-        footer: 'mt-6',
-      }"
+      :ui="{ ...sectionUi, footer: 'mt-6' }"
     >
       <pre
         class="overflow-x-auto rounded-xl bg-board p-5 font-mono text-[0.8125rem] leading-relaxed text-flap-ink"
@@ -186,25 +166,32 @@ const marks = [
   { variant: 'icon', label: 'Icon' },
   { variant: 'tail', label: 'Tail' },
 ].map((mark) => {
-  const mono = `${mark.variant}-mono`
+  const name = mark.label.toLowerCase()
+  const color = hasAsset(airline, mark.variant) ? mark.variant : null
+  const mono = hasAsset(airline, `${mark.variant}-mono`)
+    ? `${mark.variant}-mono`
+    : null
 
-  return {
-    ...mark,
-    files: [
-      {
-        kind: 'color',
-        variant: hasAsset(airline, mark.variant) ? mark.variant : null,
-      },
-      { kind: 'mono', variant: hasAsset(airline, mono) ? mono : null },
-    ],
-  }
+  // With neither file, one placeholder spans the row
+  const files =
+    color || mono
+      ? [
+          { kind: 'color', variant: color, missing: `No color ${name} yet.` },
+          {
+            kind: 'mono',
+            variant: mono,
+            missing: `No monochrome ${name} yet.`,
+          },
+        ]
+      : [{ kind: 'none', variant: null, missing: `No ${name} yet.` }]
+
+  return { ...mark, files }
 })
 
-const contributingUrl =
-  'https://github.com/soaring-symbols/soaring-symbols/blob/main/CONTRIBUTING.md'
-
 // The package snippet shows the first color file the airline ships
-const snippetVariant = marks.find((mark) => mark.files[0].variant)?.variant
+const snippetVariant = marks.find((mark) =>
+  hasAsset(airline, mark.variant),
+)?.variant
 const snippetPath = snippetVariant
   ? `'soaring-symbols/assets/${airline.slug}/${snippetVariant}.svg'`
   : 'undefined'
