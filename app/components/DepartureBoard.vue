@@ -36,18 +36,19 @@
       </ul>
 
       <div class="board-foot">
-        <span>Pick a row to see its logo, icon and colors.</span>
+        <span>Pick a row to see its marks.</span>
         <button
           v-if="canRotate"
           type="button"
           class="board-toggle"
+          :aria-label="paused ? 'Resume the board' : 'Pause the board'"
           @click="paused = !paused"
         >
           <UIcon
             :name="paused ? 'hugeicons:play' : 'hugeicons:pause'"
             class="size-3.5"
           />
-          {{ paused ? 'Resume board' : 'Pause board' }}
+          {{ paused ? 'Resume' : 'Pause' }}
         </button>
       </div>
     </div>

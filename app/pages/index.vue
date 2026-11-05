@@ -26,7 +26,7 @@
               v-model="query"
               size="xl"
               icon="hugeicons:search-01"
-              placeholder="Airline name, IATA or ICAO code"
+              placeholder="Name, IATA or ICAO code"
               aria-label="Find an airline"
               class="flex-1"
               :ui="{ base: 'bg-surface' }"

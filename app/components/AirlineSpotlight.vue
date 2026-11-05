@@ -98,14 +98,14 @@
           :to="`/airlines/${airline.slug}`"
           class="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
         >
-          All files and details
+          All files
           <UIcon name="hugeicons:arrow-right-02" class="size-4" />
         </ULink>
       </div>
 
       <div class="flex flex-col gap-5">
         <div v-if="steady || colors.length" class="flex flex-col gap-2">
-          <p class="text-sm text-muted">Brand colors, click to copy</p>
+          <p class="text-sm text-muted">Brand colors</p>
           <ul
             :class="
               steady
@@ -116,7 +116,8 @@
             <li v-for="color in shownColors" :key="color">
               <button
                 type="button"
-                class="flex cursor-pointer items-center gap-2 rounded-full bg-elevated py-1 ps-1 pe-3 text-xs font-semibold text-highlighted hover:bg-accented focus-visible:outline-2 focus-visible:outline-primary"
+                class="group flex cursor-pointer items-center gap-2 rounded-full bg-elevated py-1 ps-1 pe-2.5 text-xs font-semibold text-highlighted hover:bg-accented focus-visible:outline-2 focus-visible:outline-primary"
+                :title="`Copy ${color.toUpperCase()}`"
                 @click="copy(color)"
               >
                 <span
@@ -124,6 +125,11 @@
                   :style="{ backgroundColor: color }"
                 />
                 {{ color.toUpperCase() }}
+                <UIcon
+                  name="hugeicons:copy-01"
+                  class="size-3.5 text-dimmed group-hover:text-highlighted"
+                  aria-hidden="true"
+                />
               </button>
             </li>
             <li v-if="hiddenCount">

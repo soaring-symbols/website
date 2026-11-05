@@ -56,8 +56,8 @@
         v-model="reference.file.value"
         accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp"
         icon="hugeicons:git-compare"
-        label="Compare with a reference (optional)"
-        description="Drop the original PNG, JPEG or WebP, or the previous SVG, to check that vectorizing, optimizing or merging paths did not change how it looks."
+        label="Compare with a reference"
+        description="Optional. Drop the original PNG, JPEG or WebP, or the previous SVG, to check the artwork still looks the same."
         class="min-h-36"
       />
     </template>
