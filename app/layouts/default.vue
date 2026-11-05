@@ -24,7 +24,16 @@
       </template>
 
       <template #body>
-        <UNavigationMenu :items="nav" orientation="vertical" class="-mx-2.5" />
+        <UNavigationMenu
+          :items="nav"
+          orientation="vertical"
+          class="-mx-3"
+          :ui="{
+            list: 'flex flex-col gap-1',
+            link: 'gap-3 px-3 py-3 text-base before:inset-0 before:rounded-lg',
+            linkLeadingIcon: 'size-6',
+          }"
+        />
       </template>
     </UHeader>
 

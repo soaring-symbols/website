@@ -9,17 +9,18 @@
       <p class="mt-3 text-lg text-toned text-pretty">{{ meta.description }}</p>
     </div>
 
-    <!-- Filters stay in reach while the list scrolls -->
+    <!-- Filters stay in reach while the list scrolls; on phones the bar
+         would cover a third of the screen, so it scrolls away there -->
     <div
-      class="sticky top-(--ui-header-height) z-10 -mx-4 mt-8 border-b border-default bg-default/90 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+      class="z-10 sm:sticky sm:top-(--ui-header-height) -mx-4 mt-8 border-b border-default bg-default/90 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
     >
-      <div class="flex flex-wrap items-center gap-3">
+      <div class="grid grid-cols-2 items-center gap-3 sm:flex sm:flex-wrap">
         <UInput
           v-model="search"
           placeholder="Airline name, IATA or ICAO code"
           icon="hugeicons:search-01"
           aria-label="Search airlines"
-          class="w-full sm:w-72"
+          class="col-span-2 w-full sm:w-72"
           :ui="{ base: 'bg-surface' }"
         />
 
@@ -29,7 +30,7 @@
           placeholder="Any alliance"
           aria-label="Alliance"
           :items="allianceOptions"
-          class="w-44"
+          class="w-full sm:w-44"
           :ui="{ base: 'bg-surface' }"
         />
 
@@ -39,13 +40,13 @@
           placeholder="Any country"
           aria-label="Country"
           :items="countryOptions"
-          class="w-44"
+          class="w-full sm:w-44"
           :ui="{ base: 'bg-surface' }"
         />
 
         <USwitch v-model="flagCarrierOnly" label="Flag carriers only" />
 
-        <UFieldGroup class="ms-auto" aria-label="Layout">
+        <UFieldGroup class="justify-self-end sm:ms-auto" aria-label="Layout">
           <UButton
             icon="hugeicons:grid-view"
             aria-label="Grid"
@@ -134,7 +135,12 @@
     <USlideover
       v-model:open="detailOpen"
       :title="active?.name ?? 'Airline'"
-      :ui="{ content: 'max-w-lg', header: 'sr-only' }"
+      :ui="{
+        content: 'max-w-lg divide-none',
+        header: 'min-h-0 justify-end pb-0',
+        title: 'sr-only',
+        close: 'static',
+      }"
     >
       <template #body>
         <AirlineSpotlight v-if="active" :airline="active" />
