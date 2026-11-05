@@ -165,6 +165,7 @@ getAssetPath('VN', 'logo')
 
     <!-- Other tools that ship the same marks -->
     <UPageSection
+      id="ecosystem"
       title="Ecosystem"
       description="The same marks, ready in the tools you already use."
       :ui="{ features: 'lg:grid-cols-2' }"

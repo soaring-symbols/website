@@ -13,7 +13,7 @@ export const ecosystem: EcosystemEntry[] = [
     name: 'Raycast extension',
     icon: 'simple-icons:raycast',
     description:
-      'Search airlines from your launcher, see their codes, country and website, and grab their SVGs.',
+      'Search airlines from your launcher, see their codes, country and website, and grab their SVGs. Also works in launchers that run Raycast extensions, such as Vicinae, SuperCmd and Tinycast.',
     link: {
       label: 'Open in Raycast Store',
       to: 'https://www.raycast.com/anhthang/soaring-symbols',
