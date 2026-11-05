@@ -29,4 +29,14 @@ export const ecosystem: EcosystemEntry[] = [
       code: 'https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/<slug>/logo.svg',
     },
   },
+  {
+    name: 'JSON API',
+    icon: 'hugeicons:api',
+    description:
+      'Look up an airline and get its codes, country, brand colors and links to every SVG. End the URL with its IATA code (VN), ICAO code (HVN), slug (vietnam-airlines) or name, in any case; drop it to list them all. Open to any site, no key needed.',
+    snippet: {
+      label: 'Copy URL',
+      code: 'https://soaringsymbols.org/api/airlines/VN',
+    },
+  },
 ]

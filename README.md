@@ -48,4 +48,4 @@ Shipped integrations are listed in `app/data/ecosystem.ts` and shown on the home
 - [ ] Iconify icon set, for Iconify, Nuxt Icon, UnoCSS, Tailwind and Astro
 - [ ] Figma plugin, to search airlines by name or IATA code and drop their marks into designs
 - [ ] Swift Package, with an asset catalog and a SwiftUI view
-- [ ] JSON API on the Worker, such as `/api/airlines/VN`
+- [x] JSON API on the Worker: `/api/airlines` lists every airline, `/api/airlines/VN` looks one up by IATA or ICAO code, slug or name
