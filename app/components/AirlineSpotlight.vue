@@ -58,6 +58,26 @@
             <dt class="text-muted">ICAO code</dt>
             <dd class="font-semibold text-highlighted">{{ airline.icao }}</dd>
           </div>
+          <!-- Callsign and years, then hubs below country and alliance;
+               left out of a steady spotlight, which keeps one height
+               for every airline. Both cells always show, so the pairs
+               below stay side by side. -->
+          <template v-if="!steady">
+            <div>
+              <dt class="text-muted">Callsign</dt>
+              <dd class="font-semibold text-highlighted">
+                {{ airline.callsign ?? '—' }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-muted">
+                {{ airline.ceased ? 'Operated' : 'Founded' }}
+              </dt>
+              <dd class="font-semibold text-highlighted">
+                {{ years }}
+              </dd>
+            </div>
+          </template>
           <div>
             <dt class="text-muted">Country</dt>
             <dd
@@ -76,6 +96,14 @@
               :class="steady && 'truncate'"
             >
               {{ airline.alliance ?? 'None' }}
+            </dd>
+          </div>
+          <div v-if="!steady && airline.hubs?.length" class="col-span-2">
+            <dt class="text-muted">
+              {{ airline.hubs.length > 1 ? 'Hubs' : 'Hub' }}
+            </dt>
+            <dd class="font-semibold text-highlighted">
+              {{ airline.hubs.join(', ') }}
             </dd>
           </div>
           <div v-if="airline.website" class="col-span-2">
@@ -182,6 +210,14 @@ const toast = useToast()
 
 // A faint wash of the airline's own color behind its marks
 const tint = computed(() => brandTint(props.airline))
+
+// "1956", or "1946–2019" for an airline that has ceased operations
+const years = computed(() => {
+  const { founded, ceased } = props.airline
+  if (!ceased) return founded ? String(founded) : '—'
+
+  return `${founded ?? '?'}–${ceased}`
+})
 
 const colors = computed(() => {
   const { logo, icon } = props.airline.assets

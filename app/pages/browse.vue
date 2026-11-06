@@ -10,7 +10,7 @@
       <div class="grid grid-cols-2 items-center gap-3 sm:flex sm:flex-wrap">
         <UInput
           v-model="search"
-          placeholder="Name, IATA or ICAO code"
+          placeholder="Name, code or callsign"
           icon="hugeicons:search-01"
           aria-label="Search airlines"
           class="col-span-2 w-full sm:w-72"
@@ -227,7 +227,8 @@ const filtered = computed(() => {
       (a) =>
         a.name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().includes(q) ||
         a.iata?.toLowerCase().startsWith(q) ||
-        a.icao?.toLowerCase().startsWith(q),
+        a.icao?.toLowerCase().startsWith(q) ||
+        a.callsign?.toLowerCase().includes(q),
     )
   }
 

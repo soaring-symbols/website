@@ -7,7 +7,7 @@
       "dependencies": {
         "@nuxt/ui": "^4.12.0",
         "nuxt": "^4.6.4",
-        "soaring-symbols": "^0.2.0",
+        "soaring-symbols": "^0.2.1",
       },
       "devDependencies": {
         "@commitlint/cli": "^21.2.4",
@@ -1830,7 +1830,7 @@
 
     "smob": ["smob@1.6.2", "", {}, "sha512-RQsvleCbF8cVHEv+xuDGaA4pOizFqJ0GgjtMSRo6oP8pnN7WsigHgVGey6aILRBKv4W2YOMHLqbKdnB6hpB9fw=="],
 
-    "soaring-symbols": ["soaring-symbols@0.2.0", "", {}, "sha512-QB4q50I0eWsaUPrZifAQXXgGELDwjbWWHUhGou0SznVjpBEOVVTPAtmsTXEFdYaSTPDnov7Injob3VTJwAJdog=="],
+    "soaring-symbols": ["soaring-symbols@0.2.1", "", {}, "sha512-xY67O9NFY7MYTCgqCUVQSupv9fCzdJApy8JhZ1Hh217ZIKdbg8lK8O/mEFk3x667qLwvdqK/tFO4WzVpSizIPw=="],
 
     "source-map": ["source-map@0.7.6", "", {}, "sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ=="],
 
