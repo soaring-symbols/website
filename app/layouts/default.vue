@@ -12,7 +12,11 @@
         </span>
       </template>
 
-      <UNavigationMenu :items="nav" variant="link" />
+      <UNavigationMenu
+        :items="nav"
+        variant="link"
+        :ui="{ linkLabel: 'cap-center' }"
+      />
 
       <template #right>
         <UButton
@@ -34,6 +38,7 @@
             list: 'flex flex-col gap-1',
             link: 'gap-3 px-3 py-3 text-base before:inset-0 before:rounded-lg',
             linkLeadingIcon: 'size-6',
+            linkLabel: 'cap-center',
           }"
         />
       </template>
