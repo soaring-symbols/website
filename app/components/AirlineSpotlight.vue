@@ -28,10 +28,7 @@
             >
               {{ airline.name }}
             </component>
-            <div
-              v-if="airline.branding?.tagline || ceasedLabel(airline)"
-              class="mt-1 flex items-center gap-2"
-            >
+            <div class="mt-1 flex items-center gap-2 empty:hidden">
               <CeasedBadge :airline="airline" />
               <p
                 v-if="airline.branding?.tagline"
@@ -80,7 +77,7 @@
                 {{ airline.ceased ? 'Operated' : 'Founded' }}
               </dt>
               <dd class="font-semibold text-highlighted">
-                {{ years }}
+                {{ operatingYears(airline) ?? '—' }}
               </dd>
             </div>
           </template>
@@ -216,14 +213,6 @@ const toast = useToast()
 
 // A faint wash of the airline's own color behind its marks
 const tint = computed(() => brandTint(props.airline))
-
-// "1956", or "1946–2019" for an airline that has ceased operations
-const years = computed(() => {
-  const { founded, ceased } = props.airline
-  if (!ceased) return founded ? String(founded) : '—'
-
-  return `${founded ?? '?'}–${ceased}`
-})
 
 const colors = computed(() => {
   const { logo, icon } = props.airline.assets

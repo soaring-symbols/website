@@ -46,6 +46,15 @@ export function ceasedLabel(airline: Airline) {
   return airline.defunct ? 'Defunct' : undefined
 }
 
+// "1956", or "1946–2019" for an airline that has ceased operations;
+// undefined when neither year is known
+export function operatingYears(airline: Airline) {
+  const { founded, ceased } = airline
+  if (ceased) return `${founded ?? '?'}–${ceased}`
+
+  return founded ? String(founded) : undefined
+}
+
 export function cleanUrl(url: string) {
   return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
 }
