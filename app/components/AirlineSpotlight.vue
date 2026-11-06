@@ -109,6 +109,28 @@
               {{ airline.hubs.join(', ') }}
             </dd>
           </div>
+          <!-- The group it belongs to, or the airlines it owns -->
+          <div v-if="!steady && parent" class="col-span-2">
+            <dt class="text-muted">Part of</dt>
+            <dd class="font-semibold">
+              <ULink :to="`/airlines/${parent.slug}`" :class="linkClass">
+                {{ parent.name }}
+              </ULink>
+            </dd>
+          </div>
+          <div v-if="!steady && subsidiaries.length" class="col-span-2">
+            <dt class="text-muted">Subsidiaries</dt>
+            <dd class="font-semibold">
+              <template v-for="(sub, i) in subsidiaries" :key="sub.slug">
+                <ULink :to="`/airlines/${sub.slug}`" :class="linkClass">
+                  {{ sub.name }}
+                </ULink>
+                <span v-if="i < subsidiaries.length - 1" class="text-muted"
+                  >,
+                </span>
+              </template>
+            </dd>
+          </div>
           <div v-if="airline.website" class="col-span-2">
             <dt class="text-muted">Website</dt>
             <dd class="truncate font-semibold">
@@ -213,6 +235,11 @@ const toast = useToast()
 
 // A faint wash of the airline's own color behind its marks
 const tint = computed(() => brandTint(props.airline))
+
+const parent = computed(() => airlineBySlug(props.airline.parent))
+const subsidiaries = computed(() => subsidiariesOf(props.airline))
+const linkClass =
+  'text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current'
 
 const colors = computed(() => {
   const { logo, icon } = props.airline.assets

@@ -3,6 +3,18 @@ import airlinesData from '#airlines-data'
 
 const airlines = airlinesData as unknown as Airline[]
 
+const bySlug = new Map(airlines.map((a) => [a.slug, a]))
+
+// Airlines owned by each parent, in catalog (name) order
+const children = new Map<string, Airline[]>()
+for (const airline of airlines) {
+  if (!airline.parent) continue
+  children.set(airline.parent, [
+    ...(children.get(airline.parent) ?? []),
+    airline,
+  ])
+}
+
 const stats = {
   total: airlines.length,
   countries: new Set(airlines.flatMap((a) => a.country.split(','))).size,
@@ -53,6 +65,15 @@ export function operatingYears(airline: Airline) {
   if (ceased) return `${founded ?? '?'}–${ceased}`
 
   return founded ? String(founded) : undefined
+}
+
+export function airlineBySlug(slug?: string) {
+  return slug ? bySlug.get(slug) : undefined
+}
+
+// The airlines this one owns, e.g. Thai AirAsia under AirAsia
+export function subsidiariesOf(airline: Airline) {
+  return children.get(airline.slug) ?? []
 }
 
 export function cleanUrl(url: string) {

@@ -7,7 +7,7 @@
     <!-- Every SVG the airline ships, with where to get it -->
     <UPageSection
       title="Files"
-      description="Download a file, or link it straight from the npm package through jsDelivr. Monochrome files use currentColor, so they take the color of the text around them."
+      :description="filesDescription"
       class="mt-16"
       :ui="sectionUi"
     >
@@ -144,6 +144,17 @@ if (!airline) {
 }
 
 const tint = brandTint(airline)
+
+// An airline drawn with another's marks says whose they are; the files are
+// still published under its own slug
+const markOwner = airlineBySlug(airline.marks)
+const filesDescription = [
+  markOwner &&
+    `${airline.name} flies the same marks as ${markOwner.name}, published under its own name too.`,
+  'Download a file, or link it straight from the npm package through jsDelivr. Monochrome files use currentColor, so they take the color of the text around them.',
+]
+  .filter(Boolean)
+  .join(' ')
 
 // Sections here sit closer together, under smaller titles, than on the home page
 const sectionUi = {
