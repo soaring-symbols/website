@@ -19,7 +19,12 @@
     <div class="flex items-start gap-3 px-1 pb-1">
       <FlapText :text="airline.iata ?? ''" :length="2" class="code" />
       <div class="min-w-0">
-        <h2 class="truncate font-bold text-highlighted">{{ airline.name }}</h2>
+        <div class="flex items-center gap-2">
+          <h2 class="truncate font-bold text-highlighted">
+            {{ airline.name }}
+          </h2>
+          <CeasedBadge :airline="airline" />
+        </div>
         <p class="flex items-center gap-1.5 text-sm text-muted">
           <CountryFlags :iso="airline.country" />
           <span class="min-w-0 truncate">{{

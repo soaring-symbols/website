@@ -38,6 +38,14 @@ export function brandTint(airline: Airline) {
   return `linear-gradient(${tint}, ${tint})`
 }
 
+// "Ceased 2017" for an airline that no longer flies, "Defunct" when the
+// year is unknown, and undefined for one still flying
+export function ceasedLabel(airline: Airline) {
+  if (airline.ceased) return `Ceased ${airline.ceased}`
+
+  return airline.defunct ? 'Defunct' : undefined
+}
+
 export function cleanUrl(url: string) {
   return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
 }

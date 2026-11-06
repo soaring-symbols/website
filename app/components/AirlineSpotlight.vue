@@ -28,13 +28,19 @@
             >
               {{ airline.name }}
             </component>
-            <p
-              v-if="airline.branding?.tagline"
-              class="mt-1 text-muted"
-              :class="steady && 'line-clamp-1'"
+            <div
+              v-if="airline.branding?.tagline || ceasedLabel(airline)"
+              class="mt-1 flex items-center gap-2"
             >
-              “{{ airline.branding.tagline }}”
-            </p>
+              <CeasedBadge :airline="airline" />
+              <p
+                v-if="airline.branding?.tagline"
+                class="min-w-0 text-muted"
+                :class="steady && 'line-clamp-1'"
+              >
+                “{{ airline.branding.tagline }}”
+              </p>
+            </div>
           </div>
           <div
             v-if="hasAsset(airline, 'icon')"
