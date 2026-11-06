@@ -38,6 +38,7 @@ npx wrangler --cwd .output dev
 - [x] List every mark on the airline page, color and monochrome side by side, and ask for the files that are missing
 - [x] Country flags as SVG
 - [x] Ecosystem section on the homepage, including the launchers that run Raycast extensions
+- [x] Callsign, hubs and founding year on the airline page, a badge for airlines that ceased operations, and search by callsign
 - [x] Fix the hydration mismatches: the homepage spotlight, and error pages that rendered only in the browser (now `app/error.vue`)
 - [ ] Drop the `@nuxt/fonts` 1.x entry in `nuxt.config.ts` once `@nuxt/ui` ships with it (the social cards need 1.x for Overpass)
 - [ ] Run ESLint again, once typescript-eslint supports TypeScript 7 (or pin TypeScript 6 for linting)
@@ -47,9 +48,9 @@ npx wrangler --cwd .output dev
 Shipped integrations are listed in `app/data/ecosystem.ts` and shown on the homepage.
 
 - [x] npm package
-- [x] Raycast extension
 - [x] jsDelivr CDN
+- [x] JSON API on the Worker: `/api/airlines` lists every airline, `/api/airlines/VN` looks one up by IATA or ICAO code, slug or name
+- [x] Raycast extension
 - [ ] Iconify icon set, for Iconify, Nuxt Icon, UnoCSS, Tailwind and Astro
 - [ ] Figma plugin, to search airlines by name or IATA code and drop their marks into designs
 - [ ] Swift Package, with an asset catalog and a SwiftUI view
-- [x] JSON API on the Worker: `/api/airlines` lists every airline, `/api/airlines/VN` looks one up by IATA or ICAO code, slug or name

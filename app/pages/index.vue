@@ -26,7 +26,7 @@
               v-model="query"
               size="xl"
               icon="hugeicons:search-01"
-              placeholder="Name, IATA or ICAO code"
+              placeholder="Name, code or callsign"
               aria-label="Find an airline"
               class="flex-1"
               :ui="{ base: 'bg-surface' }"
@@ -92,7 +92,7 @@
     <UPageSection
       id="use"
       title="Use them in your project"
-      description="The npm package ships every SVG with its airline’s codes, country, alliance and brand colors. Look an airline up by IATA code, ICAO code or name."
+      description="The npm package ships every SVG with its airline’s codes, callsign, country, alliance, hubs, founding year and brand colors. Look an airline up by IATA code, ICAO code or name."
       orientation="horizontal"
       :ui="{ body: 'mt-6' }"
     >
