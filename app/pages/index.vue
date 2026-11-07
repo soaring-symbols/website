@@ -165,63 +165,44 @@ getAssetPath('VN', 'logo')
 <span class="text-flap-ink/50">// 'soaring-symbols/assets/vietnam-airlines/logo.svg'</span></code></pre>
     </UPageSection>
 
-    <!-- Other tools that ship the same marks -->
-    <UPageSection
-      id="ecosystem"
-      title="Ecosystem"
-      description="The same marks, ready in the tools you already use."
-      :ui="{ features: 'lg:grid-cols-2' }"
-    >
-      <template #features>
-        <UPageFeature
-          v-for="entry in ecosystem"
-          :key="entry.name"
-          as="li"
-          :icon="entry.icon"
-          :title="entry.name"
-          orientation="horizontal"
-        >
-          <template #title>
-            <span class="inline-flex flex-wrap items-center gap-2">
-              {{ entry.name }}
-              <UBadge
-                v-if="entry.inDevelopment"
-                label="In development"
-                color="neutral"
-                variant="subtle"
-                size="sm"
-              />
-            </span>
-          </template>
-          <template #description>
-            <p>{{ entry.description }}</p>
-            <code
-              v-if="entry.snippet"
-              class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md bg-elevated px-3 py-2 font-mono text-xs whitespace-nowrap text-highlighted"
-              >{{ entry.snippet.code }}</code
-            >
-            <UButton
-              v-if="entry.link"
-              :to="entry.link.to"
-              target="_blank"
-              :label="entry.link.label"
-              trailing-icon="hugeicons:arrow-up-right-01"
-              variant="outline"
-              class="mt-4"
-              :ui="{ label: 'block' }"
-            />
-            <UButton
-              v-else-if="entry.snippet"
-              :label="entry.snippet.label"
-              icon="hugeicons:copy-01"
-              variant="outline"
-              class="mt-4"
-              :ui="{ label: 'block' }"
-              @click="copySnippet(entry.snippet)"
-            />
-          </template>
-        </UPageFeature>
+    <!-- Other tools that ship the same marks, in full on /ecosystem -->
+    <UPageSection id="ecosystem">
+      <template #header>
+        <UPageHeader
+          :as="{ title: 'h2' }"
+          title="Ecosystem"
+          description="The same marks, ready in the tools you already use: files on a CDN, a JSON and image API, and apps and plugins."
+          :links="[
+            {
+              to: '/ecosystem',
+              label: 'See the ecosystem',
+              trailingIcon: 'hugeicons:arrow-right-02',
+              size: 'lg',
+              ui: { label: 'block' },
+            },
+          ]"
+          :ui="{ title: 'text-3xl sm:text-3xl', description: 'text-base' }"
+        />
       </template>
+
+      <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <li v-for="entry in ecosystem" :key="entry.id">
+          <NuxtLink
+            :to="`/ecosystem#${entry.id}`"
+            class="flex h-full items-center gap-3 rounded-lg bg-surface p-4 ring ring-default hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
+          >
+            <UIcon :name="entry.icon" class="size-6 shrink-0 text-primary" />
+            <span class="flex flex-col gap-1">
+              <span class="font-semibold text-highlighted">{{
+                entry.name
+              }}</span>
+              <span v-if="entry.inDevelopment" class="text-xs text-muted">
+                In development
+              </span>
+            </span>
+          </NuxtLink>
+        </li>
+      </ul>
     </UPageSection>
 
     <!-- Contributing -->
@@ -261,7 +242,6 @@ getAssetPath('VN', 'logo')
 import { ecosystem } from '~/data/ecosystem'
 
 const { airlines, stats } = useAirlines()
-const toast = useToast()
 
 defineOgImage('Site')
 
@@ -299,11 +279,6 @@ async function copyInstall() {
   await navigator.clipboard.writeText(installCommand.value)
   copied.value = true
   setTimeout(() => (copied.value = false), 1500)
-}
-
-async function copySnippet(snippet) {
-  await navigator.clipboard.writeText(snippet.code)
-  toast.add({ title: 'Copied', duration: 1500 })
 }
 
 const packageLinks = [

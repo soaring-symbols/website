@@ -8,6 +8,7 @@ export default defineEventHandler((event) => {
     '/',
     '/browse',
     '/validate',
+    '/ecosystem',
     ...(airlines as { slug: string }[]).map(
       (airline) => `/airlines/${airline.slug}`,
     ),
