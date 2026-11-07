@@ -1,5 +1,32 @@
 <template>
   <UAccordion v-model="openGroups" :items="accordionItems" type="multiple">
+    <!-- The group's worst result, so a closed group still shows it -->
+    <template #leading="{ item }">
+      <UIcon
+        :name="statusIcon(item.status)"
+        class="size-4 shrink-0"
+        :class="statusColor(item.status)"
+      />
+    </template>
+    <template #default="{ item }">
+      <span class="flex items-center gap-2">
+        {{ item.label }}
+        <UBadge
+          v-if="item.errors"
+          :label="`${item.errors} issue${item.errors > 1 ? 's' : ''}`"
+          color="error"
+          variant="subtle"
+          size="sm"
+        />
+        <UBadge
+          v-if="item.warnings"
+          :label="`${item.warnings} warning${item.warnings > 1 ? 's' : ''}`"
+          color="warning"
+          variant="subtle"
+          size="sm"
+        />
+      </span>
+    </template>
     <template #body="{ item }">
       <UPageList>
         <li
@@ -9,9 +36,9 @@
         >
           <div class="flex items-start gap-2">
             <UIcon
-              :name="statusIcon(check)"
+              :name="statusIcon(checkStatus(check))"
               class="size-4 mt-0.5 shrink-0"
-              :class="statusColor(check)"
+              :class="statusColor(checkStatus(check))"
             />
             <span class="text-default">{{ check.label }}</span>
             <UBadge
@@ -40,15 +67,23 @@ const props = defineProps({
 })
 
 // A failed warning is advice, not an error, as in `lint-svg.js --check`
-const statusIcon = (check) => {
-  if (check.pass) return 'hugeicons:checkmark-circle-02'
-  return isWarning(check) ? 'hugeicons:alert-circle' : 'hugeicons:cancel-circle'
+const checkStatus = (check) => {
+  if (check.pass) return 'pass'
+  return isWarning(check) ? 'warning' : 'error'
 }
 
-const statusColor = (check) => {
-  if (check.pass) return 'text-success'
-  return isWarning(check) ? 'text-warning' : 'text-error'
+const STATUS_ICONS = {
+  pass: 'hugeicons:checkmark-circle-02',
+  warning: 'hugeicons:alert-circle',
+  error: 'hugeicons:cancel-circle',
 }
+const STATUS_COLORS = {
+  pass: 'text-success',
+  warning: 'text-warning',
+  error: 'text-error',
+}
+const statusIcon = (status) => STATUS_ICONS[status]
+const statusColor = (status) => STATUS_COLORS[status]
 
 const failingTitles = (groups) =>
   groups.filter((g) => !g.checks.every((c) => c.pass)).map((g) => g.title)
@@ -63,10 +98,18 @@ watch(
 )
 
 const accordionItems = computed(() =>
-  props.groups.map((g) => ({
-    label: g.title,
-    value: g.title,
-    checks: g.checks,
-  })),
+  props.groups.map((g) => {
+    const statuses = g.checks.map(checkStatus)
+    const errors = statuses.filter((s) => s === 'error').length
+    const warnings = statuses.filter((s) => s === 'warning').length
+    return {
+      label: g.title,
+      value: g.title,
+      checks: g.checks,
+      errors,
+      warnings,
+      status: errors ? 'error' : warnings ? 'warning' : 'pass',
+    }
+  }),
 )
 </script>
