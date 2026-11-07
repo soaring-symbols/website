@@ -37,7 +37,7 @@ npx wrangler --cwd .output dev
 - [x] Serve the site on <https://soaringsymbols.org>
 - [x] List every mark on the airline page, color and monochrome side by side, and ask for the files that are missing
 - [x] Country flags as SVG
-- [x] Ecosystem section on the homepage, including the launchers that run Raycast extensions
+- [x] Ecosystem page at `/ecosystem`, with every integration in full (including the image API's parameters and the launchers that run Raycast extensions) and a row of tiles on the homepage linking to it
 - [x] Callsign, hubs and founding year on the airline page, a badge for airlines that ceased operations, and search by callsign
 - [x] Fix the hydration mismatches: the homepage spotlight, and error pages that rendered only in the browser (now `app/error.vue`)
 - [ ] Drop the `@nuxt/fonts` 1.x entry in `nuxt.config.ts` once `@nuxt/ui` ships with it (the social cards need 1.x for Overpass)
@@ -45,4 +45,4 @@ npx wrangler --cwd .output dev
 
 ### Ecosystem
 
-Plans for the API on this site and for other integrations are tracked in the [main repository's roadmap](https://github.com/soaring-symbols/soaring-symbols#roadmap), so they don't need updating in two places. The integrations shown on the homepage, shipped or in development, are listed in `app/data/ecosystem.ts`.
+Plans for the API on this site and for other integrations are tracked in the [main repository's roadmap](https://github.com/soaring-symbols/soaring-symbols#roadmap), so they don't need updating in two places. The integrations shown on the ecosystem page and the homepage, shipped or in development, are listed in `app/data/ecosystem.ts`.
