@@ -29,8 +29,9 @@
       <ValidatorPanel
         :groups="groupedChecks"
         :all-pass="allPass"
-        :total="allChecks.length"
+        :total="errorChecks.length"
         :passed="passedCount"
+        :warnings="warningCount"
       />
     </template>
 
@@ -47,8 +48,9 @@
         <ValidatorPanel
           :groups="groupedChecks"
           :all-pass="allPass"
-          :total="allChecks.length"
+          :total="errorChecks.length"
           :passed="passedCount"
+          :warnings="warningCount"
         />
       </div>
 
@@ -69,12 +71,8 @@ const type = ref('logo')
 const candidate = useImageFile()
 const reference = useImageFile()
 
-const STRUCTURE_LABELS = [
-  'Required attributes',
-  'No embedded scripts',
-  'No transforms',
-]
-const GEOMETRY_LABELS = ['Fills viewBox', 'Fits viewBox', 'Centered']
+// Same order as the package lists its checks in
+const GROUPS = ['Structure', 'Format', 'Style', 'Geometry']
 
 const detectedFrom = ref(null)
 
@@ -103,24 +101,29 @@ const allChecks = computed(() => {
     candidate.parsed.value,
     type.value,
     candidate.bbox.value,
+    {
+      fileName: candidate.file.value?.name ?? '',
+      source: candidate.content.value,
+    },
   )
 })
 
-const groupedChecks = computed(() => {
-  const groups = [
-    { title: 'Structure', labels: STRUCTURE_LABELS },
-    { title: 'Geometry', labels: GEOMETRY_LABELS },
-  ]
-  return groups
-    .map((g) => ({
-      title: g.title,
-      checks: g.labels
-        .map((label) => allChecks.value.find((c) => c.label === label))
-        .filter(Boolean),
-    }))
-    .filter((g) => g.checks.length > 0)
-})
+const groupedChecks = computed(() =>
+  GROUPS.map((title) => ({
+    title,
+    checks: allChecks.value.filter((c) => c.group === title),
+  })).filter((g) => g.checks.length > 0),
+)
 
-const allPass = computed(() => allChecks.value.every((c) => c.pass))
-const passedCount = computed(() => allChecks.value.filter((c) => c.pass).length)
+// Warnings are advice, as in `lint-svg.js --check`: they never fail an SVG
+const errorChecks = computed(() =>
+  allChecks.value.filter((c) => c.level !== 'warning'),
+)
+const allPass = computed(() => errorChecks.value.every((c) => c.pass))
+const passedCount = computed(
+  () => errorChecks.value.filter((c) => c.pass).length,
+)
+const warningCount = computed(
+  () => allChecks.value.filter((c) => c.level === 'warning' && !c.pass).length,
+)
 </script>

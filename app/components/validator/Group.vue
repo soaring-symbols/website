@@ -9,15 +9,18 @@
         >
           <div class="flex items-start gap-2">
             <UIcon
-              :name="
-                check.pass
-                  ? 'hugeicons:checkmark-circle-02'
-                  : 'hugeicons:cancel-circle'
-              "
+              :name="statusIcon(check)"
               class="size-4 mt-0.5 shrink-0"
-              :class="check.pass ? 'text-success' : 'text-error'"
+              :class="statusColor(check)"
             />
             <span class="text-default">{{ check.label }}</span>
+            <UBadge
+              v-if="check.level === 'warning'"
+              label="Warning"
+              color="warning"
+              variant="subtle"
+              size="sm"
+            />
           </div>
           <span
             class="text-muted font-mono text-xs text-right shrink-0 max-w-[50%] truncate"
@@ -35,6 +38,19 @@
 const props = defineProps({
   groups: Array,
 })
+
+// A failed warning is advice, not an error, as in `lint-svg.js --check`
+const isWarning = (check) => !check.pass && check.level === 'warning'
+
+const statusIcon = (check) => {
+  if (check.pass) return 'hugeicons:checkmark-circle-02'
+  return isWarning(check) ? 'hugeicons:alert-circle' : 'hugeicons:cancel-circle'
+}
+
+const statusColor = (check) => {
+  if (check.pass) return 'text-success'
+  return isWarning(check) ? 'text-warning' : 'text-error'
+}
 
 const failingTitles = (groups) =>
   groups.filter((g) => !g.checks.every((c) => c.pass)).map((g) => g.title)

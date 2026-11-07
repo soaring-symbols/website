@@ -8,7 +8,11 @@
       <UUser
         v-if="allPass"
         name="SVG Valid"
-        :description="'No issues found. This SVG meets the contribution guidelines.'"
+        :description="
+          warnings
+            ? `No issues found. This SVG meets the contribution guidelines, with ${warnings} warning${warnings > 1 ? 's' : ''} worth a look.`
+            : 'No issues found. This SVG meets the contribution guidelines.'
+        "
         :avatar="{
           icon: 'hugeicons:checkmark-circle-02',
           ui: {
@@ -53,5 +57,6 @@ defineProps({
   allPass: Boolean,
   total: Number,
   passed: Number,
+  warnings: { type: Number, default: 0 },
 })
 </script>
