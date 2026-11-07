@@ -57,13 +57,30 @@
         />
       </div>
 
-      <!-- SVG image -->
-      <img
-        :src="previewUrl"
-        :alt="fileName"
-        class="object-contain transition-transform duration-200"
-        :style="imageStyle"
-      />
+      <!-- SVG in its viewBox: the dashed frame is the viewBox's edge -->
+      <div
+        class="relative transition-transform duration-200"
+        :style="frameStyle"
+      >
+        <div
+          class="absolute inset-0 border border-dashed border-primary/60 pointer-events-none"
+        />
+        <!-- currentColor can't reach an <img>, so a mono SVG is drawn as a
+             mask filled with the text color, readable in either theme -->
+        <div
+          v-if="mono"
+          role="img"
+          :aria-label="fileName"
+          class="size-full bg-inverted"
+          :style="maskStyle"
+        />
+        <img
+          v-else
+          :src="previewUrl"
+          :alt="fileName"
+          class="size-full object-contain"
+        />
+      </div>
 
       <!-- Dimensions pill -->
       <div
@@ -83,11 +100,13 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   previewUrl: { type: String, default: '' },
   fileName: { type: String, default: '' },
   metadata: { type: Object, default: () => ({}) },
   allPass: Boolean,
+  // Drawn only in currentColor (a -mono.svg)
+  mono: Boolean,
 })
 
 defineEmits(['remove'])
@@ -108,12 +127,27 @@ const checkerboardStyle = computed(() => {
   }
 })
 
-const imageStyle = computed(() => ({
+const frameStyle = computed(() => ({
   width: '192px',
   height: '192px',
   transform: `scale(${zoomLevel.value})`,
   transformOrigin: 'center center',
 }))
+
+const maskStyle = computed(() => {
+  const mask = {
+    image: `url("${props.previewUrl}")`,
+    size: 'contain',
+    repeat: 'no-repeat',
+    position: 'center',
+  }
+  return Object.fromEntries(
+    Object.entries(mask).flatMap(([key, value]) => [
+      [`mask-${key}`, value],
+      [`-webkit-mask-${key}`, value],
+    ]),
+  )
+})
 
 function zoomIn() {
   zoomLevel.value = Math.min(4, parseFloat((zoomLevel.value + 0.25).toFixed(2)))

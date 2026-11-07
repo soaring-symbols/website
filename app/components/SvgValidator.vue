@@ -37,6 +37,7 @@
           :file-name="candidate.file.value.name"
           :metadata="candidate.metadata.value"
           :all-pass="allPass"
+          :mono="isMono"
           @remove="candidate.file.value = null"
         />
         <ValidatorPanel :groups="groupedChecks" />
@@ -78,6 +79,14 @@ watch(
     type.value = detected.type
     detectedFrom.value = detected.source
   },
+)
+
+// Drawn only in currentColor, with no colors of its own
+const isMono = computed(
+  () =>
+    !!candidate.parsed.value &&
+    /currentColor/i.test(candidate.content.value ?? '') &&
+    getSvgColors(candidate.parsed.value).size === 0,
 )
 
 const allChecks = computed(() => {
