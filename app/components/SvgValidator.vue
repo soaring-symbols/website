@@ -26,12 +26,7 @@
         :reference="reference"
         :candidate="candidate"
       />
-      <ValidatorPanel
-        :groups="groupedChecks"
-        :all-pass="allPass"
-        :total="allChecks.length"
-        :passed="passedCount"
-      />
+      <ValidatorPanel :groups="groupedChecks" />
     </template>
 
     <!-- Validating only: the SVG next to its checks, and a reference dropzone -->
@@ -44,12 +39,7 @@
           :all-pass="allPass"
           @remove="candidate.file.value = null"
         />
-        <ValidatorPanel
-          :groups="groupedChecks"
-          :all-pass="allPass"
-          :total="allChecks.length"
-          :passed="passedCount"
-        />
+        <ValidatorPanel :groups="groupedChecks" />
       </div>
 
       <UFileUpload
@@ -68,13 +58,6 @@
 const type = ref('logo')
 const candidate = useImageFile()
 const reference = useImageFile()
-
-const STRUCTURE_LABELS = [
-  'Required attributes',
-  'No embedded scripts',
-  'No transforms',
-]
-const GEOMETRY_LABELS = ['Fills viewBox', 'Fits viewBox', 'Centered']
 
 const detectedFrom = ref(null)
 
@@ -103,24 +86,24 @@ const allChecks = computed(() => {
     candidate.parsed.value,
     type.value,
     candidate.bbox.value,
+    {
+      fileName: candidate.file.value?.name ?? '',
+      source: candidate.content.value,
+    },
   )
 })
 
+// Groups in the order the package lists its checks in
 const groupedChecks = computed(() => {
-  const groups = [
-    { title: 'Structure', labels: STRUCTURE_LABELS },
-    { title: 'Geometry', labels: GEOMETRY_LABELS },
-  ]
-  return groups
-    .map((g) => ({
-      title: g.title,
-      checks: g.labels
-        .map((label) => allChecks.value.find((c) => c.label === label))
-        .filter(Boolean),
-    }))
-    .filter((g) => g.checks.length > 0)
+  const groups = new Map()
+  for (const check of allChecks.value) {
+    if (!groups.has(check.group)) groups.set(check.group, [])
+    groups.get(check.group).push(check)
+  }
+  return [...groups].map(([title, checks]) => ({ title, checks }))
 })
 
-const allPass = computed(() => allChecks.value.every((c) => c.pass))
-const passedCount = computed(() => allChecks.value.filter((c) => c.pass).length)
+const allPass = computed(() =>
+  allChecks.value.every((c) => c.pass || isWarning(c)),
+)
 </script>
