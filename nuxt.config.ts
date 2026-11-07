@@ -104,6 +104,13 @@ export default defineNuxtConfig({
       },
       { baseURL: '/flags', dir: flagsDir, maxAge: 60 * 60 * 24 * 365 },
     ],
+    // The image API reads the SVGs to tint and render them, and a Worker
+    // cannot read its static files: bundle a copy as server assets
+    serverAssets: [{ baseName: 'airlines', dir: assetsDir }],
+    // Lets the image API import resvg's WebAssembly module
+    experimental: {
+      wasm: true,
+    },
     // The airline data only changes with a package release, so every page
     // is built ahead of time and served as a static file
     prerender: {

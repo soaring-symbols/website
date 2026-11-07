@@ -31,6 +31,16 @@ export const ecosystem: EcosystemEntry[] = [
     },
   },
   {
+    name: 'Image API',
+    icon: 'hugeicons:image-02',
+    description:
+      'Load any mark by IATA or ICAO code, as SVG or as PNG for apps that can’t render SVG. Add size for the PNG width (16 to 1024), and give monochrome marks a color, plus a dark one that SVGs switch to in dark mode.',
+    snippet: {
+      label: 'Copy URL',
+      code: 'https://soaringsymbols.org/api/airlines/VN/icon-mono.png?color=fff&size=128',
+    },
+  },
+  {
     name: 'Raycast extension',
     icon: 'simple-icons:raycast',
     description:
