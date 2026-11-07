@@ -42,7 +42,7 @@
             />
             <span class="text-default">{{ check.label }}</span>
             <UBadge
-              v-if="isWarning(check)"
+              v-if="checkStatus(check) === 'warning'"
               label="Warning"
               color="warning"
               variant="subtle"
