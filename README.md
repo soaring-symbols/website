@@ -45,4 +45,4 @@ npx wrangler --cwd .output dev
 
 ### Ecosystem
 
-Plans for the API on this site and for other integrations are tracked in the [main repository's roadmap](https://github.com/soaring-symbols/soaring-symbols#roadmap), so they don't need updating in two places. Shipped integrations shown on the homepage are listed in `app/data/ecosystem.ts`.
+Plans for the API on this site and for other integrations are tracked in the [main repository's roadmap](https://github.com/soaring-symbols/soaring-symbols#roadmap), so they don't need updating in two places. The integrations shown on the homepage, shipped or in development, are listed in `app/data/ecosystem.ts`.

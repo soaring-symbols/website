@@ -181,6 +181,18 @@ getAssetPath('VN', 'logo')
           :title="entry.name"
           orientation="horizontal"
         >
+          <template #title>
+            <span class="inline-flex flex-wrap items-center gap-2">
+              {{ entry.name }}
+              <UBadge
+                v-if="entry.inDevelopment"
+                label="In development"
+                color="neutral"
+                variant="subtle"
+                size="sm"
+              />
+            </span>
+          </template>
           <template #description>
             <p>{{ entry.description }}</p>
             <code

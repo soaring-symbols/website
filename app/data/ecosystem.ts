@@ -1,12 +1,14 @@
 // Places outside the npm package where the marks can be used, from raw
-// files and data to apps built on them. List only what has shipped; each
-// entry offers either a link or a snippet to copy.
+// files and data to apps built on them. A shipped entry offers either a link
+// or a snippet to copy; one still being built is marked inDevelopment and
+// links to its source until it ships.
 export interface EcosystemEntry {
   name: string
   icon: string
   description: string
   link?: { label: string; to: string }
   snippet?: { label: string; code: string }
+  inDevelopment?: boolean
 }
 
 export const ecosystem: EcosystemEntry[] = [
@@ -48,6 +50,17 @@ export const ecosystem: EcosystemEntry[] = [
     link: {
       label: 'Open in Raycast Store',
       to: 'https://www.raycast.com/anhthang/soaring-symbols',
+    },
+  },
+  {
+    name: 'Figma plugin',
+    icon: 'simple-icons:figma',
+    description:
+      'Search airlines by name, IATA or ICAO code in Figma or FigJam, and click or drag their marks onto the canvas as vector layers, in the size you need and monochrome marks in any color.',
+    inDevelopment: true,
+    link: {
+      label: 'View on GitHub',
+      to: 'https://github.com/soaring-symbols/figma',
     },
   },
 ]
