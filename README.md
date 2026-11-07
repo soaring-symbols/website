@@ -45,12 +45,4 @@ npx wrangler --cwd .output dev
 
 ### Ecosystem
 
-Shipped integrations are listed in `app/data/ecosystem.ts` and shown on the homepage.
-
-- [x] npm package
-- [x] jsDelivr CDN
-- [x] JSON API on the Worker: `/api/airlines` lists every airline, `/api/airlines/VN` looks one up by IATA or ICAO code, slug or name
-- [x] Raycast extension
-- [ ] Iconify icon set, for Iconify, Nuxt Icon, UnoCSS, Tailwind and Astro
-- [ ] Figma plugin, to search airlines by name or IATA code and drop their marks into designs
-- [ ] Swift Package, with an asset catalog and a SwiftUI view
+Plans for the API on this site and for other integrations are tracked in the [main repository's roadmap](https://github.com/soaring-symbols/soaring-symbols#roadmap), so they don't need updating in two places. Shipped integrations shown on the homepage are listed in `app/data/ecosystem.ts`.
