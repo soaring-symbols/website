@@ -52,11 +52,17 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   groups: Array,
-  allPass: Boolean,
-  total: Number,
-  passed: Number,
-  warnings: { type: Number, default: 0 },
 })
+
+// Warnings never fail an SVG, so the counts cover errors only
+const checks = computed(() => props.groups.flatMap((g) => g.checks))
+const errors = computed(() => checks.value.filter((c) => !isWarning(c)))
+const total = computed(() => errors.value.length)
+const passed = computed(() => errors.value.filter((c) => c.pass).length)
+const allPass = computed(() => passed.value === total.value)
+const warnings = computed(
+  () => checks.value.filter((c) => isWarning(c) && !c.pass).length,
+)
 </script>

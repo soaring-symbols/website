@@ -15,7 +15,7 @@
             />
             <span class="text-default">{{ check.label }}</span>
             <UBadge
-              v-if="check.level === 'warning'"
+              v-if="isWarning(check)"
               label="Warning"
               color="warning"
               variant="subtle"
@@ -40,8 +40,6 @@ const props = defineProps({
 })
 
 // A failed warning is advice, not an error, as in `lint-svg.js --check`
-const isWarning = (check) => !check.pass && check.level === 'warning'
-
 const statusIcon = (check) => {
   if (check.pass) return 'hugeicons:checkmark-circle-02'
   return isWarning(check) ? 'hugeicons:alert-circle' : 'hugeicons:cancel-circle'

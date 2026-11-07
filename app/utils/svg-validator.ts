@@ -1,5 +1,10 @@
-export type { SvgValidation } from 'soaring-symbols/svg-validator'
+import type { SvgValidation } from 'soaring-symbols/svg-validator'
+
+export type { SvgValidation }
 export { runSvgValidations } from 'soaring-symbols/svg-validator'
+
+// Warnings are advice, as in `lint-svg.js --check`: they never fail an SVG
+export const isWarning = (check: SvgValidation) => check.level === 'warning'
 
 export function computeSvgBBox(svgEl: SVGSVGElement): DOMRect | null {
   const ns = 'http://www.w3.org/2000/svg'

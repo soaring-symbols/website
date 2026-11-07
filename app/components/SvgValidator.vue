@@ -26,13 +26,7 @@
         :reference="reference"
         :candidate="candidate"
       />
-      <ValidatorPanel
-        :groups="groupedChecks"
-        :all-pass="allPass"
-        :total="errorChecks.length"
-        :passed="passedCount"
-        :warnings="warningCount"
-      />
+      <ValidatorPanel :groups="groupedChecks" />
     </template>
 
     <!-- Validating only: the SVG next to its checks, and a reference dropzone -->
@@ -45,13 +39,7 @@
           :all-pass="allPass"
           @remove="candidate.file.value = null"
         />
-        <ValidatorPanel
-          :groups="groupedChecks"
-          :all-pass="allPass"
-          :total="errorChecks.length"
-          :passed="passedCount"
-          :warnings="warningCount"
-        />
+        <ValidatorPanel :groups="groupedChecks" />
       </div>
 
       <UFileUpload
@@ -70,9 +58,6 @@
 const type = ref('logo')
 const candidate = useImageFile()
 const reference = useImageFile()
-
-// Same order as the package lists its checks in
-const GROUPS = ['Structure', 'Format', 'Style', 'Geometry']
 
 const detectedFrom = ref(null)
 
@@ -108,22 +93,17 @@ const allChecks = computed(() => {
   )
 })
 
-const groupedChecks = computed(() =>
-  GROUPS.map((title) => ({
-    title,
-    checks: allChecks.value.filter((c) => c.group === title),
-  })).filter((g) => g.checks.length > 0),
-)
+// Groups in the order the package lists its checks in
+const groupedChecks = computed(() => {
+  const groups = new Map()
+  for (const check of allChecks.value) {
+    if (!groups.has(check.group)) groups.set(check.group, [])
+    groups.get(check.group).push(check)
+  }
+  return [...groups].map(([title, checks]) => ({ title, checks }))
+})
 
-// Warnings are advice, as in `lint-svg.js --check`: they never fail an SVG
-const errorChecks = computed(() =>
-  allChecks.value.filter((c) => c.level !== 'warning'),
-)
-const allPass = computed(() => errorChecks.value.every((c) => c.pass))
-const passedCount = computed(
-  () => errorChecks.value.filter((c) => c.pass).length,
-)
-const warningCount = computed(
-  () => allChecks.value.filter((c) => c.level === 'warning' && !c.pass).length,
+const allPass = computed(() =>
+  allChecks.value.every((c) => c.pass || isWarning(c)),
 )
 </script>
