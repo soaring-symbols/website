@@ -72,18 +72,20 @@
 
       <ul class="icon-wall">
         <li v-for="airline in withIcons" :key="airline.slug">
-          <NuxtLink
-            :to="`/airlines/${airline.slug}`"
-            :title="airline.name"
-            class="grid aspect-square place-items-center rounded-lg bg-white p-3 hover:bg-slate-100 dark:bg-slate-100 dark:hover:bg-white focus-visible:outline-2 focus-visible:outline-primary"
-          >
-            <img
-              :src="assetUrl(airline, 'icon')"
-              :alt="airline.name"
-              loading="lazy"
-              class="size-full object-contain"
-            />
-          </NuxtLink>
+          <!-- The name on hover or keyboard focus, right away -->
+          <UTooltip :text="airline.name" :delay-duration="0">
+            <NuxtLink
+              :to="`/airlines/${airline.slug}`"
+              class="grid aspect-square place-items-center rounded-lg bg-white p-3 hover:bg-slate-100 dark:bg-slate-100 dark:hover:bg-white focus-visible:outline-2 focus-visible:outline-primary"
+            >
+              <img
+                :src="assetUrl(airline, 'icon')"
+                :alt="airline.name"
+                loading="lazy"
+                class="size-full object-contain"
+              />
+            </NuxtLink>
+          </UTooltip>
         </li>
       </ul>
     </UPageSection>
@@ -251,7 +253,9 @@ const toast = useToast()
 
 defineOgImage('Site')
 
-const withIcons = airlines.filter((a) => hasAsset(a, 'icon'))
+// One tile per drawn icon: an airline flying another's marks (a subsidiary
+// using its parent's logo) would only repeat that icon
+const withIcons = airlines.filter((a) => !a.marks && hasAsset(a, 'icon'))
 
 // The first row of the departure board, set here so the spotlight renders
 // the same on the server and in the browser
