@@ -43,22 +43,15 @@
 
         <USwitch v-model="flagCarrierOnly" label="Flag carriers only" />
 
-        <UFieldGroup class="justify-self-end sm:ms-auto" aria-label="Layout">
-          <UButton
-            icon="hugeicons:grid-view"
-            aria-label="Grid"
-            :aria-pressed="viewMode === 'grid'"
-            :variant="viewMode === 'grid' ? 'solid' : 'outline'"
-            @click="viewMode = 'grid'"
-          />
-          <UButton
-            icon="hugeicons:list-view"
-            aria-label="List"
-            :aria-pressed="viewMode === 'list'"
-            :variant="viewMode === 'list' ? 'solid' : 'outline'"
-            @click="viewMode = 'list'"
-          />
-        </UFieldGroup>
+        <ViewToggle
+          v-model="viewMode"
+          label="Layout"
+          :options="[
+            { value: 'grid', icon: 'hugeicons:grid-view', ariaLabel: 'Grid' },
+            { value: 'list', icon: 'hugeicons:list-view', ariaLabel: 'List' },
+          ]"
+          class="justify-self-end sm:ms-auto"
+        />
       </div>
     </div>
 

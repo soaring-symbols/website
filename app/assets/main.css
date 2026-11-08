@@ -1,15 +1,10 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-@theme {
-  --breakpoint-3xl: 112rem;
-  --breakpoint-4xl: 128rem;
-
-  /* Overpass descends from Highway Gothic, the lettering of road and airport signs */
-  --font-sans: 'Overpass', sans-serif;
-  --font-mono: 'Overpass Mono', monospace;
-
-  /* Wayfinding yellow, used only where the page points somewhere */
+/* Wayfinding yellow, used only where the page points somewhere. Static, so
+   every shade is emitted: Nuxt UI reads the primary shades through
+   variables Tailwind cannot see, and would otherwise get empty values */
+@theme static {
   --color-signal-50: #fffbeb;
   --color-signal-100: #fff3c4;
   --color-signal-200: #ffe58a;
@@ -21,6 +16,15 @@
   --color-signal-800: #8a6100;
   --color-signal-900: #6b4b00;
   --color-signal-950: #3d2a00;
+}
+
+@theme {
+  --breakpoint-3xl: 112rem;
+  --breakpoint-4xl: 128rem;
+
+  /* Overpass descends from Highway Gothic, the lettering of road and airport signs */
+  --font-sans: 'Overpass', sans-serif;
+  --font-mono: 'Overpass Mono', monospace;
 
   /* The split-flap board: housing, flap and lettering */
   --color-board: #1f242b;
@@ -43,7 +47,9 @@
 
 :root {
   --ui-bg: #f4f6f8;
-  --ui-primary: var(--ui-color-primary-800);
+  /* Yellow text is unreadable on a light page, so light mode marks the
+     current choice in the text's own ink; dark mode uses the signal yellow */
+  --ui-primary: var(--ui-text-highlighted);
   --ui-radius: 0.375rem;
   --surface: #ffffff;
 }

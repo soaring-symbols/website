@@ -160,13 +160,14 @@ export default defineAppConfig({
         },
       ],
     },
-    // Board-colored tiles, as behind the airline marks
+    // Board-colored tiles, as behind the airline marks; in dark mode the mark
+    // takes the signal yellow, like a sign at the gate
     pageFeature: {
       slots: {
         root: 'min-w-0',
         wrapper: 'min-w-0',
         leading: 'size-10 shrink-0 rounded-md bg-board',
-        leadingIcon: 'text-flap-ink',
+        leadingIcon: 'text-flap-ink dark:text-signal-500',
         title: 'font-bold',
         description: 'text-sm text-toned',
       },

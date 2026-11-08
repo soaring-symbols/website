@@ -76,7 +76,7 @@
           <UTooltip :text="airline.name" :delay-duration="0">
             <NuxtLink
               :to="`/airlines/${airline.slug}`"
-              class="grid aspect-square place-items-center rounded-lg bg-white p-3 hover:bg-slate-100 dark:bg-slate-100 dark:hover:bg-white focus-visible:outline-2 focus-visible:outline-primary"
+              class="grid aspect-square place-items-center rounded-lg bg-white p-3 hover:bg-slate-100 dark:bg-slate-300 dark:hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-primary"
             >
               <img
                 :src="assetUrl(airline, 'icon')"

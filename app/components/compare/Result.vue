@@ -37,22 +37,22 @@
       >
         <!-- Difference map / overlay -->
         <div class="flex flex-col items-center gap-3">
-          <UFieldGroup>
-            <UButton
-              label="Difference"
-              icon="hugeicons:image-composition"
-              :variant="view === 'diff' ? 'subtle' : 'outline'"
-              :color="view === 'diff' ? 'primary' : 'neutral'"
-              @click="view = 'diff'"
-            />
-            <UButton
-              label="Overlay"
-              icon="hugeicons:layers-01"
-              :variant="view === 'overlay' ? 'subtle' : 'outline'"
-              :color="view === 'overlay' ? 'primary' : 'neutral'"
-              @click="view = 'overlay'"
-            />
-          </UFieldGroup>
+          <ViewToggle
+            v-model="view"
+            label="Comparison view"
+            :options="[
+              {
+                value: 'diff',
+                label: 'Difference',
+                icon: 'hugeicons:image-composition',
+              },
+              {
+                value: 'overlay',
+                label: 'Overlay',
+                icon: 'hugeicons:layers-01',
+              },
+            ]"
+          />
 
           <canvas
             v-show="view === 'diff'"
