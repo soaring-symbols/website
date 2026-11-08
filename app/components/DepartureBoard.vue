@@ -234,6 +234,12 @@ onMounted(() => {
     --flap: calc((100cqi - 1.5rem - 14 * var(--flap-gap)) / 16);
   }
 
+  /* Two tracks, so the hidden columns leave no empty gaps behind */
+  .board-head,
+  .board-row {
+    grid-template-columns: auto auto;
+  }
+
   .board-head .col-icao,
   .board-head .col-country,
   .board-row .col-icao,
