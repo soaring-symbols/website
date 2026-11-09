@@ -22,17 +22,46 @@ const stats = {
     .size,
 }
 
+// The marks an airline used before its current ones, as the package
+// publishes them from assets/<slug>/history/<since>/ (from 0.2.4; older
+// releases have no history, so it may be missing)
+type AssetMap = Airline['assets']
+export interface HistoricalMarks {
+  since: number
+  assets: AssetMap
+}
+
 // Whether the package ships a variant, e.g. 'logo' or 'logo-mono'. Every
 // single-color mark has a mono file; multi-color ones only when hand-drawn.
-export function hasAsset(airline: Airline, variant: string) {
+// `assets` defaults to the current marks; pass a history entry's for an
+// older one.
+export function hasAsset(
+  airline: Airline,
+  variant: string,
+  assets: AssetMap = airline.assets,
+) {
   const [type, mono] = variant.split('-') as [AssetType, string?]
-  const asset = airline.assets[type]
+  const asset = assets[type]
 
   return Boolean(mono ? asset?.mono : asset?.color)
 }
 
-export function assetUrl(airline: Airline, variant: string) {
-  return `/airlines/${airline.slug}/${variant}.svg`
+// The folder of the current marks, or of the older ones introduced in `since`
+export function assetDir(airline: Airline, since?: number) {
+  return since === undefined ? airline.slug : `${airline.slug}/history/${since}`
+}
+
+export function assetUrl(airline: Airline, variant: string, since?: number) {
+  return `/airlines/${assetDir(airline, since)}/${variant}.svg`
+}
+
+// Older marks, newest first. Each was used from its `since` until the next
+// one's, and the newest until the current marks
+export function markHistory(airline: Airline) {
+  const history =
+    (airline as Airline & { history?: HistoricalMarks[] }).history ?? []
+
+  return [...history].reverse()
 }
 
 // Always six hex digits, so callers can append an alpha channel: a short

@@ -11,93 +11,28 @@
       class="mt-16"
       :ui="sectionUi"
     >
-      <!-- One row per mark, its color file beside its monochrome one, so
-           every row is full whichever marks the airline has -->
-      <div class="flex flex-col gap-3">
-        <div
-          class="hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)]"
-          aria-hidden="true"
-        >
-          <span />
-          <span>Color</span>
-          <span>Monochrome</span>
-        </div>
+      <AirlineFileRows :airline="airline" />
+    </UPageSection>
 
-        <div class="flex flex-col gap-10 lg:gap-6">
-          <section
-            v-for="mark in marks"
-            :key="mark.variant"
-            class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-6"
-          >
-            <h3
-              class="font-bold text-highlighted sm:col-span-2 lg:col-span-1 lg:pt-2"
-            >
-              {{ mark.label }}
-            </h3>
-
-            <template v-for="file in mark.files" :key="file.kind">
-              <div
-                v-if="file.variant"
-                class="flex flex-col gap-4 rounded-xl bg-surface p-4"
-              >
-                <div
-                  class="flex aspect-[5/2] items-center justify-center overflow-hidden rounded-lg bg-white p-6"
-                  :style="{ backgroundImage: tint }"
-                >
-                  <img
-                    :src="assetUrl(airline, file.variant)"
-                    :alt="`${airline.name} ${file.kind} ${mark.label.toLowerCase()}`"
-                    loading="lazy"
-                    class="size-full object-contain"
-                  />
-                </div>
-
-                <div class="flex items-center justify-between gap-3">
-                  <div class="min-w-0">
-                    <p class="font-semibold text-highlighted lg:sr-only">
-                      {{ file.kind === 'mono' ? 'Monochrome' : 'Color' }}
-                    </p>
-                    <p class="truncate font-mono text-xs text-muted">
-                      {{ file.variant }}.svg
-                    </p>
-                  </div>
-                  <div class="flex shrink-0 gap-1">
-                    <UButton
-                      icon="hugeicons:link-04"
-                      variant="ghost"
-                      :aria-label="`Copy the CDN link to ${file.variant}.svg`"
-                      @click="copy(cdnUrl(file.variant), 'CDN link')"
-                    />
-                    <UButton
-                      :to="assetUrl(airline, file.variant)"
-                      external
-                      :download="`${airline.slug}-${file.variant}.svg`"
-                      icon="hugeicons:download-04"
-                      variant="outline"
-                      :aria-label="`Download ${file.variant}.svg`"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- A missing file, or the whole mark, asks for a contribution -->
-              <div
-                v-else
-                class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-accented p-6 text-center text-sm text-muted"
-                :class="file.kind === 'none' && 'min-h-40 sm:col-span-2'"
-              >
-                <p>{{ file.missing }}</p>
-                <ULink
-                  :to="CONTRIBUTING_URL"
-                  target="_blank"
-                  class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
-                >
-                  Contribute one
-                </ULink>
-              </div>
-            </template>
-          </section>
-        </div>
+    <!-- Marks the airline used before its current ones, newest first -->
+    <UPageSection
+      v-if="history.length"
+      title="Earlier marks"
+      :description="`Logos ${airline.name} used before its current ones, kept for reference. Each was used from the year shown until the next one, the newest until today's marks.`"
+      :ui="sectionUi"
+    >
+      <div class="flex flex-col gap-12">
+        <section v-for="mark in history" :key="mark.since">
+          <h3 class="mb-6 text-lg font-bold text-highlighted">
+            Introduced {{ mark.since }}
+          </h3>
+          <AirlineFileRows
+            :airline="airline"
+            :since="mark.since"
+            :assets="mark.assets"
+            heading-tag="h4"
+          />
+        </section>
       </div>
     </UPageSection>
 
@@ -124,7 +59,9 @@
 
 getAirline('{{ lookupCode }}')
 getAssetPath('{{ lookupCode }}', '{{ snippetVariant ?? 'logo' }}')
-<span class="text-flap-ink/50">// {{ snippetPath }}</span></code></pre>
+<span class="text-flap-ink/50">// {{ snippetPath }}</span><template v-if="historySnippet">
+getAssetPath('{{ lookupCode }}', '{{ historySnippet.variant }}', { since: {{ historySnippet.since }} })
+<span class="text-flap-ink/50">// '{{ historySnippet.path }}'</span></template></code></pre>
     </UPageSection>
   </div>
 </template>
@@ -142,8 +79,6 @@ if (!airline) {
     fatal: true,
   })
 }
-
-const tint = brandTint(airline)
 
 // An airline drawn with another's marks says whose they are; the files are
 // still published under its own slug
@@ -169,53 +104,25 @@ const breadcrumb = [
   { label: airline.name },
 ]
 
-// Every mark, with its color file and its monochrome one; a slot is empty
-// (variant null) when the airline does not ship that file yet, so every
-// airline page lists the same rows and asks for what is missing
-const marks = [
-  { variant: 'logo', label: 'Logo' },
-  { variant: 'icon', label: 'Icon' },
-  { variant: 'tail', label: 'Tail' },
-].map((mark) => {
-  const name = mark.label.toLowerCase()
-  const color = hasAsset(airline, mark.variant) ? mark.variant : null
-  const mono = hasAsset(airline, `${mark.variant}-mono`)
-    ? `${mark.variant}-mono`
-    : null
-
-  // With neither file, one placeholder spans the row
-  const files =
-    color || mono
-      ? [
-          { kind: 'color', variant: color, missing: `No color ${name} yet.` },
-          {
-            kind: 'mono',
-            variant: mono,
-            missing: `No monochrome ${name} yet.`,
-          },
-        ]
-      : [{ kind: 'none', variant: null, missing: `No ${name} yet.` }]
-
-  return { ...mark, files }
-})
+const ASSET_TYPES = ['logo', 'icon', 'tail']
 
 // The package snippet shows the first color file the airline ships
-const snippetVariant = marks.find((mark) =>
-  hasAsset(airline, mark.variant),
-)?.variant
+const snippetVariant = ASSET_TYPES.find((type) => hasAsset(airline, type))
 const snippetPath = snippetVariant
   ? `'soaring-symbols/assets/${airline.slug}/${snippetVariant}.svg'`
   : 'undefined'
 
-function cdnUrl(variant) {
-  return `https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/${airline.slug}/${variant}.svg`
-}
+// Older marks, newest first
+const history = markHistory(airline)
 
-const toast = useToast()
-
-async function copy(text, what) {
-  await navigator.clipboard.writeText(text)
-  toast.add({ title: `Copied the ${what}`, duration: 1500 })
+// The snippet also shows how to get the newest older mark, when there is one
+const newest = history[0]
+const newestVariant =
+  newest && ASSET_TYPES.find((type) => hasAsset(airline, type, newest.assets))
+const historySnippet = newestVariant && {
+  since: newest.since,
+  variant: newestVariant,
+  path: `soaring-symbols/assets/${assetDir(airline, newest.since)}/${newestVariant}.svg`,
 }
 
 const description = [
