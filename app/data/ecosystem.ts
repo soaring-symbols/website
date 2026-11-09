@@ -1,7 +1,8 @@
 // Places outside the npm package where the marks can be used, from raw
 // files and data to apps built on them. A shipped entry offers either a link
-// or a snippet to copy; one still being built is marked inDevelopment and
-// links to its source until it ships.
+// or a snippet to copy; one that hasn't shipped yet carries a status (still
+// being built, or waiting for a store's review) and links to its source until
+// its store page is public.
 //
 // The homepage shows each entry as a small tile linking to /ecosystem#<id>;
 // the ecosystem page shows the full card, with its details.
@@ -15,7 +16,7 @@ export interface EcosystemEntry {
   details?: string[]
   link?: { label: string; to: string }
   snippet?: { label: string; code: string }
-  inDevelopment?: boolean
+  status?: 'In development' | 'In review'
 }
 
 export type EcosystemGroup = 'data' | 'apps'
@@ -109,7 +110,7 @@ export const ecosystem: EcosystemEntry[] = [
     group: 'apps',
     description:
       'Search airlines by name, IATA or ICAO code in Figma or FigJam, and click or drag their marks onto the canvas as vector layers, in the size you need and monochrome marks in any color.',
-    inDevelopment: true,
+    status: 'In review',
     link: {
       label: 'View on GitHub',
       to: 'https://github.com/soaring-symbols/figma',

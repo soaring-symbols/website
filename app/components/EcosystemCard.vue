@@ -11,8 +11,8 @@
       <span class="inline-flex flex-wrap items-center gap-2">
         {{ entry.name }}
         <UBadge
-          v-if="entry.inDevelopment"
-          label="In development"
+          v-if="entry.status"
+          :label="entry.status"
           color="neutral"
           variant="subtle"
           size="sm"

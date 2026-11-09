@@ -198,8 +198,8 @@ getAssetPath('VN', 'logo')
               <span class="font-semibold text-highlighted">{{
                 entry.name
               }}</span>
-              <span v-if="entry.inDevelopment" class="text-xs text-muted">
-                In development
+              <span v-if="entry.status" class="text-xs text-muted">
+                {{ entry.status }}
               </span>
             </span>
           </NuxtLink>
