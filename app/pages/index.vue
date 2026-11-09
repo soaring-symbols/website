@@ -1,7 +1,9 @@
 <template>
   <div>
     <!-- Hero: what this is, a way in, and the board -->
-    <section class="pt-6 pb-16 sm:pt-12 lg:pb-24">
+    <section class="relative isolate pt-6 pb-16 sm:pt-12 lg:pb-24">
+      <HeroFlight />
+
       <div
         class="grid items-center gap-12 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-14"
       >
