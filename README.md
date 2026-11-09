@@ -33,7 +33,7 @@ npx wrangler --cwd .output dev
 - [x] Airline detail pages at `/airlines/[slug]`, so each airline has a link to share and a page search engines can index; link to them from the Browse slideover and the homepage icon wall
 - [x] Prerender the pages at build time, since the airline data is static
 - [x] Sitemap, Open Graph images and canonical URLs
-- [x] Favicon and brand mark in the split-flap style (logo files for the GitHub org and Raycast in `brand/`)
+- [x] Favicon and brand mark in the split-flap style (the mark's sources and the icons for the GitHub org, Raycast and Figma now live in [soaring-symbols/brand](https://github.com/soaring-symbols/brand))
 - [x] Serve the site on <https://soaringsymbols.org>
 - [x] List every mark on the airline page, color and monochrome side by side, and ask for the files that are missing
 - [x] Country flags as SVG
