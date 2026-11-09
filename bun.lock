@@ -8,7 +8,7 @@
         "@nuxt/ui": "^4.12.0",
         "@resvg/resvg-wasm": "^2.6.2",
         "nuxt": "^4.6.4",
-        "soaring-symbols": "^0.2.3",
+        "soaring-symbols": "^0.2.4",
       },
       "devDependencies": {
         "@commitlint/cli": "^21.2.4",
@@ -1835,7 +1835,7 @@
 
     "smob": ["smob@1.6.2", "", {}, "sha512-RQsvleCbF8cVHEv+xuDGaA4pOizFqJ0GgjtMSRo6oP8pnN7WsigHgVGey6aILRBKv4W2YOMHLqbKdnB6hpB9fw=="],
 
-    "soaring-symbols": ["soaring-symbols@0.2.3", "", {}, "sha512-mpf2niRAy60/LmZLxvSDwv3LCBiD1Qd7pHiUNDS6Y+X55xgFdFyQqsTkRQX06jM7BuUWs1QFxhR4x1T9Oa7pAg=="],
+    "soaring-symbols": ["soaring-symbols@0.2.4", "", {}, "sha512-S7NXXnInBHjbiNC+JgwLR1sRsa15y+cuA264iD3J+J8Hzj/Pl1VpR+NZHqxJzNRtgfSwCzJhK0mrcjy/TidcqQ=="],
 
     "source-map": ["source-map@0.7.6", "", {}, "sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ=="],
 
