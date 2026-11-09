@@ -24,35 +24,86 @@ const stats = {
 
 // The marks an airline used before its current ones, as the package
 // publishes them from assets/<slug>/history/<since>/ (from 0.2.4; older
-// releases have no history, so it may be missing)
-type AssetMap = Airline['assets']
-export interface HistoricalMarks {
+// releases have no history, so it may be missing). Drop this and the cast in
+// markHistory once the site depends on a release that types `history`.
+interface HistoricalMarks {
   since: number
-  assets: AssetMap
+  assets: Airline['assets']
 }
+
+// The mark types, in the order every page lists them
+export const MARK_TYPES = [
+  { variant: 'logo', label: 'Logo' },
+  { variant: 'icon', label: 'Icon' },
+  { variant: 'tail', label: 'Tail' },
+] as const
 
 // Whether the package ships a variant, e.g. 'logo' or 'logo-mono'. Every
 // single-color mark has a mono file; multi-color ones only when hand-drawn.
-// `assets` defaults to the current marks; pass a history entry's for an
-// older one.
+// Without `mark` it looks at the current marks; with an entry of
+// markHistory(), at that older set.
 export function hasAsset(
   airline: Airline,
   variant: string,
-  assets: AssetMap = airline.assets,
+  mark?: HistoricalMarks,
 ) {
   const [type, mono] = variant.split('-') as [AssetType, string?]
-  const asset = assets[type]
+  const asset = (mark?.assets ?? airline.assets)[type]
 
   return Boolean(mono ? asset?.mono : asset?.color)
 }
 
-// The folder of the current marks, or of the older ones introduced in `since`
-export function assetDir(airline: Airline, since?: number) {
-  return since === undefined ? airline.slug : `${airline.slug}/history/${since}`
+// The first color mark a set ships, e.g. 'logo'; undefined when none
+export function firstVariant(airline: Airline, mark?: HistoricalMarks) {
+  return MARK_TYPES.find(({ variant }) => hasAsset(airline, variant, mark))
+    ?.variant
 }
 
-export function assetUrl(airline: Airline, variant: string, since?: number) {
-  return `/airlines/${assetDir(airline, since)}/${variant}.svg`
+// A file's path inside the package's assets folder, e.g.
+// 'korean-air/logo.svg' or 'korean-air/history/1984/logo.svg'. The site,
+// jsDelivr and the npm package each put their own root in front.
+export function assetPath(
+  airline: Airline,
+  variant: string,
+  mark?: HistoricalMarks,
+) {
+  const dir = mark ? `${airline.slug}/history/${mark.since}` : airline.slug
+
+  return `${dir}/${variant}.svg`
+}
+
+export function assetUrl(
+  airline: Airline,
+  variant: string,
+  mark?: HistoricalMarks,
+) {
+  return `/airlines/${assetPath(airline, variant, mark)}`
+}
+
+export function cdnUrl(
+  airline: Airline,
+  variant: string,
+  mark?: HistoricalMarks,
+) {
+  return `https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/${assetPath(airline, variant, mark)}`
+}
+
+// What getAssetPath() returns for the file
+export function packagePath(
+  airline: Airline,
+  variant: string,
+  mark?: HistoricalMarks,
+) {
+  return `soaring-symbols/assets/${assetPath(airline, variant, mark)}`
+}
+
+// The name a downloaded file gets, e.g. 'korean-air-1984-logo.svg'
+export function downloadName(
+  airline: Airline,
+  variant: string,
+  mark?: HistoricalMarks,
+) {
+  return [airline.slug, mark?.since, variant].filter(Boolean).join('-') + '.svg'
 }
 
 // Older marks, newest first. Each was used from its `since` until the next

@@ -13,18 +13,18 @@
 
     <div class="flex flex-col gap-10 lg:gap-6">
       <section
-        v-for="mark in marks"
-        :key="mark.variant"
+        v-for="row in rows"
+        :key="row.variant"
         class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-6"
       >
         <component
-          :is="headingTag"
+          :is="mark ? 'h4' : 'h3'"
           class="font-bold text-highlighted sm:col-span-2 lg:col-span-1 lg:pt-2"
         >
-          {{ mark.label }}
+          {{ row.label }}
         </component>
 
-        <template v-for="file in mark.files" :key="file.kind">
+        <template v-for="file in row.files" :key="file.kind">
           <div
             v-if="file.variant"
             class="flex flex-col gap-4 rounded-xl bg-surface p-4"
@@ -34,8 +34,8 @@
               :style="{ backgroundImage: tint }"
             >
               <img
-                :src="assetUrl(airline, file.variant, since)"
-                :alt="`${airline.name} ${file.kind} ${mark.label.toLowerCase()}${since ? ` introduced in ${since}` : ''}`"
+                :src="assetUrl(airline, file.variant, mark)"
+                :alt="`${airline.name} ${file.kind} ${row.label.toLowerCase()}${mark ? ` introduced in ${mark.since}` : ''}`"
                 loading="lazy"
                 class="size-full object-contain"
               />
@@ -58,9 +58,9 @@
                   @click="copyCdnUrl(file.variant)"
                 />
                 <UButton
-                  :to="assetUrl(airline, file.variant, since)"
+                  :to="assetUrl(airline, file.variant, mark)"
                   external
-                  :download="downloadName(file.variant)"
+                  :download="downloadName(airline, file.variant, mark)"
                   icon="hugeicons:download-04"
                   variant="outline"
                   :aria-label="`Download ${fileName(file.variant)}`"
@@ -91,60 +91,55 @@
 </template>
 
 <script setup>
-// The files of one set of marks: the airline's current ones, or with
-// `since` and `assets` the older ones from its history
+// The files of one set of marks: the airline's current ones, or with `mark`
+// (an entry of markHistory()) an older set, headed by its year
 const props = defineProps({
   airline: { type: Object, required: true },
-  since: { type: Number, default: undefined },
-  assets: { type: Object, default: undefined },
-  // h4 under a heading of its own, such as an older mark's year
-  headingTag: { type: String, default: 'h3' },
+  mark: { type: Object, default: undefined },
 })
 
 const tint = brandTint(props.airline)
-const assets = props.assets ?? props.airline.assets
 
-// Every current mark gets a row, so each airline page lists the same rows
-// and asks for what is missing; an older mark lists only the types it had.
-// A slot is empty (variant null) when that file is not shipped yet.
-const marks = [
-  { variant: 'logo', label: 'Logo' },
-  { variant: 'icon', label: 'Icon' },
-  { variant: 'tail', label: 'Tail' },
-]
-  .map((mark) => {
-    const name = mark.label.toLowerCase()
-    const has = (variant) => hasAsset(props.airline, variant, assets)
-    const color = has(mark.variant) ? mark.variant : null
-    const mono = has(`${mark.variant}-mono`) ? `${mark.variant}-mono` : null
+// Every current mark type gets a row, so each airline page lists the same
+// rows and asks for what is missing; an older set lists only the types it
+// had. A slot is empty (variant null) when that file is not shipped yet.
+const rows = MARK_TYPES.flatMap(({ variant, label }) => {
+  const name = label.toLowerCase()
+  const has = (v) => hasAsset(props.airline, v, props.mark)
+  const color = has(variant) ? variant : null
+  const mono = has(`${variant}-mono`) ? `${variant}-mono` : null
 
+  if (!color && !mono) {
     // With neither file, one placeholder spans the row
-    const files =
-      color || mono
-        ? [
-            { kind: 'color', variant: color, missing: `No color ${name} yet.` },
-            {
-              kind: 'mono',
-              variant: mono,
-              missing: `No monochrome ${name} yet.`,
-            },
-          ]
-        : [{ kind: 'none', variant: null, missing: `No ${name} yet.` }]
+    return props.mark
+      ? []
+      : [
+          {
+            variant,
+            label,
+            files: [
+              { kind: 'none', variant: null, missing: `No ${name} yet.` },
+            ],
+          },
+        ]
+  }
 
-    return { ...mark, files, shipped: Boolean(color || mono) }
-  })
-  .filter((mark) => props.since === undefined || mark.shipped)
+  return [
+    {
+      variant,
+      label,
+      files: [
+        { kind: 'color', variant: color, missing: `No color ${name} yet.` },
+        { kind: 'mono', variant: mono, missing: `No monochrome ${name} yet.` },
+      ],
+    },
+  ]
+})
 
+// The path under the airline's folder, e.g. 'history/1984/logo.svg'
 function fileName(variant) {
-  return props.since === undefined
-    ? `${variant}.svg`
-    : `history/${props.since}/${variant}.svg`
-}
-
-function downloadName(variant) {
-  return (
-    [props.airline.slug, props.since, variant].filter(Boolean).join('-') +
-    '.svg'
+  return assetPath(props.airline, variant, props.mark).slice(
+    props.airline.slug.length + 1,
   )
 }
 
@@ -152,7 +147,7 @@ const toast = useToast()
 
 async function copyCdnUrl(variant) {
   await navigator.clipboard.writeText(
-    `https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/${assetDir(props.airline, props.since)}/${variant}.svg`,
+    cdnUrl(props.airline, variant, props.mark),
   )
   toast.add({ title: 'Copied the CDN link', duration: 1500 })
 }

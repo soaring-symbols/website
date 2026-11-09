@@ -26,12 +26,7 @@
           <h3 class="mb-6 text-lg font-bold text-highlighted">
             Introduced {{ mark.since }}
           </h3>
-          <AirlineFileRows
-            :airline="airline"
-            :since="mark.since"
-            :assets="mark.assets"
-            heading-tag="h4"
-          />
+          <AirlineFileRows :airline="airline" :mark="mark" />
         </section>
       </div>
     </UPageSection>
@@ -61,7 +56,7 @@ getAirline('{{ lookupCode }}')
 getAssetPath('{{ lookupCode }}', '{{ snippetVariant ?? 'logo' }}')
 <span class="text-flap-ink/50">// {{ snippetPath }}</span><template v-if="historySnippet">
 getAssetPath('{{ lookupCode }}', '{{ historySnippet.variant }}', { since: {{ historySnippet.since }} })
-<span class="text-flap-ink/50">// '{{ historySnippet.path }}'</span></template></code></pre>
+<span class="text-flap-ink/50">// {{ historySnippet.path }}</span></template></code></pre>
     </UPageSection>
   </div>
 </template>
@@ -104,12 +99,10 @@ const breadcrumb = [
   { label: airline.name },
 ]
 
-const ASSET_TYPES = ['logo', 'icon', 'tail']
-
 // The package snippet shows the first color file the airline ships
-const snippetVariant = ASSET_TYPES.find((type) => hasAsset(airline, type))
+const snippetVariant = firstVariant(airline)
 const snippetPath = snippetVariant
-  ? `'soaring-symbols/assets/${airline.slug}/${snippetVariant}.svg'`
+  ? `'${packagePath(airline, snippetVariant)}'`
   : 'undefined'
 
 // Older marks, newest first
@@ -117,12 +110,11 @@ const history = markHistory(airline)
 
 // The snippet also shows how to get the newest older mark, when there is one
 const newest = history[0]
-const newestVariant =
-  newest && ASSET_TYPES.find((type) => hasAsset(airline, type, newest.assets))
+const newestVariant = newest && firstVariant(airline, newest)
 const historySnippet = newestVariant && {
   since: newest.since,
   variant: newestVariant,
-  path: `soaring-symbols/assets/${assetDir(airline, newest.since)}/${newestVariant}.svg`,
+  path: `'${packagePath(airline, newestVariant, newest)}'`,
 }
 
 const description = [

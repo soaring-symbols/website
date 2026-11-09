@@ -205,7 +205,7 @@
               :key="download.variant"
               :to="assetUrl(airline, download.variant)"
               external
-              :download="`${airline.slug}-${download.variant}.svg`"
+              :download="downloadName(airline, download.variant)"
               :label="download.label"
               :aria-label="`Download ${download.label.toLowerCase()}`"
               icon="hugeicons:download-04"
@@ -262,11 +262,7 @@ const hiddenCount = computed(
 )
 
 const downloads = computed(() =>
-  [
-    { variant: 'logo', label: 'Logo' },
-    { variant: 'icon', label: 'Icon' },
-    { variant: 'tail', label: 'Tail' },
-  ].filter((d) => hasAsset(props.airline, d.variant)),
+  MARK_TYPES.filter((d) => hasAsset(props.airline, d.variant)),
 )
 
 async function copy(color) {
