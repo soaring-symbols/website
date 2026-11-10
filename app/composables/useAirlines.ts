@@ -156,6 +156,25 @@ export function subsidiariesOf(airline: Airline) {
   return children.get(airline.slug) ?? []
 }
 
+// Renames and mergers, as the package publishes them from the release after
+// 0.2.4 (older ones have neither field). Drop this cast once the site
+// depends on a release that types them.
+const lineage = (airline: Airline) =>
+  airline as Airline & { successor?: string; predecessors?: string[] }
+
+// The airline that carried on a defunct one after a rename or a merger, e.g.
+// Pacific Airlines for Jetstar Pacific
+export function successorOf(airline: Airline) {
+  return airlineBySlug(lineage(airline).successor)
+}
+
+// The defunct airlines this one carried on, the earliest to cease first
+export function predecessorsOf(airline: Airline) {
+  return (lineage(airline).predecessors ?? []).flatMap(
+    (slug) => airlineBySlug(slug) ?? [],
+  )
+}
+
 export function cleanUrl(url: string) {
   return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
 }
