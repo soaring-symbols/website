@@ -39,7 +39,8 @@ npx wrangler --cwd .output dev
 - [x] Country flags as SVG
 - [x] Ecosystem page at `/ecosystem`, with every integration in full (including the image API's parameters and the launchers that run Raycast extensions) and a row of tiles on the homepage linking to it
 - [x] Callsign, hubs and founding year on the airline page, a badge for airlines that ceased operations, and search by callsign
-- [x] Earlier marks on the airline page, from the package's logo history (shows once the site uses a release with `history`)
+- [x] Earlier marks on the airline page, from the package's logo history (`history`, since `soaring-symbols` 0.2.4)
+- [x] Renames and mergers on the airline page: "Succeeded by" and "Preceded by" from `successor` and `predecessors`, and defunct subsidiaries under "Former subsidiaries" (the links show once the site uses a release with `successor`)
 - [x] Fix the hydration mismatches: the homepage spotlight, and error pages that rendered only in the browser (now `app/error.vue`)
 - [ ] Drop the `@nuxt/fonts` 1.x entry in `nuxt.config.ts` once `@nuxt/ui` ships with it (the social cards need 1.x for Overpass)
 - [ ] Run ESLint again, once typescript-eslint supports TypeScript 7 (or pin TypeScript 6 for linting)

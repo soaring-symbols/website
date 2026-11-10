@@ -240,6 +240,10 @@ const related = computed(() => {
   return [
     { label: 'Part of', airlines: parent ? [parent] : [] },
     { label: 'Subsidiaries', airlines: subsidiariesOf(props.airline) },
+    {
+      label: 'Former subsidiaries',
+      airlines: subsidiariesOf(props.airline, { defunct: true }),
+    },
     { label: 'Succeeded by', airlines: successor ? [successor] : [] },
     { label: 'Preceded by', airlines: predecessors },
   ].filter((row) => row.airlines.length)

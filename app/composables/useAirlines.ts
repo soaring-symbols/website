@@ -151,9 +151,13 @@ export function airlineBySlug(slug?: string) {
   return slug ? bySlug.get(slug) : undefined
 }
 
-// The airlines this one owns, e.g. Thai AirAsia under AirAsia
-export function subsidiariesOf(airline: Airline) {
-  return children.get(airline.slug) ?? []
+// The airlines this one owns, e.g. Thai AirAsia under AirAsia: with
+// `{ defunct: true }`, the ones that no longer fly under it instead, e.g.
+// Jetstar Pacific under Jetstar
+export function subsidiariesOf(airline: Airline, { defunct = false } = {}) {
+  return (children.get(airline.slug) ?? []).filter(
+    (child) => Boolean(child.defunct) === defunct,
+  )
 }
 
 // Renames and mergers, as the package publishes them from the release after
