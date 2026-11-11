@@ -22,38 +22,34 @@
       style="min-height: 280px"
       :style="checkerboardStyle"
     >
-      <!-- Zoom controls -->
-      <div
-        class="absolute left-3 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-10"
-      >
+      <!-- Zoom controls, in a corner so they never cover the artwork -->
+      <div class="absolute right-3 top-3 flex items-center gap-1 z-10">
         <UButton
-          icon="hugeicons:full-screen"
+          icon="hugeicons:minus-sign"
           size="xs"
           variant="subtle"
-          title="Fit"
+          aria-label="Zoom out"
+          title="Zoom out"
+          :disabled="zoomLevel <= MIN_ZOOM"
+          @click="zoomOut"
+        />
+        <UButton
+          :label="`${Math.round(zoomLevel * 100)}%`"
+          size="xs"
+          variant="subtle"
+          class="font-mono justify-center min-w-14"
+          :ui="{ label: 'block' }"
+          title="Reset zoom"
           @click="zoomLevel = 1"
         />
         <UButton
           icon="hugeicons:add-01"
           size="xs"
           variant="subtle"
+          aria-label="Zoom in"
           title="Zoom in"
+          :disabled="zoomLevel >= MAX_ZOOM"
           @click="zoomIn"
-        />
-        <UButton
-          icon="hugeicons:minus-sign"
-          size="xs"
-          variant="subtle"
-          title="Zoom out"
-          @click="zoomOut"
-        />
-        <UButton
-          label="1:1"
-          size="xs"
-          variant="subtle"
-          class="font-mono text-xs justify-center"
-          title="Reset zoom"
-          @click="zoomLevel = 1"
         />
       </div>
 
@@ -81,19 +77,10 @@
           class="size-full object-contain"
         />
       </div>
-
-      <!-- Dimensions pill -->
-      <div
-        class="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs px-3 py-1.5 rounded-full flex items-center gap-2 whitespace-nowrap backdrop-blur-sm font-mono border border-default bg-default/80"
-      >
-        <span>{{ metadata?.dimensions ?? '—' }}</span>
-        <span class="opacity-40">·</span>
-        <span>viewBox: {{ metadata?.viewBox ?? '—' }}</span>
-      </div>
     </div>
 
     <!-- Metadata stats footer -->
-    <template #footer>
+    <template v-if="stats" #footer>
       <ValidatorMetadataStats v-bind="metadata" />
     </template>
   </UCard>
@@ -104,15 +91,18 @@ const props = defineProps({
   previewUrl: { type: String, default: '' },
   fileName: { type: String, default: '' },
   metadata: { type: Object, default: () => ({}) },
-  allPass: Boolean,
   // Drawn only in currentColor (a -mono.svg)
   mono: Boolean,
+  // Off where the same numbers are shown elsewhere, as in a comparison
+  stats: { type: Boolean, default: true },
 })
 
 defineEmits(['remove'])
 
 const colorMode = useColorMode()
 
+const MIN_ZOOM = 0.25
+const MAX_ZOOM = 4
 const zoomLevel = ref(1)
 
 const checkerboardStyle = computed(() => {
@@ -150,13 +140,10 @@ const maskStyle = computed(() => {
 })
 
 function zoomIn() {
-  zoomLevel.value = Math.min(4, parseFloat((zoomLevel.value + 0.25).toFixed(2)))
+  zoomLevel.value = Math.min(MAX_ZOOM, zoomLevel.value + 0.25)
 }
 
 function zoomOut() {
-  zoomLevel.value = Math.max(
-    0.25,
-    parseFloat((zoomLevel.value - 0.25).toFixed(2)),
-  )
+  zoomLevel.value = Math.max(MIN_ZOOM, zoomLevel.value - 0.25)
 }
 </script>

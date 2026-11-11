@@ -10,7 +10,7 @@
         },
       }"
       :name="stat.label"
-      :description="stat.value"
+      :description="String(stat.value)"
     />
   </div>
 </template>

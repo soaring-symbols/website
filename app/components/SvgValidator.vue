@@ -1,61 +1,122 @@
 <template>
-  <div class="flex flex-col gap-4">
-    <!-- Toolbar with file upload -->
-    <UFileUpload
-      v-slot="{ open }"
-      v-model="candidate.file.value"
-      accept=".svg,image/svg+xml"
-      :preview="false"
-    >
-      <ValidatorToolbar
-        :type="type"
-        :detected-from="detectedFrom"
-        @update:type="onTypeChange"
-        @upload="open()"
-      />
-    </UFileUpload>
+  <div class="flex flex-col gap-6">
+    <!-- Two jobs, one per tab: check one SVG, or compare it with the original.
+         The SVG is shared, so it carries over from one tab to the other. -->
+    <UTabs
+      v-model="tab"
+      :items="tabs"
+      :content="false"
+      variant="link"
+      class="w-full"
+    />
 
-    <!-- Comparing: both previews, the comparison, then the guideline checks -->
-    <template v-if="candidate.file.value && reference.file.value">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-        <CompareSide label="Reference" :image="reference" />
-        <CompareSide label="SVG" color="primary" :image="candidate" />
-      </div>
-      <CompareResult
-        v-if="reference.ready.value && candidate.ready.value"
-        :reference="reference"
-        :candidate="candidate"
-      />
-      <ValidatorPanel :groups="groupedChecks" />
-    </template>
+    <!-- Check: the SVG against the contribution guidelines -->
+    <template v-if="tab === 'check'">
+      <UFileUpload
+        v-slot="{ open }"
+        v-model="candidate.file.value"
+        accept=".svg,image/svg+xml"
+        :preview="false"
+      >
+        <ValidatorToolbar
+          :type="type"
+          :detected-from="detectedFrom"
+          :has-file="!!candidate.file.value"
+          @update:type="onTypeChange"
+          @upload="open()"
+        />
+      </UFileUpload>
 
-    <!-- Validating only: the SVG next to its checks, and a reference dropzone -->
-    <template v-else-if="candidate.file.value">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+      <div
+        v-if="candidate.file.value"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start"
+      >
         <ValidatorPreviewCard
           :preview-url="candidate.previewUrl.value"
           :file-name="candidate.file.value.name"
           :metadata="candidate.metadata.value"
-          :all-pass="allPass"
-          :mono="isMono"
+          :mono="candidate.isMono.value"
           @remove="candidate.file.value = null"
         />
-        <ValidatorPanel :groups="groupedChecks" />
+        <ValidatorPanel
+          :groups="groupedChecks"
+          :file-name="candidate.file.value.name"
+        />
+      </div>
+      <UFileUpload
+        v-else
+        v-model="candidate.file.value"
+        accept=".svg,image/svg+xml"
+        icon="hugeicons:upload-04"
+        label="Drop an SVG here"
+        description="A logo, icon or tail, color or -mono. It never leaves your browser."
+        class="min-h-72"
+      />
+    </template>
+
+    <!-- Compare: the SVG with the original artwork or its previous version -->
+    <template v-else>
+      <p class="text-sm text-muted">
+        Add the original artwork (PNG, JPEG or WebP) or the previous SVG under
+        Original, and your SVG under Your SVG, to check the artwork still looks
+        the same.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <CompareSide
+          label="Original"
+          :image="reference"
+          accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp"
+          description="PNG, JPEG or WebP artwork, or the previous SVG"
+        />
+        <CompareSide
+          label="Your SVG"
+          color="primary"
+          :image="candidate"
+          accept=".svg,image/svg+xml"
+          description="The SVG you are contributing"
+        >
+          <!-- The guideline result, so it isn't lost on this tab -->
+          <UButton
+            v-if="candidate.parsed.value"
+            :label="checkSummary.label"
+            :icon="checkSummary.icon"
+            :color="checkSummary.color"
+            variant="soft"
+            size="xs"
+            trailing-icon="hugeicons:arrow-right-01"
+            @click="tab = 'check'"
+          />
+        </CompareSide>
       </div>
 
-      <UFileUpload
-        v-model="reference.file.value"
-        accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp"
-        icon="hugeicons:git-compare"
-        label="Compare with a reference"
-        description="Optional. Drop the original PNG, JPEG or WebP, or the previous SVG, to check the artwork still looks the same."
-        class="min-h-36"
+      <CompareResult
+        v-if="reference.ready.value && candidate.ready.value"
+        :reference="reference"
+        :candidate="candidate"
       />
     </template>
   </div>
 </template>
 
 <script setup>
+const route = useRoute()
+const router = useRouter()
+
+const tabs = [
+  { label: 'Check', value: 'check', icon: 'hugeicons:checkmark-circle-02' },
+  { label: 'Compare', value: 'compare', icon: 'hugeicons:git-compare' },
+]
+
+// Kept in the URL (?tab=compare), so a link can open either tab
+const tab = computed({
+  get: () => (route.query.tab === 'compare' ? 'compare' : 'check'),
+  set: (value) =>
+    router.replace({
+      query: { ...route.query, tab: value === 'check' ? undefined : value },
+    }),
+})
+
 const type = ref('logo')
 const candidate = useImageFile()
 const reference = useImageFile()
@@ -81,14 +142,6 @@ watch(
   },
 )
 
-// Drawn only in currentColor, with no colors of its own
-const isMono = computed(
-  () =>
-    !!candidate.parsed.value &&
-    /currentColor/i.test(candidate.content.value ?? '') &&
-    getSvgColors(candidate.parsed.value).size === 0,
-)
-
 const allChecks = computed(() => {
   if (!candidate.parsed.value) return []
   return runSvgValidations(
@@ -112,7 +165,19 @@ const groupedChecks = computed(() => {
   return [...groups].map(([title, checks]) => ({ title, checks }))
 })
 
-const allPass = computed(() =>
-  allChecks.value.every((c) => c.pass || isWarning(c)),
-)
+// Warnings never fail an SVG, as on the Check tab
+const checkSummary = computed(() => {
+  const issues = allChecks.value.filter((c) => !c.pass && !isWarning(c)).length
+  return issues
+    ? {
+        label: `${issues} guideline issue${issues > 1 ? 's' : ''}`,
+        icon: 'hugeicons:cancel-circle',
+        color: 'error',
+      }
+    : {
+        label: 'Meets the guidelines',
+        icon: 'hugeicons:checkmark-circle-02',
+        color: 'success',
+      }
+})
 </script>

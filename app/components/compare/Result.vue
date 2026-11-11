@@ -3,7 +3,7 @@
     <template #header>
       <div class="flex items-center gap-2">
         <UIcon name="hugeicons:git-compare" class="size-4 text-muted" />
-        <span class="font-medium text-sm">Comparison</span>
+        <span class="font-medium text-sm">Result</span>
       </div>
     </template>
 
@@ -23,10 +23,6 @@
           :title="verdict.title"
           :description="verdict.description"
         />
-        <p v-if="result.shapeOnly" class="text-xs text-muted">
-          One of the SVGs is monochrome (<code>currentColor</code>), so only the
-          shapes are compared, not their colors.
-        </p>
         <p v-if="result.mode === 'outline'" class="text-xs text-muted">
           A raster file can't be compared pixel by pixel, so both images have
           their background removed, are trimmed to their content and scaled to
@@ -37,10 +33,11 @@
 
       <div
         v-show="result && !loading"
-        class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start"
+        class="grid grid-cols-1 gap-6 items-start"
+        :class="{ 'lg:grid-cols-2': showVisuals }"
       >
-        <!-- Difference map / overlay -->
-        <div class="flex flex-col items-center gap-3">
+        <!-- Difference map / overlay, left out when there is nothing to see -->
+        <div v-show="showVisuals" class="flex flex-col items-center gap-3">
           <ViewToggle
             v-model="view"
             label="Comparison view"
@@ -93,37 +90,67 @@
             </span>
           </div>
           <div v-else class="flex items-center gap-3 w-full max-w-80 text-xs">
-            <span class="text-muted">Reference</span>
+            <span class="text-muted shrink-0">{{ ORIGINAL }}</span>
             <USlider v-model="afterOpacity" :min="0" :max="100" />
-            <span class="text-muted">SVG</span>
+            <span class="text-muted shrink-0">{{ YOURS }}</span>
           </div>
         </div>
 
-        <!-- Stats -->
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="text-muted text-left border-b border-default">
-              <th class="py-2 font-normal" />
-              <th class="py-2 font-normal">Reference</th>
-              <th class="py-2 font-normal">SVG</th>
-              <th class="py-2 font-normal">Change</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="row in statRows"
-              :key="row.label"
-              class="border-b border-default last:border-0"
-            >
-              <td class="py-2 text-muted">{{ row.label }}</td>
-              <td class="py-2 font-mono">{{ row.before }}</td>
-              <td class="py-2 font-mono">{{ row.after }}</td>
-              <td class="py-2 font-mono" :class="row.changeClass">
-                {{ row.change }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="flex flex-col gap-4">
+          <!-- What changed between the two files -->
+          <table class="w-full text-xs sm:text-sm">
+            <thead>
+              <tr class="text-muted text-left border-b border-default">
+                <th class="py-2 font-normal" />
+                <th class="py-2 font-normal">{{ ORIGINAL }}</th>
+                <th class="py-2 font-normal">{{ YOURS }}</th>
+                <th class="py-2 font-normal">Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="row in fileRows"
+                :key="row.label"
+                class="border-b border-default last:border-0"
+              >
+                <td class="py-2 text-muted">{{ row.label }}</td>
+                <td class="py-2 font-mono">{{ row.before }}</td>
+                <td class="py-2 font-mono">{{ row.after }}</td>
+                <td class="py-2 font-mono" :class="row.changeClass">
+                  {{ row.change }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- How the drawings differ -->
+          <table class="w-full text-xs sm:text-sm">
+            <tbody>
+              <tr
+                v-for="row in resultRows"
+                :key="row.label"
+                class="border-b border-default last:border-0"
+              >
+                <td class="py-2 text-muted">{{ row.label }}</td>
+                <td class="py-2 font-mono text-right" :class="row.changeClass">
+                  {{ row.value }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <UButton
+            v-if="!showVisuals && result"
+            label="Show the difference map anyway"
+            icon="hugeicons:image-composition"
+            variant="link"
+            color="neutral"
+            size="sm"
+            class="self-start px-0"
+            :ui="{ label: 'block' }"
+            @click="showMap = true"
+          />
+        </div>
       </div>
     </div>
   </UCard>
@@ -139,11 +166,20 @@ const props = defineProps({
 // Keep in sync with EDGE_TOLERANCE in utils/svg-compare.ts
 const EDGE_TOLERANCE = 2
 
+// The names the compare tab gives each side
+const ORIGINAL = 'Original'
+const YOURS = 'Your SVG'
+
 const colorMode = useColorMode()
 const loading = ref(false)
 const error = ref(null)
 const result = ref(null)
 const view = ref('diff')
+// An identical result has no map worth showing, unless asked for
+const showMap = ref(false)
+const showVisuals = computed(
+  () => showMap.value || result.value?.verdict !== 'identical',
+)
 const afterOpacity = ref(50)
 const maskCanvas = ref(null)
 const beforeCanvas = ref(null)
@@ -171,8 +207,11 @@ const rgb = ([r, g, b]) => `rgb(${r} ${g} ${b})`
 const legend = computed(() =>
   result.value?.mode === 'outline'
     ? [
-        { label: 'Only in reference', color: colors.value.diff },
-        { label: 'Only in SVG', color: colors.value.extra },
+        {
+          label: `Only in ${ORIGINAL.toLowerCase()}`,
+          color: colors.value.diff,
+        },
+        { label: `Only in ${YOURS}`, color: colors.value.extra },
         { label: 'Both', color: colors.value.shape },
       ]
     : [
@@ -227,8 +266,35 @@ const VERDICTS = {
 // Average color distance above which colors are called out separately
 const COLOR_WARNING = 0.1
 
+// A monochrome side is compared on its shapes alone, so say so rather than
+// call two differently colored files identical
+const SHAPE_ONLY_VERDICTS = {
+  identical: {
+    title: 'Same shapes',
+    description: 'Both SVGs draw the same shapes.',
+  },
+  edges: {
+    title: 'Same shapes, edge differences only',
+    description:
+      'Only anti-aliased edge pixels differ, which happens when paths are merged or re-optimized.',
+  },
+  shapes: {
+    title: 'Shapes differ',
+    description:
+      'The SVGs draw different shapes. Check the highlighted areas in the difference map.',
+  },
+}
+
 const verdict = computed(() => {
   const base = VERDICTS[result.value?.verdict] ?? {}
+  if (result.value?.shapeOnly) {
+    const shapeOnly = SHAPE_ONLY_VERDICTS[result.value.verdict]
+    return {
+      ...base,
+      ...shapeOnly,
+      description: `${shapeOnly.description} One of them is monochrome (currentColor), so their colors aren't compared.`,
+    }
+  }
   if (result.value?.mode !== 'outline') return base
   if (result.value.colorDelta <= COLOR_WARNING) return base
 
@@ -252,29 +318,26 @@ const delta = (x, y) =>
       ? '—'
       : `${y - x > 0 ? '+' : ''}${y - x}`
 
+// Side by side, with the change; a bigger file or fewer colors is no fault in
+// itself (a -mono.svg has none), so only a changed viewBox or aspect is flagged
 const fileRows = computed(() => {
   const b = props.reference.metadata.value ?? {}
   const a = props.candidate.metadata.value ?? {}
   const bytesB = props.reference.file.value?.size ?? 0
   const bytesA = props.candidate.file.value?.size ?? 0
-  const sizeChange = bytesB
-    ? `${bytesA - bytesB > 0 ? '+' : ''}${(((bytesA - bytesB) / bytesB) * 100).toFixed(1)}%`
-    : '—'
+  const sizeChange =
+    bytesB && bytesA !== bytesB
+      ? `${bytesA - bytesB > 0 ? '+' : ''}${(((bytesA - bytesB) / bytesB) * 100).toFixed(1)}%`
+      : '—'
   const sameViewBox =
     b.viewBox === a.viewBox || [b, a].some((m) => m.viewBox === '—')
 
-  return [
+  const rows = [
     {
       label: 'File size',
       before: b.fileSize,
       after: a.fileSize,
       change: sizeChange,
-      changeClass:
-        bytesA < bytesB
-          ? 'text-success'
-          : bytesA > bytesB
-            ? 'text-warning'
-            : '',
     },
     {
       label: 'Paths',
@@ -296,45 +359,12 @@ const fileRows = computed(() => {
       changeClass: sameViewBox ? '' : 'text-warning',
     },
   ]
-})
 
-const resultRows = computed(() => {
   const r = result.value
-  if (!r) return []
-  if (r.mode === 'pixel') {
-    return r.renders.map((render) => ({
-      label: `Diff @ ${render.size}px`,
-      before: '',
-      after: '',
-      change: `${render.diffPixels} px (${percent(render.share)})`,
-    }))
-  }
-
-  const [aspectB, aspectA] = r.aspects
-  const aspectChange = (aspectA - aspectB) / aspectB
-
-  return [
-    { label: 'Outline match', before: '', after: '', change: percent(r.match) },
-    {
-      label: 'Only in reference',
-      before: '',
-      after: '',
-      change: percent(r.onlyBefore),
-    },
-    {
-      label: 'Only in SVG',
-      before: '',
-      after: '',
-      change: percent(r.onlyAfter),
-    },
-    {
-      label: 'Color difference',
-      before: '',
-      after: '',
-      change: percent(r.colorDelta),
-      changeClass: r.colorDelta > COLOR_WARNING ? 'text-warning' : '',
-    },
-    {
+  if (r?.mode === 'outline') {
+    const [aspectB, aspectA] = r.aspects
+    const aspectChange = (aspectA - aspectB) / aspectB
+    rows.push({
       label: 'Aspect ratio',
       before: aspectB.toFixed(3),
       after: aspectA.toFixed(3),
@@ -343,11 +373,37 @@ const resultRows = computed(() => {
           ? '—'
           : `${aspectChange > 0 ? '+' : ''}${(aspectChange * 100).toFixed(1)}%`,
       changeClass: Math.abs(aspectChange) >= 0.02 ? 'text-warning' : '',
+    })
+  }
+
+  return rows
+})
+
+// How far the drawings differ, one measurement per row
+const resultRows = computed(() => {
+  const r = result.value
+  if (!r) return []
+  if (r.mode === 'pixel') {
+    return r.renders.map((render) => ({
+      label: `Pixels that differ at ${render.size}px`,
+      value: `${render.diffPixels.toLocaleString()} (${percent(render.share)})`,
+    }))
+  }
+
+  return [
+    { label: 'Outline match', value: percent(r.match) },
+    {
+      label: `Only in the ${ORIGINAL.toLowerCase()}`,
+      value: percent(r.onlyBefore),
+    },
+    { label: `Only in ${YOURS}`, value: percent(r.onlyAfter) },
+    {
+      label: 'Color difference',
+      value: percent(r.colorDelta),
+      changeClass: r.colorDelta > COLOR_WARNING ? 'text-warning' : '',
     },
   ]
 })
-
-const statRows = computed(() => [...fileRows.value, ...resultRows.value])
 
 const toSource = (image) =>
   image.isSvg.value
@@ -358,6 +414,7 @@ async function run() {
   if (!props.reference.ready.value || !props.candidate.ready.value) return
   loading.value = true
   error.value = null
+  showMap.value = false
   try {
     result.value =
       props.reference.isSvg.value && props.candidate.isSvg.value
