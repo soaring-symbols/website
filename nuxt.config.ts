@@ -10,8 +10,21 @@ const soaringSymbolsDir = resolve(
 )
 const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
 const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
-const airlines: { slug: string }[] = JSON.parse(
+const airlines: { slug: string; previous_slugs?: string[] }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
+)
+// A renamed airline's page moves to its new slug; old links get a permanent
+// redirect (previous_slugs is in the package from the release after 0.2.4).
+// Its SVGs stay at the old path too, since the package ships them there.
+const formerSlugRedirects = Object.fromEntries(
+  airlines.flatMap((airline) =>
+    (airline.previous_slugs ?? []).map((slug) => [
+      `/airlines/${slug}`,
+      {
+        redirect: { to: `/airlines/${airline.slug}`, statusCode: 301 as const },
+      },
+    ]),
+  ),
 )
 // Country flags, served as files so each loads once, cached, and only where
 // it is shown: a few carry detailed arms that would weigh down every page
@@ -43,6 +56,8 @@ export default defineNuxtConfig({
       weights: [400, 600, 800],
     },
   },
+
+  routeRules: formerSlugRedirects,
 
   // Read by nuxt-og-image for absolute image URLs, and by the sitemap
   site: {
