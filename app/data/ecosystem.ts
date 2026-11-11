@@ -51,6 +51,8 @@ export const ecosystem: EcosystemEntry[] = [
     details: [
       'Pin a release line, such as soaring-symbols@0.2, to get new airlines and fixes without breaking changes.',
       'Add -mono before .svg for the monochrome mark, where the airline has one.',
+      'Older logos sit under <slug>/history/<year>/, named after the year each came in.',
+      'A renamed airline’s old slug keeps working and shows its current marks. Link an exact release, such as soaring-symbols@0.2.4, to keep a file as it was.',
     ],
     snippet: {
       label: 'Copy URL',
@@ -63,10 +65,11 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'hugeicons:api',
     group: 'data',
     description:
-      'Look up an airline and get its codes, callsign, country, hubs, history, brand colors and links to every SVG. End the URL with its IATA code (VN), ICAO code (HVN), slug (vietnam-airlines) or name, in any case; drop it to list them all. Open to any site, no key needed.',
+      'Look up an airline and get its codes, callsign, country, hubs, history, brand colors and links to every SVG. End the URL with its IATA code (VN), ICAO code (HVN), slug (vietnam-airlines) or name, current or former, in any case; drop it to list them all. Open to any site, no key needed.',
     details: [
       '/api/airlines lists every airline, with the package version and a count.',
       '/api/airlines/<code> returns one airline, or a 404 with a hint when nothing matches.',
+      'A renamed airline lists its former names, and each older logo in its history comes with the years it was used.',
     ],
     snippet: {
       label: 'Copy URL',
@@ -109,7 +112,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:figma',
     group: 'apps',
     description:
-      'Search airlines by name, IATA or ICAO code in Figma or FigJam, and click or drag their marks onto the canvas as vector layers, in the size you need and monochrome marks in any color.',
+      'Search airlines by name, IATA or ICAO code in Figma or FigJam, and click or drag their marks onto the canvas as vector layers, earlier logos included, in the size you need and monochrome marks in any color.',
     status: 'In review',
     link: {
       label: 'View on GitHub',
