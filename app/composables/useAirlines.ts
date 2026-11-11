@@ -1,4 +1,4 @@
-import type { Airline, AssetType } from 'soaring-symbols'
+import type { Airline, AssetType, HistoricalMarks } from 'soaring-symbols'
 import airlinesData from '#airlines-data'
 
 const airlines = airlinesData as unknown as Airline[]
@@ -20,18 +20,6 @@ const stats = {
   countries: new Set(airlines.flatMap((a) => a.country.split(','))).size,
   alliances: new Set(airlines.filter((a) => a.alliance).map((a) => a.alliance))
     .size,
-}
-
-// The marks an airline used before its current ones, as the package
-// publishes them from assets/<slug>/history/<since>/ (from 0.2.4; older
-// releases have no history, so it may be missing). Drop this and the cast in
-// markHistory once the site depends on a release that types `history`.
-// `until` and `name` come from the release after 0.2.4.
-interface HistoricalMarks {
-  since: number
-  until?: number
-  name?: string
-  assets: Airline['assets']
 }
 
 // The mark types, in the order every page lists them
@@ -122,19 +110,15 @@ export function markHeading(airline: Airline, mark: HistoricalMarks) {
     : years
 }
 
-// Year the current marks came in, set for an airline with older marks (from
-// the release after 0.2.4)
+// Year the current marks came in, set for an airline with older marks
 export function currentMarksSince(airline: Airline) {
-  return (airline.branding as { since?: number } | undefined)?.since
+  return airline.branding?.since
 }
 
 // Older marks, newest first. Each was used from its `since` until the next
 // one's, and the newest until the current marks
 export function markHistory(airline: Airline) {
-  const history =
-    (airline as Airline & { history?: HistoricalMarks[] }).history ?? []
-
-  return [...history].reverse()
+  return [...(airline.history ?? [])].reverse()
 }
 
 // Always six hex digits, so callers can append an alpha channel: a short
@@ -182,31 +166,21 @@ export function subsidiariesOf(airline: Airline, { defunct = false } = {}) {
   )
 }
 
-// Renames and mergers, as the package publishes them from the release after
-// 0.2.4 (older ones have neither field). Drop this cast once the site
-// depends on a release that types them.
-const lineage = (airline: Airline) =>
-  airline as Airline & {
-    previous_names?: string[]
-    successor?: string
-    predecessors?: string[]
-  }
-
 // The names a renamed airline flew under before, oldest first, e.g.
-// ['Binter Canarias'] for Binter
+// ['Hansung Airlines', "T'way Air"] for Trinity Airways
 export function previousNames(airline: Airline) {
-  return lineage(airline).previous_names ?? []
+  return airline.previous_names ?? []
 }
 
 // The airline that carried on a defunct one after a merger, a refounding or a
 // move out of a group's brand, e.g. Pacific Airlines for Jetstar Pacific
 export function successorOf(airline: Airline) {
-  return airlineBySlug(lineage(airline).successor)
+  return airlineBySlug(airline.successor)
 }
 
 // The defunct airlines this one carried on, the earliest to cease first
 export function predecessorsOf(airline: Airline) {
-  return (lineage(airline).predecessors ?? []).flatMap(
+  return (airline.predecessors ?? []).flatMap(
     (slug) => airlineBySlug(slug) ?? [],
   )
 }

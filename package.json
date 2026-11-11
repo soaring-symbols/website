@@ -28,7 +28,7 @@
     "@nuxt/ui": "^4.12.0",
     "@resvg/resvg-wasm": "^2.6.2",
     "nuxt": "^4.6.4",
-    "soaring-symbols": "^0.2.4"
+    "soaring-symbols": "^0.3.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

@@ -14,7 +14,7 @@ const airlines: { slug: string; previous_slugs?: string[] }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
 )
 // A renamed airline's page moves to its new slug; old links get a permanent
-// redirect (previous_slugs is in the package from the release after 0.2.4).
+// redirect (previous_slugs, from soaring-symbols 0.3).
 // Its SVGs stay at the old path too, since the package ships them there.
 const formerSlugRedirects = Object.fromEntries(
   airlines.flatMap((airline) =>
