@@ -216,9 +216,12 @@ const filtered = computed(() => {
       .normalize('NFD')
       .replace(/[̀-ͯ]/g, '')
       .toLowerCase()
+    const matches = (name) =>
+      name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().includes(q)
     list = list.filter(
       (a) =>
-        a.name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().includes(q) ||
+        // A renamed airline is found by its old names too
+        [a.name, ...previousNames(a)].some(matches) ||
         a.iata?.toLowerCase().startsWith(q) ||
         a.icao?.toLowerCase().startsWith(q) ||
         a.callsign?.toLowerCase().includes(q),

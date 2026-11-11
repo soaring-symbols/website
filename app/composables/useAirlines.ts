@@ -164,10 +164,20 @@ export function subsidiariesOf(airline: Airline, { defunct = false } = {}) {
 // 0.2.4 (older ones have neither field). Drop this cast once the site
 // depends on a release that types them.
 const lineage = (airline: Airline) =>
-  airline as Airline & { successor?: string; predecessors?: string[] }
+  airline as Airline & {
+    previous_names?: string[]
+    successor?: string
+    predecessors?: string[]
+  }
 
-// The airline that carried on a defunct one after a rename or a merger, e.g.
-// Pacific Airlines for Jetstar Pacific
+// The names a renamed airline flew under before, oldest first, e.g.
+// ['Binter Canarias'] for Binter
+export function previousNames(airline: Airline) {
+  return lineage(airline).previous_names ?? []
+}
+
+// The airline that carried on a defunct one after a merger, a refounding or a
+// move out of a group's brand, e.g. Pacific Airlines for Jetstar Pacific
 export function successorOf(airline: Airline) {
   return airlineBySlug(lineage(airline).successor)
 }
