@@ -23,6 +23,10 @@
           :title="verdict.title"
           :description="verdict.description"
         />
+        <p v-if="result.shapeOnly" class="text-xs text-muted">
+          One of the SVGs is monochrome (<code>currentColor</code>), so only the
+          shapes are compared, not their colors.
+        </p>
         <p v-if="result.mode === 'outline'" class="text-xs text-muted">
           A raster file can't be compared pixel by pixel, so both images have
           their background removed, are trimmed to their content and scaled to

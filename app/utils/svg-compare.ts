@@ -6,6 +6,9 @@
 //   shapes are identical. Those edge differences shrink relative to the image
 //   as the render size grows, while a real shape change keeps the same share,
 //   so the two are told apart by comparing a small and a large render.
+//   When either side is a monochrome SVG (fill="currentColor", which renders
+//   black), only coverage is compared: a mono variant is meant to differ from
+//   the color one in color, not in shape.
 // - "outline": at least one side is a raster reference (PNG, JPEG, WebP) with
 //   its own size, padding and background. Backgrounds are removed, both images
 //   are trimmed to their content and fitted into the same box, and the shapes
@@ -32,6 +35,8 @@ export interface CompareRender {
 export interface PixelResult {
   mode: 'pixel'
   verdict: 'identical' | 'edges' | 'shapes'
+  // Only coverage (alpha) was compared, because one side is monochrome
+  shapeOnly: boolean
   renders: CompareRender[]
   mask: ImageData
   layers: [ImageData, ImageData]
@@ -136,13 +141,20 @@ const channelDelta = (a: Uint8ClampedArray, b: Uint8ClampedArray, i: number) =>
     Math.abs(a[i + 3] - b[i + 3]),
   )
 
+const alphaDelta = (a: Uint8ClampedArray, b: Uint8ClampedArray, i: number) =>
+  Math.abs(a[i + 3] - b[i + 3])
+
 // --- Pixel mode ---
+
+const isMonochrome = (svg: string) => /currentColor/i.test(svg)
 
 export async function compareSvgs(
   before: string,
   after: string,
   colors: CompareColors,
 ): Promise<PixelResult> {
+  const shapeOnly = isMonochrome(before) || isMonochrome(after)
+  const delta = shapeOnly ? alphaDelta : channelDelta
   const renders: CompareRender[] = []
   let mask: ImageData | null = null
   let layers: [ImageData, ImageData] | null = null
@@ -158,7 +170,7 @@ export async function compareSvgs(
     for (let i = 0; i < a.data.length; i += 4) {
       const isDrawn = a.data[i + 3] || b.data[i + 3]
       if (isDrawn) drawn++
-      if (channelDelta(a.data, b.data, i) > THRESHOLD) {
+      if (delta(a.data, b.data, i) > THRESHOLD) {
         diff++
         sizeMask?.data.set([...colors.diff, 255], i)
       } else if (isDrawn) {
@@ -181,7 +193,14 @@ export async function compareSvgs(
   )
     verdict = 'edges'
 
-  return { mode: 'pixel', verdict, renders, mask: mask!, layers: layers! }
+  return {
+    mode: 'pixel',
+    verdict,
+    shapeOnly,
+    renders,
+    mask: mask!,
+    layers: layers!,
+  }
 }
 
 // --- Outline mode ---
