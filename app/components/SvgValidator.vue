@@ -62,11 +62,12 @@
         the same.
       </p>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <CompareSide
           label="Original"
           :image="reference"
           accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp"
+          drop-label="Drop the original here"
           description="PNG, JPEG or WebP artwork, or the previous SVG"
         />
         <CompareSide
@@ -74,6 +75,7 @@
           color="primary"
           :image="candidate"
           accept=".svg,image/svg+xml"
+          drop-label="Drop your SVG here"
           description="The SVG you are contributing"
         >
           <!-- The guideline result, so it isn't lost on this tab -->

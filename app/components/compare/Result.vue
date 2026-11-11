@@ -139,16 +139,21 @@
             </tbody>
           </table>
 
+          <!-- Identical files hide the map; this shows or hides it again -->
           <UButton
-            v-if="!showVisuals && result"
-            label="Show the difference map anyway"
-            icon="hugeicons:image-composition"
+            v-if="result?.verdict === 'identical'"
+            :label="
+              showMap ? 'Hide the difference map' : 'Show the difference map'
+            "
+            :icon="
+              showMap ? 'hugeicons:view-off' : 'hugeicons:image-composition'
+            "
             variant="link"
             color="neutral"
             size="sm"
             class="self-start px-0"
             :ui="{ label: 'block' }"
-            @click="showMap = true"
+            @click="showMap = !showMap"
           />
         </div>
       </div>

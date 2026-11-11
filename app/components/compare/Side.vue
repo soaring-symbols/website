@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col gap-2">
+  <!-- Fills its grid cell, so an empty side matches a loaded one's height -->
+  <div class="flex flex-col gap-2 h-full">
     <div class="flex items-center justify-between gap-2 min-h-6">
       <UBadge :label="label" :color="color" variant="subtle" />
       <slot />
@@ -20,9 +21,10 @@
       v-model="image.file.value"
       :accept="accept"
       icon="hugeicons:upload-04"
-      :label="`Drop the ${label.toLowerCase()} here`"
+      :label="dropLabel"
       :description="description"
-      class="min-h-80"
+      class="min-h-80 flex-1"
+      :ui="{ base: 'flex-1' }"
     />
   </div>
 </template>
@@ -34,5 +36,7 @@ defineProps({
   image: { type: Object, required: true },
   accept: { type: String, required: true },
   description: { type: String, default: '' },
+  // The empty dropzone's prompt, e.g. "Drop the original here"
+  dropLabel: { type: String, required: true },
 })
 </script>
