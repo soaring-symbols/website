@@ -18,13 +18,13 @@
     <UPageSection
       v-if="history.length"
       title="Earlier marks"
-      :description="`Logos ${airline.name} used before its current ones, kept for reference. Each was used from the year shown until the next one, the newest until today's marks.`"
+      :description="`Logos ${airline.name} used before its current ones, kept for reference, with the years each was in use.`"
       :ui="sectionUi"
     >
       <div class="flex flex-col gap-12">
         <section v-for="mark in history" :key="mark.since">
           <h3 class="mb-6 text-lg font-bold text-highlighted">
-            Introduced {{ mark.since }}
+            {{ markHeading(airline, mark) }}
           </h3>
           <AirlineFileRows :airline="airline" :mark="mark" />
         </section>
@@ -78,7 +78,9 @@ if (!airline) {
 // An airline drawn with another's marks says whose they are; the files are
 // still published under its own slug
 const markOwner = airlineBySlug(airline.marks)
+const marksSince = currentMarksSince(airline)
 const filesDescription = [
+  marksSince && `${airline.name} has used these marks since ${marksSince}.`,
   markOwner &&
     `${airline.name} flies the same marks as ${markOwner.name}, published under its own name too.`,
   'Download a file, or link it straight from the npm package through jsDelivr. Monochrome files use currentColor, so they take the color of the text around them.',

@@ -26,8 +26,11 @@ const stats = {
 // publishes them from assets/<slug>/history/<since>/ (from 0.2.4; older
 // releases have no history, so it may be missing). Drop this and the cast in
 // markHistory once the site depends on a release that types `history`.
+// `until` and `name` come from the release after 0.2.4.
 interface HistoricalMarks {
   since: number
+  until?: number
+  name?: string
   assets: Airline['assets']
 }
 
@@ -104,6 +107,25 @@ export function downloadName(
   mark?: HistoricalMarks,
 ) {
   return [airline.slug, mark?.since, variant].filter(Boolean).join('-') + '.svg'
+}
+
+// The heading of an older mark: the years it was used ("2010–2026"), after
+// the name on it when that was a former name ("T'way Air · 2010–2026").
+// Releases without `until` give the year it came in instead.
+export function markHeading(airline: Airline, mark: HistoricalMarks) {
+  const years = mark.until
+    ? `${mark.since}–${mark.until}`
+    : `Introduced ${mark.since}`
+
+  return mark.name && mark.name !== airline.name
+    ? `${mark.name} · ${years}`
+    : years
+}
+
+// Year the current marks came in, set for an airline with older marks (from
+// the release after 0.2.4)
+export function currentMarksSince(airline: Airline) {
+  return (airline.branding as { since?: number } | undefined)?.since
 }
 
 // Older marks, newest first. Each was used from its `since` until the next
