@@ -47,12 +47,12 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:jsdelivr',
     group: 'data',
     description:
-      'Link any mark straight from the npm package, with nothing to install. The slug is the airline’s name in lowercase with hyphens, like vietnam-airlines; swap logo for icon or tail to get the other marks.',
+      'Link any mark straight from the npm package, with nothing to install. The slug is the airline’s name in lowercase with hyphens, like vietnam-airlines.',
     details: [
-      'Pin a release line, such as soaring-symbols@0.2, to get new airlines and fixes without breaking changes.',
-      'Add -mono before .svg for the monochrome mark, where the airline has one.',
-      'Older logos sit under <slug>/history/<year>/, named after the year each came in.',
-      'A renamed airline’s old slug keeps working and shows its current marks. Link an exact release, such as soaring-symbols@0.2.4, to keep a file as it was.',
+      'Swap logo for icon or tail, and add -mono before .svg for the monochrome mark.',
+      'Older logos are under <slug>/history/<year>/, by the year each came in.',
+      'Pin a release line such as soaring-symbols@0.2 for fixes without breaking changes, or an exact release to keep files as they are.',
+      'A renamed airline’s old slug keeps working and shows its current marks.',
     ],
     snippet: {
       label: 'Copy URL',
@@ -65,11 +65,11 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'hugeicons:api',
     group: 'data',
     description:
-      'Look up an airline and get its codes, callsign, country, hubs, history, brand colors and links to every SVG. End the URL with its IATA code (VN), ICAO code (HVN), slug (vietnam-airlines) or name, current or former, in any case; drop it to list them all. Open to any site, no key needed.',
+      'Look up an airline and get its codes, callsign, hubs, brand colors, history and links to every SVG. Open to any site, no key needed.',
     details: [
       '/api/airlines lists every airline, with the package version and a count.',
-      '/api/airlines/<code> returns one airline, or a 404 with a hint when nothing matches.',
-      'A renamed airline lists its former names, and each older logo in its history comes with the years it was used.',
+      '/api/airlines/<code> takes an IATA or ICAO code, a slug or a name, current or former, and returns a 404 with a hint when nothing matches.',
+      'A renamed airline lists its former names, and each older logo comes with the years it was used.',
     ],
     snippet: {
       label: 'Copy URL',
@@ -82,11 +82,10 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'hugeicons:image-02',
     group: 'data',
     description:
-      'Load any mark by IATA or ICAO code, as SVG or as PNG for apps that can’t render SVG. Add size for the PNG width (16 to 1024), and give monochrome marks a color, plus a dark one that SVGs switch to in dark mode.',
+      'Load any mark by IATA or ICAO code, as SVG or as PNG for apps that can’t render SVG, with monochrome marks in the color you pick.',
     details: [
       'The file is logo, icon or tail, with -mono for the monochrome mark, ending in .svg or .png.',
-      'color takes a hex color such as fff or 00ccff, for monochrome marks only.',
-      'dark sets the color a monochrome SVG switches to when the viewer is in dark mode.',
+      'color takes a hex color such as fff, and dark the one a monochrome SVG switches to in dark mode.',
       'size sets the PNG width in pixels, from 16 to 1024 (256 by default).',
     ],
     snippet: {
@@ -100,7 +99,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:raycast',
     group: 'apps',
     description:
-      'Search airlines from your launcher, see their codes, callsign, hubs and history, and grab their SVGs. Also works in launchers that run Raycast extensions, such as Vicinae, SuperCmd and Tinycast.',
+      'Search airlines from your launcher, see their codes, hubs and history, and grab their SVGs, earlier logos included. Also works in Vicinae, SuperCmd and Tinycast, which run Raycast extensions.',
     link: {
       label: 'Open in Raycast Store',
       to: 'https://www.raycast.com/anhthang/soaring-symbols',
@@ -112,7 +111,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:figma',
     group: 'apps',
     description:
-      'Search airlines by name, IATA or ICAO code in Figma or FigJam, and click or drag their marks onto the canvas as vector layers, earlier logos included, in the size you need and monochrome marks in any color.',
+      'Search airlines by name or code in Figma or FigJam, and click or drag their marks onto the canvas as vector layers, earlier logos included, with monochrome marks in any color.',
     status: 'In review',
     link: {
       label: 'View on GitHub',
