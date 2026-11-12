@@ -39,7 +39,7 @@
         v-if="derivedMono"
         color="warning"
         variant="subtle"
-        icon="hugeicons:alert-02"
+        icon="solar:danger-triangle-linear"
         :title="`${possessive(airline)} ${kind} is single-color`"
         :description="`Its ${kind}-mono.svg is generated from ${kind}.svg when the package is built, so a mono file isn't needed. Upload the color ${kind}.svg instead.`"
       />
@@ -77,7 +77,7 @@
         v-else
         v-model="candidate.file.value"
         accept=".svg,image/svg+xml"
-        icon="hugeicons:upload-04"
+        icon="solar:upload-linear"
         label="Drop an SVG here"
         description="A logo, icon or tail, color or -mono. It never leaves your browser."
         class="min-h-72"
@@ -116,7 +116,7 @@
             :color="checkSummary.color"
             variant="soft"
             size="xs"
-            trailing-icon="hugeicons:arrow-right-01"
+            trailing-icon="solar:alt-arrow-right-linear"
             @click="tab = 'check'"
           />
         </CompareSide>
@@ -136,8 +136,12 @@ const route = useRoute()
 const router = useRouter()
 
 const tabs = [
-  { label: 'Check', value: 'check', icon: 'hugeicons:checkmark-circle-02' },
-  { label: 'Compare', value: 'compare', icon: 'hugeicons:git-compare' },
+  { label: 'Check', value: 'check', icon: 'solar:check-circle-linear' },
+  {
+    label: 'Compare',
+    value: 'compare',
+    icon: 'solar:git-diff-linear',
+  },
 ]
 
 // Kept in the URL (?tab=compare), so a link can open either tab
@@ -292,12 +296,12 @@ const checkSummary = computed(() => {
   return issues
     ? {
         label: `${issues} guideline issue${issues > 1 ? 's' : ''}`,
-        icon: 'hugeicons:cancel-circle',
+        icon: 'solar:close-circle-linear',
         color: 'error',
       }
     : {
         label: 'Meets the guidelines',
-        icon: 'hugeicons:checkmark-circle-02',
+        icon: 'solar:check-circle-linear',
         color: 'success',
       }
 })

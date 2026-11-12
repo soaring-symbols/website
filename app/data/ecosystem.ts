@@ -62,7 +62,7 @@ export const ecosystem: EcosystemEntry[] = [
   {
     id: 'json-api',
     name: 'JSON API',
-    icon: 'hugeicons:api',
+    icon: 'solar:code-square-linear',
     group: 'data',
     description:
       'Look up an airline and get its codes, callsign, hubs, brand colors, history and links to every SVG. Open to any site, no key needed.',
@@ -79,7 +79,7 @@ export const ecosystem: EcosystemEntry[] = [
   {
     id: 'image-api',
     name: 'Image API',
-    icon: 'hugeicons:image-02',
+    icon: 'solar:gallery-linear',
     group: 'data',
     description:
       'Load any mark by IATA or ICAO code, as SVG or as PNG for apps that can’t render SVG, with monochrome marks in the color you pick.',

@@ -22,7 +22,7 @@
         <UButton
           to="https://github.com/soaring-symbols/soaring-symbols"
           target="_blank"
-          icon="hugeicons:github"
+          icon="simple-icons:github"
           variant="ghost"
           aria-label="Soaring Symbols on GitHub"
         />
@@ -68,9 +68,9 @@
 const year = new Date().getFullYear()
 
 const nav = [
-  { label: 'Browse', to: '/browse', icon: 'hugeicons:airplane-01' },
-  { label: 'Validate', to: '/validate', icon: 'hugeicons:checkmark-circle-02' },
-  { label: 'Ecosystem', to: '/ecosystem', icon: 'hugeicons:puzzle' },
+  { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
+  { label: 'Validate', to: '/validate', icon: 'solar:check-circle-linear' },
+  { label: 'Ecosystem', to: '/ecosystem', icon: 'solar:widget-add-linear' },
 ]
 </script>
 

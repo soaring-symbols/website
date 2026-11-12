@@ -53,7 +53,7 @@ bun run generate
 - **All UI uses Nuxt UI**: No custom HTML elements, always prefer Nuxt UI components
 - **Component Auto-Import**: No imports needed for Nuxt UI components
 - **Dark Mode**: Components automatically support both light/dark modes
-- **Icons**: Use `hugeicons:*` format for icons (e.g., `icon="hugeicons:heart"`)
+- **Icons**: Use Solar's linear style, `solar:*-linear`, for icons (e.g., `icon="solar:heart-linear"`), and `simple-icons:*` for brand logos
 - **Vue Script**: Use `<script setup>` (plain JavaScript, no `lang="ts"`)
 - **Vue Block Order**: `<template>` → `<script setup>` → `<style scoped>`
 

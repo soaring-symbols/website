@@ -52,7 +52,7 @@
               </div>
               <div class="flex shrink-0 gap-1">
                 <UButton
-                  icon="hugeicons:link-04"
+                  icon="solar:link-linear"
                   variant="ghost"
                   :aria-label="`Copy the CDN link to ${fileName(file.variant)}`"
                   @click="copyCdnUrl(file.variant)"
@@ -61,7 +61,7 @@
                   :to="assetUrl(airline, file.variant, mark)"
                   external
                   :download="downloadName(airline, file.variant, mark)"
-                  icon="hugeicons:download-04"
+                  icon="solar:download-linear"
                   variant="outline"
                   :aria-label="`Download ${fileName(file.variant)}`"
                 />

@@ -2,17 +2,20 @@
   <UCard>
     <template #header>
       <div class="flex items-center gap-2">
-        <UIcon name="hugeicons:git-compare" class="size-4 text-muted" />
+        <UIcon
+          name="solar:git-diff-linear"
+          class="size-4 text-muted"
+        />
         <span class="font-medium text-sm">Result</span>
       </div>
     </template>
 
     <div class="flex flex-col gap-4">
-      <UAlert v-if="loading" icon="hugeicons:loading-03" title="Comparing…" />
+      <UAlert v-if="loading" icon="solar:refresh-linear" title="Comparing…" />
       <UAlert
         v-else-if="error"
         color="error"
-        icon="hugeicons:cancel-circle"
+        icon="solar:close-circle-linear"
         title="Could not compare the files"
         :description="error"
       />
@@ -45,12 +48,12 @@
               {
                 value: 'diff',
                 label: 'Difference',
-                icon: 'hugeicons:image-composition',
+                icon: 'solar:gallery-wide-linear',
               },
               {
                 value: 'overlay',
                 label: 'Overlay',
-                icon: 'hugeicons:layers-01',
+                icon: 'solar:layers-linear',
               },
             ]"
           />
@@ -146,7 +149,7 @@
               showMap ? 'Hide the difference map' : 'Show the difference map'
             "
             :icon="
-              showMap ? 'hugeicons:view-off' : 'hugeicons:image-composition'
+              showMap ? 'solar:eye-closed-linear' : 'solar:gallery-wide-linear'
             "
             variant="link"
             color="neutral"
@@ -228,40 +231,40 @@ const legend = computed(() =>
 const VERDICTS = {
   identical: {
     color: 'success',
-    icon: 'hugeicons:checkmark-circle-02',
+    icon: 'solar:check-circle-linear',
     title: 'Identical',
     description: 'Both SVGs render the same pixels.',
   },
   edges: {
     color: 'info',
-    icon: 'hugeicons:information-circle',
+    icon: 'solar:info-circle-linear',
     title: 'Edge differences only',
     description:
       'Only anti-aliased edge pixels differ, which happens when paths are merged or re-optimized. The shapes are the same.',
   },
   shapes: {
     color: 'warning',
-    icon: 'hugeicons:alert-02',
+    icon: 'solar:danger-triangle-linear',
     title: 'Shapes differ',
     description:
       'The SVGs render differently. Check the highlighted areas in the difference map.',
   },
   match: {
     color: 'success',
-    icon: 'hugeicons:checkmark-circle-02',
+    icon: 'solar:check-circle-linear',
     title: 'Outlines match',
     description: 'The shapes line up with each other once aligned.',
   },
   close: {
     color: 'info',
-    icon: 'hugeicons:information-circle',
+    icon: 'solar:info-circle-linear',
     title: 'Close match',
     description:
       'Most of the outline lines up, but some small areas differ. Check the highlighted areas.',
   },
   differs: {
     color: 'warning',
-    icon: 'hugeicons:alert-02',
+    icon: 'solar:danger-triangle-linear',
     title: 'Outlines differ',
     description:
       'Parts of the shape are missing or added. Check the highlighted areas, or use the overlay.',

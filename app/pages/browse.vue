@@ -11,7 +11,7 @@
         <UInput
           v-model="search"
           placeholder="Name, code or callsign"
-          icon="hugeicons:search-01"
+          icon="solar:magnifier-linear"
           aria-label="Search airlines"
           class="col-span-2 w-full sm:w-72"
           :ui="{ base: 'bg-surface' }"
@@ -47,8 +47,8 @@
           v-model="viewMode"
           label="Layout"
           :options="[
-            { value: 'grid', icon: 'hugeicons:grid-view', ariaLabel: 'Grid' },
-            { value: 'list', icon: 'hugeicons:list-view', ariaLabel: 'List' },
+            { value: 'grid', icon: 'solar:widget-linear', ariaLabel: 'Grid' },
+            { value: 'list', icon: 'solar:list-linear', ariaLabel: 'List' },
           ]"
           class="justify-self-end sm:ms-auto"
         />

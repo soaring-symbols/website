@@ -141,7 +141,7 @@
           class="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
         >
           All files
-          <UIcon name="hugeicons:arrow-right-02" class="size-4" />
+          <UIcon name="solar:arrow-right-linear" class="size-4" />
         </ULink>
       </div>
 
@@ -162,7 +162,7 @@
                 />
                 {{ color.toUpperCase() }}
                 <UIcon
-                  name="hugeicons:copy-01"
+                  name="solar:copy-linear"
                   class="size-3.5 text-dimmed group-hover:text-highlighted"
                   aria-hidden="true"
                 />
@@ -191,7 +191,7 @@
               :download="downloadName(airline, download.variant)"
               :label="download.label"
               :aria-label="`Download ${download.label.toLowerCase()}`"
-              icon="hugeicons:download-04"
+              icon="solar:download-linear"
               :variant="download.variant === 'logo' ? 'solid' : 'outline'"
               :class="download.variant === 'logo' ? 'btn-signal' : undefined"
               :ui="{ label: 'block' }"

@@ -40,7 +40,7 @@
         {
           to: '/#use',
           label: 'Install the package',
-          trailingIcon: 'hugeicons:arrow-right-02',
+          trailingIcon: 'solar:arrow-right-linear',
           variant: 'outline',
           size: 'md',
           ui: { label: 'block' },
@@ -97,7 +97,7 @@ const sectionUi = {
 const lookupCode = airline.iata || airline.icao
 
 const breadcrumb = [
-  { label: 'Browse', to: '/browse', icon: 'hugeicons:airplane-01' },
+  { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
   { label: airline.name },
 ]
 
