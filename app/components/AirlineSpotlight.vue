@@ -136,7 +136,7 @@
         </dl>
 
         <ULink
-          v-if="pageLink"
+          v-if="!airlinePage"
           :to="`/airlines/${airline.slug}`"
           class="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
         >
@@ -180,7 +180,7 @@
           </ul>
         </div>
 
-        <div class="flex flex-col gap-2">
+        <div v-if="!airlinePage" class="flex flex-col gap-2">
           <p class="text-sm text-muted">Download SVG</p>
           <div class="flex flex-wrap gap-2">
             <UButton
@@ -207,8 +207,9 @@
 const props = defineProps({
   airline: { type: Object, required: true },
   headingTag: { type: String, default: 'h2' },
-  // Off on the airline's own page, which this would link back to
-  pageLink: { type: Boolean, default: true },
+  // On the airline's own page, which lists every file below: no link back
+  // to it, and no download buttons
+  airlinePage: { type: Boolean, default: false },
 })
 
 const toast = useToast()
