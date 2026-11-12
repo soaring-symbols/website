@@ -31,15 +31,15 @@
       </div>
     </UPageSection>
 
-    <!-- The same data from the package -->
+    <!-- The same marks and data in code: package, CDN and API -->
     <UPageSection
       title="In your project"
-      :description="`Look ${airline.name} up in the npm package by its IATA code, ICAO code or name.`"
+      :description="`Look ${airline.name} up in the npm package, link its files from a CDN, or load them from the site’s API as SVG, PNG or JSON.`"
       orientation="horizontal"
       :links="[
         {
-          to: '/#use',
-          label: 'Install the package',
+          to: '/ecosystem',
+          label: 'See the ecosystem',
           trailingIcon: 'solar:arrow-right-linear',
           variant: 'outline',
           size: 'md',
@@ -48,15 +48,7 @@
       ]"
       :ui="{ ...sectionUi, footer: 'mt-6' }"
     >
-      <pre
-        class="overflow-x-auto rounded-xl bg-board p-5 font-mono text-[0.8125rem] leading-relaxed text-flap-ink"
-      ><code><span class="text-flap-ink/50">import</span> { getAirline, getAssetPath } <span class="text-flap-ink/50">from</span> 'soaring-symbols'
-
-getAirline('{{ lookupCode }}')
-getAssetPath('{{ lookupCode }}', '{{ snippetVariant ?? 'logo' }}')
-<span class="text-flap-ink/50">// {{ snippetPath }}</span><template v-if="historySnippet">
-getAssetPath('{{ lookupCode }}', '{{ historySnippet.variant }}', { since: {{ historySnippet.since }} })
-<span class="text-flap-ink/50">// {{ historySnippet.path }}</span></template></code></pre>
+      <AirlineUsage :airline="airline" />
     </UPageSection>
   </div>
 </template>
@@ -94,30 +86,14 @@ const sectionUi = {
   title: 'text-2xl sm:text-2xl lg:text-2xl',
   description: 'mt-2',
 }
-const lookupCode = airline.iata || airline.icao
 
 const breadcrumb = [
   { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
   { label: airline.name },
 ]
 
-// The package snippet shows the first color file the airline ships
-const snippetVariant = firstVariant(airline)
-const snippetPath = snippetVariant
-  ? `'${packagePath(airline, snippetVariant)}'`
-  : 'undefined'
-
 // Older marks, newest first
 const history = markHistory(airline)
-
-// The snippet also shows how to get the newest older mark, when there is one
-const newest = history[0]
-const newestVariant = newest && firstVariant(airline, newest)
-const historySnippet = newestVariant && {
-  since: newest.since,
-  variant: newestVariant,
-  path: `'${packagePath(airline, newestVariant, newest)}'`,
-}
 
 const description = [
   `Logo, icon and brand colors of ${airline.name}`,
