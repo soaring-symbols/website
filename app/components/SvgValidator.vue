@@ -12,20 +12,37 @@
 
     <!-- Check: the SVG against the contribution guidelines -->
     <template v-if="tab === 'check'">
+      <!-- A drop target only: a click inside opens the file picker solely
+           through the toolbar's button, not from the pickers around it -->
       <UFileUpload
         v-slot="{ open }"
         v-model="candidate.file.value"
         accept=".svg,image/svg+xml"
         :preview="false"
+        :interactive="false"
       >
         <ValidatorToolbar
           :type="type"
           :detected-from="detectedFrom"
           :has-file="!!candidate.file.value"
+          :airline="airline"
           @update:type="onTypeChange"
+          @update:airline="airline = $event"
           @upload="open()"
         />
       </UFileUpload>
+
+      <ValidatorFixCard
+        v-if="candidate.file.value"
+        :state="fixState"
+        :type="type"
+        :airline-name="airline"
+        :is-catalog-name="isCatalogName"
+        :can-merge="canMerge"
+        :needed="needsFix"
+        :has-title="hasTitle"
+        @compare="compareWithOriginal"
+      />
 
       <div
         v-if="candidate.file.value"
@@ -122,6 +139,8 @@ const tab = computed({
 const type = ref('logo')
 const candidate = useImageFile()
 const reference = useImageFile()
+// A fix of the SVG, kept here so it outlives the Check tab's components
+const fixState = useSvgFix(candidate)
 
 const detectedFrom = ref(null)
 
@@ -143,6 +162,37 @@ watch(
     detectedFrom.value = detected.source
   },
 )
+
+// The airline <title> should name, guessed from the current title when the
+// catalog knows it (by its name or a former one)
+const { airlines } = useAirlines()
+const airline = ref(null)
+watch(
+  () => candidate.parsed.value,
+  (svg) => {
+    // A file being swapped reads as none for a moment; keep the pick
+    if (!svg) return
+    const title = svg.querySelector('title')?.textContent?.trim()
+    const match = airlines.find(
+      (a) => a.name === title || a.previous_names?.includes(title),
+    )
+    // A fixed file's title is the name picked, which may be a new airline
+    airline.value =
+      match?.name ?? (title && title === airline.value ? title : null)
+  },
+)
+const hasTitle = computed(
+  () => !!candidate.parsed.value?.querySelector('title')?.textContent?.trim(),
+)
+const isCatalogName = computed(() =>
+  airlines.some((a) => a.name === airline.value),
+)
+
+// The fixed file, next to the one uploaded
+function compareWithOriginal(original) {
+  reference.file.value = original
+  tab.value = 'compare'
+}
 
 const allChecks = computed(() => {
   if (!candidate.parsed.value) return []
@@ -166,6 +216,12 @@ const groupedChecks = computed(() => {
   }
   return [...groups].map(([title, checks]) => ({ title, checks }))
 })
+
+// Anything failing, warnings included, may be something --fix clears
+const needsFix = computed(() => allChecks.value.some((c) => !c.pass))
+const canMerge = computed(() =>
+  allChecks.value.some((c) => c.label === 'One path per color' && !c.pass),
+)
 
 // Warnings never fail an SVG, as on the Check tab
 const checkSummary = computed(() => {
