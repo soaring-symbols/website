@@ -98,33 +98,27 @@
           </div>
           <!-- The group it belongs to, the airlines it owns, and the
                airlines it was renamed or merged into or carried on -->
-          <template v-if="hasFormer || related.length">
-            <!-- The names it flew under before, with a link to the table of
-                 every former name and code on its page -->
-            <div v-if="hasFormer" class="col-span-2">
+          <template v-if="former.length || related.length">
+            <!-- What it flew under before, oldest first: each name (or the
+                 codes, when only they changed) links to the table of former
+                 names and codes on its page. On that page the link scrolls
+                 to the table; in the Browse slideover it opens the page
+                 there. -->
+            <div v-if="former.length" class="col-span-2">
               <dt class="text-muted">Formerly</dt>
               <dd class="font-semibold">
-                <span v-if="formerNames.length" class="text-highlighted">
-                  {{ formerNames.join(', ') }}
-                </span>
-                <span v-if="formerNames.length" class="text-muted"> · </span>
-                <!-- On the airline's own page it scrolls to the table; in
-                     the Browse slideover it opens the page there -->
-                <ULink
-                  :to="formerLink"
-                  :class="['inline-flex items-center gap-1', linkClass]"
-                  @click="scrollToFormer"
-                >
-                  {{ formerNames.length ? 'Names and codes' : 'Earlier codes' }}
-                  <UIcon
-                    :name="
-                      onOwnPage
-                        ? 'solar:arrow-down-linear'
-                        : 'solar:arrow-right-linear'
-                    "
-                    class="size-3.5 shrink-0"
-                  />
-                </ULink>
+                <template v-for="(label, i) in former" :key="i">
+                  <ULink
+                    :to="formerLink"
+                    :class="linkClass"
+                    @click="scrollToFormer"
+                  >
+                    {{ label }}
+                  </ULink>
+                  <span v-if="i < former.length - 1" class="text-muted"
+                    >,
+                  </span>
+                </template>
               </dd>
             </div>
             <div v-for="row in related" :key="row.label" class="col-span-2">
@@ -207,8 +201,14 @@ const toast = useToast()
 // A faint wash of the airline's own color behind its marks
 const tint = computed(() => brandTint(props.airline))
 
-const hasFormer = computed(() => formerIdentities(props.airline).length > 0)
-const formerNames = computed(() => previousNames(props.airline))
+// One label per former identity: its name, or the codes that changed when
+// the name stayed, e.g. ['HAL / HAWAIIAN', 'HA'] for Hawaiian Airlines
+const former = computed(() =>
+  formerIdentities(props.airline).map(
+    ({ name, iata, icao, callsign }) =>
+      name ?? [iata, icao, callsign].filter(Boolean).join(' / '),
+  ),
+)
 
 // The table of former names and codes sits on the airline's page, at the
 // canonical URL with its trailing slash, so the link never goes through a

@@ -41,7 +41,7 @@ npx wrangler --cwd .output dev
 - [x] Callsign, hubs and founding year on the airline page, a badge for airlines that ceased operations, and search by callsign
 - [x] Earlier marks on the airline page, from the package's logo history (`history`, since `soaring-symbols` 0.2.4)
 - [x] Renames and mergers on the airline page: "Succeeded by" and "Preceded by" from `successor` and `predecessors`, and defunct subsidiaries under "Former subsidiaries", plus former names under "Formerly" and in search (`soaring-symbols` 0.3)
-- [ ] Former names and codes from `former` (`soaring-symbols` 0.3.2): "Formerly" on the airline page linking to an "Earlier names and codes" table, search by former codes and callsigns, redirects from the slugs in `former`, and a lookup key that a brand doesn't share with its parent in the usage examples. Merge once 0.3.2 is out and the dependency is bumped
+- [x] Former names and codes from `former` (`soaring-symbols` 0.3.2): "Formerly" on the airline page, each former name (or code) linking to an "Earlier names and codes" table, search by former codes and callsigns, redirects from the slugs in `former`, and a lookup key that a brand doesn't share with its parent in the usage examples
 - [x] Fix the hydration mismatches: the homepage spotlight, and error pages that rendered only in the browser (now `app/error.vue`)
 - [ ] Drop the `@nuxt/fonts` 1.x entry in `nuxt.config.ts` once `@nuxt/ui` ships with it (the social cards need 1.x for Overpass)
 - [ ] Run ESLint again, once typescript-eslint supports TypeScript 7 (or pin TypeScript 6 for linting)
