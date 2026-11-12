@@ -1,9 +1,11 @@
 <template>
   <div>
     <!-- Hero: what this is and a way in, beside the globe; below, the
-         board and the pass for the airline picked on it -->
+         board and the pass for the airline picked on it, as one ticket -->
     <section class="pt-6 pb-16 sm:pt-12 lg:pb-24">
-      <div class="grid items-center gap-12 xl:grid-cols-2 xl:gap-14">
+      <div
+        class="grid items-center gap-12 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-14"
+      >
         <div>
           <h1
             class="text-4xl font-extrabold tracking-tight text-highlighted text-balance sm:text-6xl sm:leading-[1.05]"
@@ -40,15 +42,16 @@
           </form>
         </div>
 
-        <HeroGlobe class="-mt-4 h-80 sm:h-[28rem] xl:mt-0 xl:h-[34rem]" />
+        <!-- Taller than its row: the bottom of the globe tucks under the
+             ticket -->
+        <HeroGlobe
+          class="-mt-4 -mb-16 h-96 sm:-mb-20 sm:h-[32rem] xl:mt-0 xl:-mb-36 xl:h-[44rem]"
+        />
       </div>
 
-      <div
-        class="mt-4 grid gap-4 xl:mt-8 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]"
-      >
+      <BoardingPass :airline="selected" class="relative mt-4 xl:mt-8">
         <DepartureBoard v-model:selected="selectedSlug" :airlines="airlines" />
-        <BoardingPass v-if="selected" :airline="selected" aria-live="polite" />
-      </div>
+      </BoardingPass>
     </section>
 
     <!-- The whole collection at a glance -->

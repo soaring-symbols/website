@@ -434,7 +434,7 @@ function resize() {
   globe = {
     x: width / 2,
     y: height / 2,
-    r: Math.max(Math.min(width, height) * 0.42, 60),
+    r: Math.max(Math.min(width, height) * 0.46, 60),
   }
   const dpr = Math.min(window.devicePixelRatio || 1, 2)
   canvas.value.width = Math.round(width * dpr)

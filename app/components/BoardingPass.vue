@@ -1,88 +1,76 @@
 <template>
-  <!-- The stub torn off the departure board: the airline picked on it, its
-       marks, its codes and the way to its page. One height for every
-       airline, so the page below does not jump as the board turns -->
-  <article class="pass @container">
-    <header class="pass-head">
-      <div
-        class="grid size-14 shrink-0 place-items-center rounded-lg bg-white p-2.5"
-        :style="{ backgroundImage: tint }"
-      >
-        <img
-          v-if="hasAsset(airline, 'icon')"
-          :src="assetUrl(airline, 'icon')"
-          :alt="`${airline.name} icon`"
-          class="size-full object-contain"
-        />
-        <span v-else class="font-mono text-lg font-bold text-neutral-800">
-          {{ airline.iata ?? airline.icao }}
-        </span>
-      </div>
-      <div class="min-w-0">
+  <!-- One ticket: the departure board (the slot) and, past a perforation,
+       the stub for the airline picked on it, with its marks, its codes and
+       the way to its page. The stub keeps one height for every airline, so
+       the page below does not jump as the board turns -->
+  <article class="ticket">
+    <div class="ticket-board">
+      <slot />
+    </div>
+
+    <div class="pass @container" aria-live="polite">
+      <!-- Where the stub tears off -->
+      <div class="pass-tear" aria-hidden="true" />
+
+      <header class="pass-head">
         <p class="pass-label">Now showing</p>
-        <h2
-          class="truncate text-xl font-extrabold tracking-tight text-highlighted"
-        >
-          {{ airline.name }}
-        </h2>
-        <p class="flex min-h-5 items-center gap-2 text-sm text-muted">
-          <CeasedBadge :airline="airline" />
+        <h2 class="pass-name">{{ airline.name }}</h2>
+        <!-- The badge in its dark look, on the board's colors in any mode -->
+        <p class="pass-tagline">
+          <span class="dark contents"><CeasedBadge :airline="airline" /></span>
           <span v-if="airline.branding?.tagline" class="truncate">
             “{{ airline.branding.tagline }}”
           </span>
         </p>
-      </div>
-    </header>
+      </header>
 
-    <!-- Where the stub tears off -->
-    <div class="pass-tear" aria-hidden="true" />
+      <div class="pass-body">
+        <div class="pass-main">
+          <div
+            class="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-white p-3"
+            :style="{ backgroundImage: tint }"
+          >
+            <img
+              :src="assetUrl(airline, 'logo')"
+              :alt="`${airline.name} logo`"
+              class="size-full object-contain"
+            />
+          </div>
 
-    <div class="pass-body">
-      <div class="pass-main">
-        <div
-          class="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-white p-3"
-          :style="{ backgroundImage: tint }"
-        >
-          <img
-            :src="assetUrl(airline, 'logo')"
-            :alt="`${airline.name} logo`"
-            class="size-full object-contain"
-          />
+          <dl class="pass-codes">
+            <div>
+              <dt class="pass-label">IATA</dt>
+              <dd class="pass-value">{{ airline.iata ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt class="pass-label">ICAO</dt>
+              <dd class="pass-value">{{ airline.icao ?? '—' }}</dd>
+            </div>
+            <div class="min-w-0">
+              <dt class="pass-label">Country</dt>
+              <dd class="pass-value flex items-center gap-1.5">
+                <CountryFlags :iso="airline.country" />
+                <span class="truncate">{{ countryName(airline.country) }}</span>
+              </dd>
+            </div>
+            <div class="min-w-0">
+              <dt class="pass-label">Alliance</dt>
+              <dd class="pass-value truncate">
+                {{ airline.alliance ?? 'None' }}
+              </dd>
+            </div>
+          </dl>
         </div>
 
-        <dl class="pass-codes">
-          <div>
-            <dt class="pass-label">IATA</dt>
-            <dd class="pass-value">{{ airline.iata ?? '—' }}</dd>
-          </div>
-          <div>
-            <dt class="pass-label">ICAO</dt>
-            <dd class="pass-value">{{ airline.icao ?? '—' }}</dd>
-          </div>
-          <div class="min-w-0">
-            <dt class="pass-label">Country</dt>
-            <dd class="pass-value flex items-center gap-1.5">
-              <CountryFlags :iso="airline.country" />
-              <span class="truncate">{{ countryName(airline.country) }}</span>
-            </dd>
-          </div>
-          <div class="min-w-0">
-            <dt class="pass-label">Alliance</dt>
-            <dd class="pass-value truncate">
-              {{ airline.alliance ?? 'None' }}
-            </dd>
-          </div>
-        </dl>
+        <UButton
+          :to="`/airlines/${airline.slug}`"
+          size="lg"
+          label="View logos and details"
+          trailing-icon="hugeicons:arrow-right-02"
+          class="btn-signal w-full justify-center"
+          :ui="{ label: 'block' }"
+        />
       </div>
-
-      <UButton
-        :to="`/airlines/${airline.slug}`"
-        size="lg"
-        label="View logos and details"
-        trailing-icon="hugeicons:arrow-right-02"
-        class="btn-signal w-full justify-center"
-        :ui="{ label: 'block' }"
-      />
     </div>
   </article>
 </template>
@@ -97,42 +85,67 @@ const tint = computed(() => brandTint(props.airline))
 </script>
 
 <style scoped>
-/* A boarding pass: a notch on each side where the stub tears off, cut out
-   of the card so the page shows through */
+/* The board and the stub side by side on a wide screen, one above the
+   other on a narrow one, in one card with rounded corners and the board's
+   colors in either mode */
+.ticket {
+  --notch: 0.75rem;
+  /* How far into the stub the perforation runs */
+  --tear: 1rem;
+  --ink-muted: rgb(236 235 228 / 0.55);
+  display: grid;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  color: var(--color-flap-ink);
+  box-shadow: 0 24px 48px -24px rgb(15 23 42 / 0.35);
+}
+
+:global(.dark) .ticket {
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.06),
+    0 24px 48px -24px rgb(0 0 0 / 0.6);
+}
+
+/* The board gives up its own card: the ticket rounds the corners */
+.ticket-board :deep(.board) {
+  height: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* The stub, with a notch cut at each end of its perforation, so whatever
+   lies behind the ticket (the page, the globe) shows through */
 .pass {
-  --notch: 0.7rem;
-  --tear: 6.25rem;
+  position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: 0.75rem;
-  background: var(--surface);
+  background: var(--color-board);
   mask:
     radial-gradient(
-        circle var(--notch) at 0 var(--tear),
-        transparent 98%,
-        #000 100%
-      )
-      left / 51% 100% no-repeat,
+      circle var(--notch) at 0 var(--tear),
+      transparent 96%,
+      #000 100%
+    ),
     radial-gradient(
-        circle var(--notch) at 100% var(--tear),
-        transparent 98%,
-        #000 100%
-      )
-      right / 51% 100% no-repeat;
+      circle var(--notch) at 100% var(--tear),
+      transparent 96%,
+      #000 100%
+    );
+  mask-composite: intersect;
+}
+
+/* The perforation, just inside the edge the stub shares with the board */
+.pass-tear {
+  position: absolute;
+  top: var(--tear);
+  right: 0;
+  left: 0;
+  border-top: 2px dashed rgb(236 235 228 / 0.22);
 }
 
 .pass-head {
-  display: flex;
-  height: var(--tear);
-  flex-shrink: 0;
-  align-items: center;
-  gap: 1rem;
-  padding: 0 1.5rem;
-}
-
-.pass-tear {
-  margin: 0 calc(var(--notch) + 0.5rem);
-  border-top: 2px dashed var(--ui-border-accented);
+  min-width: 0;
+  padding: calc(var(--tear) + 1.25rem) 1.5rem 0;
 }
 
 .pass-body {
@@ -142,6 +155,47 @@ const tint = computed(() => brandTint(props.airline))
   justify-content: space-between;
   gap: 1.25rem;
   padding: 1.25rem 1.5rem 1.5rem;
+}
+
+/* Tailwind's xl: the stub moves beside the board, the perforation to its
+   left edge and the notches to the top and bottom */
+@media (min-width: 1280px) {
+  .ticket {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  .pass {
+    mask:
+      radial-gradient(
+        circle var(--notch) at var(--tear) 0,
+        transparent 96%,
+        #000 100%
+      ),
+      radial-gradient(
+        circle var(--notch) at var(--tear) 100%,
+        transparent 96%,
+        #000 100%
+      );
+    mask-composite: intersect;
+  }
+
+  .pass-tear {
+    top: 0;
+    right: auto;
+    bottom: 0;
+    left: var(--tear);
+    border-top: 0;
+    border-left: 2px dashed rgb(236 235 228 / 0.22);
+  }
+
+  .pass-head,
+  .pass-body {
+    padding-left: calc(var(--tear) + 1.5rem);
+  }
+
+  .pass-head {
+    padding-top: 1.5rem;
+  }
 }
 
 /* The logo, square like its canvas, beside the codes */
@@ -163,16 +217,34 @@ const tint = computed(() => brandTint(props.airline))
   font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ui-text-muted);
+  color: var(--ink-muted);
+}
+
+.pass-name {
+  overflow: hidden;
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Kept even without a tagline, so every airline's stub is as tall */
+.pass-tagline {
+  display: flex;
+  min-height: 1.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
 }
 
 .pass-value {
   margin-top: 0.125rem;
   font-weight: 600;
-  color: var(--ui-text-highlighted);
 }
 
-/* On a phone the country and alliance take a row each, so their names fit */
+/* The country and alliance take a row each, so long names fit */
 .pass-codes > :nth-child(n + 3) {
   grid-column: 1 / -1;
 }
@@ -180,10 +252,6 @@ const tint = computed(() => brandTint(props.airline))
 @container (width >= 26rem) {
   .pass-main {
     grid-template-columns: 9rem minmax(0, 1fr);
-  }
-
-  .pass-codes > :nth-child(n + 3) {
-    grid-column: auto;
   }
 }
 </style>
