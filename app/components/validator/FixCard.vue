@@ -11,44 +11,6 @@
           editor.
         </p>
       </div>
-      <!-- A color file with no color of its own: the one it is drawn in -->
-      <UFormField
-        v-if="needsColor"
-        label="Color"
-        :error="fillColor && !validColor ? 'Six-digit hex' : undefined"
-        :ui="{ label: 'text-xs' }"
-      >
-        <UPopover :content="{ align: 'end' }">
-          <UButton
-            color="neutral"
-            variant="outline"
-            :label="validColor ? fillColor : 'Pick a color'"
-            class="font-mono"
-            :ui="{ label: 'block' }"
-          >
-            <template #leading>
-              <span
-                class="size-4 shrink-0 rounded-sm ring ring-default"
-                :style="{
-                  background: validColor ? fillColor : undefined,
-                }"
-              />
-            </template>
-          </UButton>
-
-          <template #content>
-            <div class="flex w-56 flex-col gap-3 p-3">
-              <UColorPicker v-model="pickerColor" class="mx-auto" />
-              <UInput
-                v-model="fillColor"
-                placeholder="#rrggbb"
-                class="font-mono"
-                aria-label="Hex color"
-              />
-            </div>
-          </template>
-        </UPopover>
-      </UFormField>
       <UCheckbox
         v-if="canMerge"
         v-model="mergePaths"
@@ -56,8 +18,11 @@
         description="Experimental"
         :ui="{ description: 'text-xs' }"
       />
+      <!-- The card's one action; the app's buttons default to neutral soft -->
       <UButton
         label="Fix SVG"
+        color="primary"
+        variant="solid"
         :ui="{ label: 'block' }"
         icon="hugeicons:magic-wand-01"
         :loading="fixing"
@@ -65,8 +30,8 @@
         @click="fix"
       />
       <p v-if="needsColor" class="basis-full text-xs text-warning">
-        This color file has no color of its own. Pick the color to draw it in,
-        or set Variant to Mono if it is the monochrome version.
+        This color file has no color of its own. Pick its color above, or set
+        Variant to Mono if it is the monochrome version.
       </p>
       <p v-if="needsName" class="basis-full text-xs text-warning">
         The file has no &lt;title&gt;: pick the airline above first, so the fix
@@ -109,6 +74,8 @@
         <div v-if="result.fixed" class="flex flex-wrap gap-2">
           <UButton
             label="Download"
+            color="primary"
+            variant="solid"
             :ui="{ label: 'block' }"
             icon="hugeicons:download-04"
             :title="`Save as ${fileName}`"
@@ -199,15 +166,6 @@ const {
   reset,
   download,
 } = props.state
-
-const validColor = computed(() => /^#[0-9a-f]{6}$/i.test(fillColor.value ?? ''))
-// The picker writes uppercase hex; the repo writes lowercase
-const pickerColor = computed({
-  get: () => (validColor.value ? fillColor.value : undefined),
-  set: (value) => {
-    fillColor.value = value?.toLowerCase() ?? ''
-  },
-})
 
 // What the fix reported, a repeated line (one per path) shown once
 const fixedList = computed(() => {

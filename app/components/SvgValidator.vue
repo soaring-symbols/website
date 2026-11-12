@@ -26,7 +26,10 @@
           :variant="variant"
           :has-file="!!candidate.file.value"
           :airline="airline"
+          :needs-color="needsColor"
+          :fill-color="fixState.fillColor.value"
           @update:airline="airline = $event"
+          @update:fill-color="fixState.fillColor.value = $event"
           @upload="open()"
         />
       </UFileUpload>

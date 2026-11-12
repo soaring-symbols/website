@@ -30,24 +30,40 @@
       <template v-if="hasFile">
         <div aria-hidden="true" :class="divider" />
 
-        <!-- The name <title> should hold: a catalog airline, or a new one -->
-        <UFormField
-          label="Airline"
-          hint="Sets the <title>"
-          :ui="{ hint: 'text-xs' }"
-          class="sm:w-72"
-        >
-          <USelectMenu
-            :model-value="airline ?? undefined"
-            :items="airlineNames"
-            placeholder="Pick or type a name"
-            icon="hugeicons:airplane-01"
-            create-item
-            class="w-full"
-            @update:model-value="$emit('update:airline', $event)"
-            @create="onCreate"
-          />
-        </UFormField>
+        <!-- What the fix writes into the file: the name <title> holds (a
+             catalog airline, or a new one) and, for a color file with no
+             color of its own, the color it is drawn in -->
+        <div class="flex flex-col gap-3 sm:w-72">
+          <UFormField
+            label="Airline"
+            hint="Sets the <title>"
+            :ui="{ hint: 'text-xs' }"
+          >
+            <USelectMenu
+              :model-value="airline ?? undefined"
+              :items="airlineNames"
+              placeholder="Pick or type a name"
+              icon="hugeicons:airplane-01"
+              create-item
+              class="w-full"
+              @update:model-value="$emit('update:airline', $event)"
+              @create="onCreate"
+            />
+          </UFormField>
+
+          <UFormField
+            v-if="needsColor"
+            label="Color"
+            hint="Sets the fill"
+            :error="fillColor && !validColor ? 'Six-digit hex' : undefined"
+            :ui="{ hint: 'text-xs' }"
+          >
+            <ValidatorColorField
+              :model-value="fillColor"
+              @update:model-value="$emit('update:fillColor', $event)"
+            />
+          </UFormField>
+        </div>
       </template>
 
       <!-- The upload sits at the far end, its rule with it -->
@@ -74,9 +90,14 @@ const props = defineProps({
   // An SVG is loaded, so the button replaces it
   hasFile: Boolean,
   airline: { type: String, default: null },
+  // A color file with no color of its own, and the color picked for it
+  needsColor: Boolean,
+  fillColor: { type: String, default: '' },
 })
 
-const emit = defineEmits(['update:airline', 'upload'])
+const emit = defineEmits(['update:airline', 'update:fillColor', 'upload'])
+
+const validColor = computed(() => /^#[0-9a-f]{6}$/i.test(props.fillColor ?? ''))
 
 // Catalog names, after any typed for an airline it doesn't have yet (the
 // menu only shows a value that is one of its items)
