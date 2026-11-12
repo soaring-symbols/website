@@ -19,13 +19,7 @@
       />
 
       <template #right>
-        <UButton
-          to="https://github.com/soaring-symbols/soaring-symbols"
-          target="_blank"
-          icon="simple-icons:github"
-          variant="ghost"
-          aria-label="Soaring Symbols on GitHub"
-        />
+        <GitHubStarsButton username="soaring-symbols" repo="soaring-symbols" />
         <UColorModeButton />
       </template>
 
