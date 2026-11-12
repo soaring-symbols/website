@@ -28,6 +28,11 @@ const GAP = [0.8, 2.2]
 const ROUTE = [16, 70]
 // Seconds a finished route takes to fade
 const LANDED = 1.4
+// How far apart, as a straight line through a globe of radius 1, the
+// airports of different flights stay so their codes never overlap (about
+// 7 degrees), a plane stays from another flight's airports so it never
+// covers their codes, and two planes stay from each other at any moment
+const APART = { airports: 0.12, labels: 0.09, planes: 0.12 }
 // Shades the dots are drawn in, from the limb to the middle
 const SHADES = 6
 
@@ -136,6 +141,13 @@ function facing(v, lon) {
   )
 }
 
+const distance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2])
+
+// How far along its route a flight is after `t` seconds: slow off the
+// ground and onto it, quick in the middle
+const progress = (f, t) =>
+  0.5 - 0.5 * Math.cos(Math.PI * Math.min(t / f.duration, 1))
+
 function slerp(a, b, angle, u) {
   const s = Math.sin(angle)
   const ka = Math.sin((1 - u) * angle) / s
@@ -153,21 +165,53 @@ function along(f, u) {
   return [p[0] * lift, p[1] * lift, p[2] * lift]
 }
 
-// A new flight between two airports that face us for all of it
+// Points along a route, lifted as the plane flies it
+function routePoints(f, steps = 24) {
+  return Array.from({ length: steps + 1 }, (_, i) => along(f, i / steps))
+}
+
+// Whether a new flight keeps clear of the ones in the air: its airports
+// away from theirs, neither route passing over the other's airport codes,
+// and the planes never meeting while both fly
+function keepsClear(f) {
+  const ends = [f.from.v, f.to.v]
+  const route = routePoints(f)
+  for (const g of flights) {
+    const theirs = [g.from.v, g.to.v]
+    if (ends.some((a) => theirs.some((b) => distance(a, b) < APART.airports)))
+      return false
+    if (route.some((p) => theirs.some((b) => distance(p, b) < APART.labels)))
+      return false
+    if (
+      routePoints(g).some((p) =>
+        ends.some((a) => distance(p, a) < APART.labels),
+      )
+    )
+      return false
+    for (let s = 0; g.t + s < g.duration && s < f.duration; s += 0.1) {
+      const here = along(f, progress(f, s))
+      const there = along(g, progress(g, g.t + s))
+      if (distance(here, there) < APART.planes) return false
+    }
+  }
+
+  return true
+}
+
+// A new flight between two airports that face us for all of it, clear of
+// the flights already in the air
 function takeOff() {
-  const busy = new Set(flights.flatMap((f) => [f.from.code, f.to.code]))
-  for (let tries = 0; tries < 60; tries++) {
+  for (let tries = 0; tries < 120; tries++) {
     const from = airports[Math.floor(Math.random() * airports.length)]
     const to = airports[Math.floor(Math.random() * airports.length)]
-    if (from === to || busy.has(from.code) || busy.has(to.code)) continue
+    if (from === to) continue
     const angle = Math.acos(clamp(dot3(from.v, to.v), -1, 1))
     if (angle < ROUTE[0] * RAD || angle > ROUTE[1] * RAD) continue
     const duration = 2.6 + angle * 5
     const end = view.lon - SPIN * (duration + LANDED)
     const seen = (v) => facing(v, view.lon) > 0.3 && facing(v, end) > 0.3
     if (!seen(from.v) || !seen(to.v)) continue
-
-    flights.push({
+    const flight = {
       from,
       to,
       angle,
@@ -175,7 +219,10 @@ function takeOff() {
       height: 0.03 + angle * 0.09,
       t: 0,
       landed: 0,
-    })
+    }
+    if (!keepsClear(flight)) continue
+
+    flights.push(flight)
 
     return
   }
@@ -383,8 +430,7 @@ function draw() {
   drawGlobe()
   drawAirports()
   for (const f of flights) {
-    // Slow off the ground and onto it, quick in the middle
-    const u = 0.5 - 0.5 * Math.cos(Math.PI * Math.min(f.t / f.duration, 1))
+    const u = progress(f, f.t)
     const fade = 1 - f.landed / LANDED
     drawRoute(f, u, fade)
     drawEndpoint(f.from, fade, 0)
