@@ -54,7 +54,9 @@ export function useSvgFix(image: ImageFile) {
     else reset()
   })
 
-  async function fix(options: Omit<SvgFixer.SvgFixOptions, 'fileName'>) {
+  // `fileName` is the name to check by (a -mono.svg is held to currentColor);
+  // it defaults to the uploaded file's
+  async function fix(options: SvgFixer.SvgFixOptions) {
     const file = image.file.value
     if (!file || !image.content.value) return
     fixing.value = true
@@ -62,8 +64,8 @@ export function useSvgFix(image: ImageFile) {
     try {
       const { fixSvg } = await loadSvgFixer()
       const fixed = fixSvg(image.content.value, {
-        ...options,
         fileName: file.name,
+        ...options,
         mergePaths: mergePaths.value,
       })
       original.value = file

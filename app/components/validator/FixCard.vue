@@ -138,8 +138,9 @@ const props = defineProps({
   needed: Boolean,
   // The file has a <title> whose text the fix can keep
   hasTitle: Boolean,
-  // Drawn in currentColor only, so it saves as a -mono.svg
-  mono: Boolean,
+  // The name the repo expects (logo.svg, icon-mono.svg...): the fix checks
+  // by it, and the download takes it
+  fileName: { type: String, required: true },
 })
 
 defineEmits(['compare'])
@@ -147,18 +148,14 @@ defineEmits(['compare'])
 const { fixing, error, mergePaths, original, result, undo, reset, download } =
   props.state
 
-// Where the fixed file goes in a pull request: assets/<slug>/logo.svg and
-// the like, whatever the upload was called
+// Where the fixed file goes in a pull request: assets/<slug>/<fileName>
 const { airlines } = useAirlines()
-const fileName = computed(() =>
-  assetFileName(props.type, original.value?.name ?? '', props.mono),
-)
 const repoPath = computed(() => {
   if (!props.airlineName) return null
   const slug =
     airlines.find((a) => a.name === props.airlineName)?.slug ??
     airlineSlug(props.airlineName)
-  return `assets/${slug}/${fileName.value}`
+  return `assets/${slug}/${props.fileName}`
 })
 
 // A missing <title> is added with the airline's name, so one is needed
@@ -174,6 +171,7 @@ const fixedList = computed(() => {
 
 function fix() {
   props.state.fix({
+    fileName: props.fileName,
     type: props.type,
     airlineName: props.airlineName ?? undefined,
     isCatalogName: props.isCatalogName,

@@ -3,19 +3,34 @@
     <!-- Two labeled settings for the checks and the fix, then the upload,
          each group set apart by a rule: across on phones, upright beside -->
     <div class="flex flex-col gap-4 sm:flex-row sm:items-stretch">
-      <UFormField
-        label="Type"
-        :hint="detectedFrom ? `Detected from the ${detectedFrom}` : undefined"
-        :ui="{ hint: 'text-xs' }"
-        class="shrink-0"
-      >
-        <URadioGroup
-          :model-value="type"
-          :items="typeOptions"
-          orientation="horizontal"
-          @update:model-value="$emit('update:type', $event)"
-        />
-      </UFormField>
+      <!-- What the file is: the checks and the fix follow both -->
+      <div class="flex flex-col gap-3 shrink-0">
+        <UFormField
+          label="Type"
+          :hint="detectedFrom ? `Detected from the ${detectedFrom}` : undefined"
+          :ui="{ hint: 'text-xs' }"
+        >
+          <URadioGroup
+            :model-value="type"
+            :items="typeOptions"
+            orientation="horizontal"
+            @update:model-value="$emit('update:type', $event)"
+          />
+        </UFormField>
+
+        <UFormField
+          label="Variant"
+          :hint="variantFrom ? `Detected from the ${variantFrom}` : undefined"
+          :ui="{ hint: 'text-xs' }"
+        >
+          <URadioGroup
+            :model-value="variant"
+            :items="variantOptions"
+            orientation="horizontal"
+            @update:model-value="$emit('update:variant', $event)"
+          />
+        </UFormField>
+      </div>
 
       <template v-if="hasFile">
         <div aria-hidden="true" :class="divider" />
@@ -63,9 +78,18 @@ defineProps({
   // An SVG is loaded, so the button replaces it
   hasFile: Boolean,
   airline: { type: String, default: null },
+  // 'color' or 'mono' (a -mono.svg, drawn in currentColor), and where it
+  // was detected from, cleared once the user picks one
+  variant: { type: String, default: 'color' },
+  variantFrom: { type: String, default: null },
 })
 
-const emit = defineEmits(['update:type', 'update:airline', 'upload'])
+const emit = defineEmits([
+  'update:type',
+  'update:variant',
+  'update:airline',
+  'upload',
+])
 
 // Catalog names, after any typed for an airline it doesn't have yet (the
 // menu only shows a value that is one of its items)
@@ -83,6 +107,11 @@ function onCreate(name) {
 
 // A rule between groups: a line across when they stack, upright beside
 const divider = 'border-t border-default sm:border-t-0 sm:border-s'
+
+const variantOptions = [
+  { label: 'Color', value: 'color', description: 'Its own colors' },
+  { label: 'Mono', value: 'mono', description: 'currentColor, -mono.svg' },
+]
 
 const typeOptions = [
   {

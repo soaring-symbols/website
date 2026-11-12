@@ -26,22 +26,35 @@
           :detected-from="detectedFrom"
           :has-file="!!candidate.file.value"
           :airline="airline"
+          :variant="variant"
+          :variant-from="variantFrom"
           @update:type="onTypeChange"
+          @update:variant="onVariantChange"
           @update:airline="airline = $event"
           @upload="open()"
         />
       </UFileUpload>
 
+      <!-- A single-color asset's mono file is made by the build -->
+      <UAlert
+        v-if="derivedMono"
+        color="warning"
+        variant="subtle"
+        icon="hugeicons:alert-02"
+        :title="`${possessive(airline)} ${derivedMono} is single-color`"
+        :description="`Its ${derivedMono}-mono.svg is generated from ${derivedMono}.svg when the package is built, so a mono file isn't needed. Upload the color ${derivedMono}.svg instead.`"
+      />
+
       <ValidatorFixCard
         v-if="candidate.file.value"
         :state="fixState"
         :type="type"
+        :file-name="checkName"
         :airline-name="airline"
         :is-catalog-name="isCatalogName"
         :can-merge="canMerge"
         :needed="needsFix"
         :has-title="hasTitle"
-        :mono="candidate.isMono.value"
         @compare="compareWithOriginal"
       />
 
@@ -164,6 +177,40 @@ watch(
   },
 )
 
+// Color or mono: from the file name (-mono.svg), else from the drawing
+// (currentColor and no color of its own). A pick by hand wins until the next
+// upload; a fixed file keeps what the fix was run with.
+const variant = ref('color')
+const variantFrom = ref(null)
+function onVariantChange(value) {
+  variant.value = value
+  variantFrom.value = null
+}
+watch(
+  () => candidate.parsed.value,
+  (svg) => {
+    if (!svg || fixState.result.value) return
+    const name = candidate.file.value?.name ?? ''
+    if (/-mono\.svg$/i.test(name)) {
+      variant.value = 'mono'
+      variantFrom.value = 'file name'
+    } else {
+      variant.value = candidate.isMono.value ? 'mono' : 'color'
+      variantFrom.value = 'colors'
+    }
+  },
+)
+
+// The name the checks and the fix go by, and the download gets: logo.svg,
+// icon-mono.svg and so on, whatever the upload was called
+const checkName = computed(() =>
+  assetFileName(
+    type.value,
+    candidate.file.value?.name ?? '',
+    variant.value === 'mono',
+  ),
+)
+
 // The airline <title> should name, guessed from the current title when the
 // catalog knows it (by its name or a former one)
 const { airlines } = useAirlines()
@@ -189,6 +236,19 @@ const isCatalogName = computed(() =>
   airlines.some((a) => a.name === airline.value),
 )
 
+// A mono file for a catalog airline whose color asset is single-color: the
+// build derives that one, so the color file is what to contribute. Gives the
+// asset's type ('logo', 'icon', 'tail'), or null.
+const derivedMono = computed(() => {
+  if (variant.value !== 'mono' || !candidate.file.value) return null
+  const kind = checkName.value.replace(/-mono\.svg$/, '')
+  const asset = airlines.find((a) => a.name === airline.value)?.assets?.[kind]
+  return asset?.color && asset.colors.length === 1 ? kind : null
+})
+
+// "Vietnam Airlines'" and "SpiceJet's"
+const possessive = (name) => (name.endsWith('s') ? `${name}'` : `${name}'s`)
+
 // The fixed file, next to the one uploaded
 function compareWithOriginal(original) {
   reference.file.value = original
@@ -202,7 +262,7 @@ const allChecks = computed(() => {
     type.value,
     candidate.bbox.value,
     {
-      fileName: candidate.file.value?.name ?? '',
+      fileName: checkName.value,
       source: candidate.content.value,
     },
   )
