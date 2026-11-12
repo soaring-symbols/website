@@ -1,12 +1,9 @@
 <template>
   <div>
-    <!-- Hero: what this is, a way in, and the board -->
-    <section class="relative isolate pt-6 pb-16 sm:pt-12 lg:pb-24">
-      <HeroFlight />
-
-      <div
-        class="grid items-center gap-12 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-14"
-      >
+    <!-- Hero: what this is and a way in, beside the globe; below, the
+         board and the pass for the airline picked on it -->
+    <section class="pt-6 pb-16 sm:pt-12 lg:pb-24">
+      <div class="grid items-center gap-12 xl:grid-cols-2 xl:gap-14">
         <div>
           <h1
             class="text-4xl font-extrabold tracking-tight text-highlighted text-balance sm:text-6xl sm:leading-[1.05]"
@@ -43,11 +40,14 @@
           </form>
         </div>
 
-        <DepartureBoard v-model:selected="selectedSlug" :airlines="airlines" />
+        <HeroGlobe class="-mt-4 h-80 sm:h-[28rem] xl:mt-0 xl:h-[34rem]" />
       </div>
 
-      <div class="mt-8 rounded-xl bg-surface p-5 sm:p-6" aria-live="polite">
-        <AirlineSpotlight v-if="selected" :airline="selected" steady />
+      <div
+        class="mt-4 grid gap-4 xl:mt-8 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]"
+      >
+        <DepartureBoard v-model:selected="selectedSlug" :airlines="airlines" />
+        <BoardingPass v-if="selected" :airline="selected" aria-live="polite" />
       </div>
     </section>
 
@@ -251,7 +251,7 @@ defineOgImage('Site')
 // using its parent's logo) would only repeat that icon
 const withIcons = airlines.filter((a) => !a.marks && hasAsset(a, 'icon'))
 
-// The first row of the departure board, set here so the spotlight renders
+// The first row of the departure board, set here so the pass renders
 // the same on the server and in the browser
 const selectedSlug = ref('vietnam-airlines')
 const selected = computed(() =>
