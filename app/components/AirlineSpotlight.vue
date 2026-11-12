@@ -134,15 +134,6 @@
             </dd>
           </div>
         </dl>
-
-        <ULink
-          v-if="!airlinePage"
-          :to="`/airlines/${airline.slug}`"
-          class="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
-        >
-          All files
-          <UIcon name="solar:arrow-right-linear" class="size-4" />
-        </ULink>
       </div>
 
       <div class="flex flex-col gap-5">
@@ -179,25 +170,6 @@
             </li>
           </ul>
         </div>
-
-        <div v-if="!airlinePage" class="flex flex-col gap-2">
-          <p class="text-sm text-muted">Download SVG</p>
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              v-for="download in downloads"
-              :key="download.variant"
-              :to="assetUrl(airline, download.variant)"
-              external
-              :download="downloadName(airline, download.variant)"
-              :label="download.label"
-              :aria-label="`Download ${download.label.toLowerCase()}`"
-              icon="solar:download-linear"
-              :variant="download.variant === 'logo' ? 'solid' : 'outline'"
-              :class="download.variant === 'logo' ? 'btn-signal' : undefined"
-              :ui="{ label: 'block' }"
-            />
-          </div>
-        </div>
       </div>
     </div>
   </article>
@@ -207,9 +179,6 @@
 const props = defineProps({
   airline: { type: Object, required: true },
   headingTag: { type: String, default: 'h2' },
-  // On the airline's own page, which lists every file below: no link back
-  // to it, and no download buttons
-  airlinePage: { type: Boolean, default: false },
 })
 
 const toast = useToast()
@@ -256,10 +225,6 @@ const shownColors = computed(() =>
 )
 const hiddenCount = computed(
   () => colors.value.length - shownColors.value.length,
-)
-
-const downloads = computed(() =>
-  MARK_TYPES.filter((d) => hasAsset(props.airline, d.variant)),
 )
 
 async function copy(color) {

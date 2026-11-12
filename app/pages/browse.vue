@@ -127,13 +127,29 @@
       :title="active?.name ?? 'Airline'"
       :ui="{
         content: 'max-w-lg divide-none',
-        header: 'min-h-0 justify-end pb-0',
+        // The close button floats on the cover's corner instead of taking
+        // a row of its own above it
+        header: 'absolute inset-x-0 top-0 z-10 min-h-0 p-0',
         title: 'sr-only',
-        close: 'static',
+        close:
+          'top-6 end-6 rounded-full bg-default/80 ring ring-default backdrop-blur sm:top-8 sm:end-8',
       }"
     >
       <template #body>
         <AirlineSpotlight v-if="active" :airline="active" />
+      </template>
+
+      <!-- The airline's page lists every file to download -->
+      <template v-if="active" #footer>
+        <UButton
+          :to="`/airlines/${active.slug}`"
+          label="Files &amp; details"
+          trailing-icon="solar:arrow-right-linear"
+          size="lg"
+          block
+          class="btn-signal"
+          :ui="{ label: 'block' }"
+        />
       </template>
     </USlideover>
   </div>
@@ -143,7 +159,7 @@
 const meta = {
   title: 'Browse airlines',
   description:
-    'Search the collection by name or code, filter by alliance or country, and open any airline to download its logo and icon.',
+    'Search the collection by name or code, filter by alliance or country, and open any airline for its logo, icon and colors.',
 }
 
 useSeoMeta({
