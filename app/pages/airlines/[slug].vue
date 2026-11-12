@@ -34,8 +34,9 @@
     <!-- The same marks and data in code: package, CDN and API -->
     <UPageSection
       title="In your project"
-      :description="`Look ${airline.name} up in the npm package, link its files from a CDN, or load them from the site’s API as SVG, PNG or JSON.`"
+      :description="`Use ${airline.name}’s marks and data in your own code, three ways. None needs a key or an account.`"
       orientation="horizontal"
+      :features="usageFeatures"
       :links="[
         {
           to: '/ecosystem',
@@ -46,7 +47,7 @@
           ui: { label: 'block' },
         },
       ]"
-      :ui="{ ...sectionUi, footer: 'mt-6' }"
+      :ui="{ ...sectionUi, features: 'gap-5', footer: 'mt-6' }"
     >
       <AirlineUsage :airline="airline" />
     </UPageSection>
@@ -86,6 +87,28 @@ const sectionUi = {
   title: 'text-2xl sm:text-2xl lg:text-2xl',
   description: 'mt-2',
 }
+
+// What each tab of the usage block is for, beside it
+const usageFeatures = [
+  {
+    title: 'npm package',
+    description:
+      'Every SVG with the airline’s data, typed, for Node and the browser. Look it up by code or name and get file paths to bundle.',
+    icon: 'simple-icons:npm',
+  },
+  {
+    title: 'CDN',
+    description:
+      'Link a file straight from the package on jsDelivr or unpkg, with nothing to install. Pin a release line to keep it stable.',
+    icon: 'solar:global-linear',
+  },
+  {
+    title: 'API',
+    description:
+      'Fetch the data as JSON, or any mark as SVG or PNG, with monochrome marks in the color you pick.',
+    icon: 'solar:code-square-linear',
+  },
+]
 
 const breadcrumb = [
   { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
