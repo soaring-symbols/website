@@ -29,7 +29,7 @@
       </ul>
       <code
         v-if="entry.snippet"
-        class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md bg-elevated px-3 py-2 font-mono text-xs whitespace-nowrap text-highlighted"
+        class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md border border-accented bg-elevated px-3 py-2 font-mono text-xs whitespace-nowrap text-highlighted"
         >{{ entry.snippet.code }}</code
       >
       <UButton
