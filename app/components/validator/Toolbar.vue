@@ -14,6 +14,7 @@
             :model-value="type"
             :items="typeOptions"
             orientation="horizontal"
+            :ui="{ fieldset: columns }"
             @update:model-value="$emit('update:type', $event)"
           />
         </UFormField>
@@ -27,6 +28,7 @@
             :model-value="variant"
             :items="variantOptions"
             orientation="horizontal"
+            :ui="{ fieldset: columns }"
             @update:model-value="$emit('update:variant', $event)"
           />
         </UFormField>
@@ -105,12 +107,15 @@ function onCreate(name) {
   emit('update:airline', name)
 }
 
+// Type and Variant share two columns, so Icon sits above Mono
+const columns = 'grid grid-cols-2 gap-x-8'
+
 // A rule between groups: a line across when they stack, upright beside
 const divider = 'border-t border-default sm:border-t-0 sm:border-s'
 
 const variantOptions = [
   { label: 'Color', value: 'color', description: 'Its own colors' },
-  { label: 'Mono', value: 'mono', description: 'currentColor, -mono.svg' },
+  { label: 'Mono', value: 'mono', description: 'In currentColor' },
 ]
 
 const typeOptions = [

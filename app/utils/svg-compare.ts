@@ -7,8 +7,9 @@
 //   as the render size grows, while a real shape change keeps the same share,
 //   so the two are told apart by comparing a small and a large render.
 //   When either side is a monochrome SVG (fill="currentColor", which renders
-//   black), only coverage is compared: a mono variant is meant to differ from
-//   the color one in color, not in shape.
+//   black, or no color of its own, which is black too), only coverage is
+//   compared: a mono variant, or a file given its color by the fix, is meant
+//   to differ from the other in color, not in shape.
 // - "outline": at least one side is a raster reference (PNG, JPEG, WebP) with
 //   its own size, padding and background. Backgrounds are removed, both images
 //   are trimmed to their content and fitted into the same box, and the shapes
@@ -146,7 +147,14 @@ const alphaDelta = (a: Uint8ClampedArray, b: Uint8ClampedArray, i: number) =>
 
 // --- Pixel mode ---
 
-const isMonochrome = (svg: string) => /currentColor/i.test(svg)
+// Drawn in one paint it doesn't choose: currentColor, or no color of its own
+// at all (the default black), such as a mono file or one whose color the
+// fix just filled in. A <style> may hold colors, so it rules that out.
+const isMonochrome = (svg: string) => {
+  if (/currentColor/i.test(svg)) return true
+  const el = parseSvg(svg)
+  return !!el && !el.querySelector('style') && getSvgColors(el).size === 0
+}
 
 export async function compareSvgs(
   before: string,

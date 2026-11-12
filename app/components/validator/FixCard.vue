@@ -18,22 +18,36 @@
         :error="fillColor && !validColor ? 'Six-digit hex' : undefined"
         :ui="{ label: 'text-xs' }"
       >
-        <UInput
-          v-model="fillColor"
-          placeholder="#rrggbb"
-          class="w-36 font-mono"
-          :ui="{ leading: 'ps-1.5' }"
-        >
-          <template #leading>
-            <input
-              type="color"
-              aria-label="Pick the color"
-              :value="validColor ? fillColor : '#000000'"
-              class="size-6 cursor-pointer rounded border-0 bg-transparent p-0"
-              @input="fillColor = $event.target.value"
-            />
+        <UPopover :content="{ align: 'end' }">
+          <UButton
+            color="neutral"
+            variant="outline"
+            :label="validColor ? fillColor : 'Pick a color'"
+            class="font-mono"
+            :ui="{ label: 'block' }"
+          >
+            <template #leading>
+              <span
+                class="size-4 shrink-0 rounded-sm ring ring-default"
+                :style="{
+                  background: validColor ? fillColor : undefined,
+                }"
+              />
+            </template>
+          </UButton>
+
+          <template #content>
+            <div class="flex w-56 flex-col gap-3 p-3">
+              <UColorPicker v-model="pickerColor" class="mx-auto" />
+              <UInput
+                v-model="fillColor"
+                placeholder="#rrggbb"
+                class="font-mono"
+                aria-label="Hex color"
+              />
+            </div>
           </template>
-        </UInput>
+        </UPopover>
       </UFormField>
       <UCheckbox
         v-if="canMerge"
@@ -188,6 +202,13 @@ const {
 } = props.state
 
 const validColor = computed(() => /^#[0-9a-f]{6}$/i.test(fillColor.value ?? ''))
+// The picker writes uppercase hex; the repo writes lowercase
+const pickerColor = computed({
+  get: () => (validColor.value ? fillColor.value : undefined),
+  set: (value) => {
+    fillColor.value = value?.toLowerCase() ?? ''
+  },
+})
 
 // Where the fixed file goes in a pull request: assets/<slug>/<fileName>
 const { airlines } = useAirlines()
