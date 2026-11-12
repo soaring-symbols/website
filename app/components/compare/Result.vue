@@ -297,7 +297,7 @@ const verdict = computed(() => {
     return {
       ...base,
       ...shapeOnly,
-      description: `${shapeOnly.description} One of them is monochrome (currentColor), so their colors aren't compared.`,
+      description: `${shapeOnly.description} One of them is monochrome (drawn in currentColor or no color of its own), so their colors aren't compared.`,
     }
   }
   if (result.value?.mode !== 'outline') return base

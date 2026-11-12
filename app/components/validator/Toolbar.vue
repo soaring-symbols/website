@@ -1,42 +1,125 @@
 <template>
   <UCard>
-    <div class="flex flex-wrap items-center gap-3">
-      <URadioGroup
-        :model-value="type"
-        :items="typeOptions"
-        orientation="horizontal"
-        @update:model-value="$emit('update:type', $event)"
-      />
-      <UBadge
-        v-if="detectedFrom"
-        :label="`Detected from the ${detectedFrom}`"
-        icon="hugeicons:magic-wand-01"
-        size="sm"
-      />
-
-      <div class="flex items-center gap-2 ms-auto">
-        <UButton
-          :label="hasFile ? 'Replace SVG' : 'Upload SVG'"
-          icon="hugeicons:upload-04"
-          :color="hasFile ? 'neutral' : 'primary'"
-          :variant="hasFile ? 'outline' : 'solid'"
-          @click="$emit('upload')"
-        />
+    <!-- Two labeled settings for the checks and the fix, then the upload,
+         each group set apart by a rule: across on phones, upright beside -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-stretch">
+      <!-- What the file is: the checks and the fix follow both. Each is
+           guessed from the upload until picked by hand. -->
+      <div class="flex flex-col gap-3 shrink-0">
+        <UFormField
+          v-for="field in fields"
+          :key="field.label"
+          :label="field.label"
+          :hint="
+            field.guess.from
+              ? `Detected from the ${field.guess.from}`
+              : undefined
+          "
+          :ui="{ hint: 'text-xs' }"
+        >
+          <URadioGroup
+            :model-value="field.guess.value"
+            :items="field.options"
+            orientation="horizontal"
+            :ui="{ fieldset: columns }"
+            @update:model-value="field.guess.pick($event)"
+          />
+        </UFormField>
       </div>
+
+      <template v-if="hasFile">
+        <div aria-hidden="true" :class="divider" />
+
+        <!-- What the fix writes into the file: the name <title> holds (a
+             catalog airline, or a new one) and, for a color file with no
+             color of its own, the color it is drawn in -->
+        <div class="flex flex-col gap-3 sm:w-72">
+          <UFormField
+            label="Airline"
+            hint="Sets the <title>"
+            :ui="{ hint: 'text-xs' }"
+          >
+            <USelectMenu
+              :model-value="airline ?? undefined"
+              :items="airlineNames"
+              placeholder="Pick or type a name"
+              icon="hugeicons:airplane-01"
+              create-item
+              class="w-full"
+              @update:model-value="$emit('update:airline', $event)"
+              @create="onCreate"
+            />
+          </UFormField>
+
+          <UFormField
+            v-if="needsColor"
+            label="Color"
+            hint="Sets the fill"
+            :error="fillColor && !validColor ? 'Six-digit hex' : undefined"
+            :ui="{ hint: 'text-xs' }"
+          >
+            <ValidatorColorField
+              :model-value="fillColor"
+              @update:model-value="$emit('update:fillColor', $event)"
+            />
+          </UFormField>
+        </div>
+      </template>
+
+      <!-- The upload sits at the far end, its rule with it -->
+      <div aria-hidden="true" :class="[divider, 'sm:ms-auto']" />
+      <UButton
+        :label="hasFile ? 'Replace SVG' : 'Upload SVG'"
+        icon="hugeicons:upload-04"
+        :color="hasFile ? 'neutral' : 'primary'"
+        :variant="hasFile ? 'outline' : 'solid'"
+        :ui="{ label: 'block' }"
+        class="justify-center sm:self-center"
+        @click="$emit('upload')"
+      />
     </div>
   </UCard>
 </template>
 
 <script setup>
-defineProps({
-  type: String,
-  // Where the type was detected from, cleared once the user picks one
-  detectedFrom: { type: String, default: null },
+const props = defineProps({
+  // useGuess() of 'logo' or 'icon', and of 'color' or 'mono' (a -mono.svg,
+  // drawn in currentColor)
+  type: { type: Object, required: true },
+  variant: { type: Object, required: true },
   // An SVG is loaded, so the button replaces it
   hasFile: Boolean,
+  airline: { type: String, default: null },
+  // A color file with no color of its own, and the color picked for it
+  needsColor: Boolean,
+  fillColor: { type: String, default: '' },
 })
 
-defineEmits(['update:type', 'upload'])
+const emit = defineEmits(['update:airline', 'update:fillColor', 'upload'])
+
+const validColor = computed(() => /^#[0-9a-f]{6}$/i.test(props.fillColor ?? ''))
+
+// Catalog names, after any typed for an airline it doesn't have yet (the
+// menu only shows a value that is one of its items)
+const catalogNames = useAirlines().airlines.map((a) => a.name)
+const created = ref([])
+const airlineNames = computed(() => [...created.value, ...catalogNames])
+
+function onCreate(name) {
+  if (!created.value.includes(name)) created.value.unshift(name)
+  emit('update:airline', name)
+}
+
+// Type and Variant share two columns, so Icon sits above Mono
+const columns = 'grid grid-cols-2 gap-x-8'
+
+// A rule between groups: a line across when they stack, upright beside
+const divider = 'border-t border-default sm:border-t-0 sm:border-s'
+
+const variantOptions = [
+  { label: 'Color', value: 'color', description: 'Its own colors' },
+  { label: 'Mono', value: 'mono', description: 'In currentColor' },
+]
 
 const typeOptions = [
   {
@@ -46,4 +129,10 @@ const typeOptions = [
   },
   { label: 'Icon', value: 'icon', description: '24×24 viewBox, geometry only' },
 ]
+
+// The two guesses, in the order they are shown
+const fields = computed(() => [
+  { label: 'Type', guess: props.type, options: typeOptions },
+  { label: 'Variant', guess: props.variant, options: variantOptions },
+])
 </script>

@@ -4,6 +4,10 @@ import airlinesData from '#airlines-data'
 const airlines = airlinesData as unknown as Airline[]
 
 const bySlug = new Map(airlines.map((a) => [a.slug, a]))
+const byName = new Map(airlines.map((a) => [a.name, a]))
+const byFormerName = new Map(
+  airlines.flatMap((a) => (a.previous_names ?? []).map((name) => [name, a])),
+)
 
 // Airlines owned by each parent, in catalog (name) order
 const children = new Map<string, Airline[]>()
@@ -151,6 +155,16 @@ export function operatingYears(airline: Airline) {
   if (ceased) return `${founded ?? '?'}–${ceased}`
 
   return founded ? String(founded) : undefined
+}
+
+// The airline with this name; with `former`, also one that used to be
+// called that (T'way Air finds Trinity Airways)
+export function airlineByName(
+  name?: string | null,
+  { former = false } = {},
+): Airline | undefined {
+  if (!name) return undefined
+  return byName.get(name) ?? (former ? byFormerName.get(name) : undefined)
 }
 
 export function airlineBySlug(slug?: string) {

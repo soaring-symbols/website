@@ -21,9 +21,9 @@
 
 <script setup>
 const meta = {
-  title: 'Check an SVG',
+  title: 'Check and fix an SVG',
   description:
-    'Check a logo or icon against the contribution guidelines before you open a pull request, or compare it with the original artwork to make sure it still looks the same.',
+    'Check a logo or icon against the contribution guidelines, fix what the linter can and download the result, or compare it with the original artwork before you open a pull request.',
 }
 
 useSeoMeta({
