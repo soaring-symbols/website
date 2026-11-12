@@ -64,7 +64,6 @@
 
         <UButton
           :to="`/airlines/${airline.slug}`"
-          size="lg"
           label="View logos and details"
           trailing-icon="hugeicons:arrow-right-02"
           class="btn-signal w-full justify-center"
@@ -193,8 +192,14 @@ const tint = computed(() => brandTint(props.airline))
     padding-left: calc(var(--tear) + 1.5rem);
   }
 
+  /* "Now showing" on the line of the board's column headings, and the
+     button centred on the line of its footer, both padded as the board is */
   .pass-head {
-    padding-top: 1.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .pass-body {
+    padding-bottom: 0.75rem;
   }
 }
 
@@ -212,11 +217,9 @@ const tint = computed(() => brandTint(props.airline))
   gap: 0.875rem 1.25rem;
 }
 
+/* Set like the board's column headings */
 .pass-label {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
   color: var(--ink-muted);
 }
 

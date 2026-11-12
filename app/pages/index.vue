@@ -45,7 +45,7 @@
         <!-- Taller than its row: the bottom of the globe tucks under the
              ticket -->
         <HeroGlobe
-          class="-mt-4 -mb-16 h-96 sm:-mb-20 sm:h-[32rem] xl:mt-0 xl:-mb-36 xl:h-[44rem]"
+          class="-mt-4 -mb-16 h-96 sm:-mb-20 sm:h-[32rem] xl:mt-0 xl:-mb-48 xl:h-[44rem]"
         />
       </div>
 
