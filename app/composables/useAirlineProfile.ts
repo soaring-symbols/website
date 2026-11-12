@@ -4,6 +4,8 @@ import type { MaybeRefOrGetter } from 'vue'
 // Colors shown before the rest are asked for: gradient-heavy logos list
 // dozens of stops
 const COLOR_LIMIT = 6
+// Former names and codes shown beside the airline; the rest are a link away
+const FORMER_LIMIT = 2
 
 // What an airline's profile shows beyond its own fields, shared by the
 // Browse slideover's spotlight and the hero on the airline's page: its
@@ -15,11 +17,17 @@ export function useAirlineProfile(source: MaybeRefOrGetter<Airline>) {
 
   // One label per former identity: its name, or the codes that changed when
   // the name stayed, e.g. ['HAL / HAWAIIAN', 'HA'] for Hawaiian Airlines
-  const former = computed(() =>
+  const allFormer = computed(() =>
     formerIdentities(airline.value).map(
       ({ name, iata, icao, callsign }) =>
         name ?? [iata, icao, callsign].filter(Boolean).join(' / '),
     ),
+  )
+  // The latest ones, newest first; the table on the airline's page lists
+  // them all, and formerMore says how many more it holds
+  const former = computed(() => allFormer.value.slice(-FORMER_LIMIT).reverse())
+  const formerMore = computed(
+    () => allFormer.value.length - former.value.length,
   )
 
   // The table of former names and codes sits on the airline's page, at the
@@ -79,6 +87,7 @@ export function useAirlineProfile(source: MaybeRefOrGetter<Airline>) {
 
   return {
     former,
+    formerMore,
     formerLink,
     scrollToFormer,
     related,

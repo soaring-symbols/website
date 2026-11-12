@@ -99,9 +99,10 @@
           <!-- The group it belongs to, the airlines it owns, and the
                airlines it was renamed or merged into or carried on -->
           <template v-if="former.length || related.length">
-            <!-- What it flew under before, oldest first: each name (or the
-                 codes, when only they changed) links to the table of former
-                 names and codes on its page. On that page the link scrolls
+            <!-- What it flew under most recently, newest first, and how
+                 many more: each name (or the codes, when only they changed)
+                 links to the table of every former name and code on its
+                 page. On that page the link scrolls
                  to the table; in the Browse slideover it opens the page
                  there. -->
             <div v-if="former.length" class="col-span-2">
@@ -115,10 +116,20 @@
                   >
                     {{ label }}
                   </ULink>
-                  <span v-if="i < former.length - 1" class="text-muted"
+                  <span
+                    v-if="i < former.length - 1 || formerMore"
+                    class="text-muted"
                     >,
                   </span>
                 </template>
+                <ULink
+                  v-if="formerMore"
+                  :to="formerLink"
+                  :class="linkClass"
+                  @click="scrollToFormer"
+                >
+                  {{ formerMore }} more
+                </ULink>
               </dd>
             </div>
             <div v-for="row in related" :key="row.label" class="col-span-2">
@@ -201,6 +212,7 @@ const tint = computed(() => brandTint(props.airline))
 
 const {
   former,
+  formerMore,
   formerLink,
   scrollToFormer,
   related,

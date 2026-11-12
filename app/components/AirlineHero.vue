@@ -172,6 +172,7 @@ const tint = computed(() => brandTint(props.airline))
 
 const {
   former,
+  formerMore,
   formerLink,
   scrollToFormer,
   related,
@@ -229,7 +230,10 @@ const facts = computed(() => {
       label: 'Formerly',
       icon: 'solar:history-bold-duotone',
       wide: true,
-      links: former.value.map((label) => ({
+      links: [
+        ...former.value,
+        ...(formerMore.value ? [`${formerMore.value} more`] : []),
+      ].map((label) => ({
         label,
         to: formerLink.value,
         onClick: scrollToFormer,
