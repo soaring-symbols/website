@@ -240,7 +240,9 @@ const filtered = computed(() => {
         [a.name, ...previousNames(a)].some(matches) ||
         a.iata?.toLowerCase().startsWith(q) ||
         a.icao?.toLowerCase().startsWith(q) ||
-        a.callsign?.toLowerCase().includes(q),
+        a.callsign?.toLowerCase().includes(q) ||
+        // and by the codes it used before (JAT finds Air Serbia)
+        matchesFormerCode(a, q),
     )
   }
 

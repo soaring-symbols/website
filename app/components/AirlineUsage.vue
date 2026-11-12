@@ -72,11 +72,17 @@ const props = defineProps({
 const { site } = useRuntimeConfig().public
 
 // Codes are unique among active airlines only, so a defunct one is looked
-// up by its slug, which never changes hands
+// up by its slug, which never changes hands. A brand flying under its
+// parent's codes is looked up by one it doesn't share (TAI for Avianca El
+// Salvador), else by its slug (Hawaiian Airlines), since a shared code
+// finds the parent.
 const key = computed(() => {
   const { iata, icao, slug, defunct } = props.airline
+  if (defunct) return slug
+  const parent = airlineBySlug(props.airline.parent)
+  const own = (field) => props.airline[field] !== parent?.[field]
 
-  return defunct ? slug : iata || icao || slug
+  return (own('iata') && iata) || (own('icao') && icao) || slug
 })
 
 const tabs = computed(() => {

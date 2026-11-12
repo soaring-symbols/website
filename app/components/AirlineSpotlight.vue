@@ -98,12 +98,22 @@
           </div>
           <!-- The group it belongs to, the airlines it owns, and the
                airlines it was renamed or merged into or carried on -->
-          <template v-if="formerNames.length || related.length">
-            <!-- The names a renamed airline flew under before -->
-            <div v-if="formerNames.length" class="col-span-2">
+          <template v-if="hasFormer || related.length">
+            <!-- The names it flew under before, with a link to the table of
+                 every former name and code on its page -->
+            <div v-if="hasFormer" class="col-span-2">
               <dt class="text-muted">Formerly</dt>
-              <dd class="font-semibold text-highlighted">
-                {{ formerNames.join(', ') }}
+              <dd class="font-semibold">
+                <span v-if="formerNames.length" class="text-highlighted">
+                  {{ formerNames.join(', ') }}
+                </span>
+                <span v-if="formerNames.length" class="text-muted"> · </span>
+                <ULink
+                  :to="`/airlines/${airline.slug}#former`"
+                  :class="linkClass"
+                >
+                  {{ formerNames.length ? 'Names and codes' : 'Earlier codes' }}
+                </ULink>
               </dd>
             </div>
             <div v-for="row in related" :key="row.label" class="col-span-2">
@@ -186,6 +196,7 @@ const toast = useToast()
 // A faint wash of the airline's own color behind its marks
 const tint = computed(() => brandTint(props.airline))
 
+const hasFormer = computed(() => formerIdentities(props.airline).length > 0)
 const formerNames = computed(() => previousNames(props.airline))
 
 // Links to other airlines, one row per relation it has

@@ -6,7 +6,7 @@ const airlines = airlinesData as unknown as Airline[]
 const bySlug = new Map(airlines.map((a) => [a.slug, a]))
 const byName = new Map(airlines.map((a) => [a.name, a]))
 const byFormerName = new Map(
-  airlines.flatMap((a) => (a.previous_names ?? []).map((name) => [name, a])),
+  airlines.flatMap((a) => previousNames(a).map((name) => [name, a])),
 )
 
 // Airlines owned by each parent, in catalog (name) order
@@ -180,10 +180,28 @@ export function subsidiariesOf(airline: Airline, { defunct = false } = {}) {
   )
 }
 
+// The names and codes an airline used before, oldest first, each with the
+// year it stopped: Jat Airways (ICAO JAT, callsign JAT) until 2013 for Air
+// Serbia, or Hawaiian Airlines' own codes before it took Alaska's
+export function formerIdentities(airline: Airline) {
+  return airline.former ?? []
+}
+
 // The names a renamed airline flew under before, oldest first, e.g.
 // ['Hansung Airlines', "T'way Air"] for Trinity Airways
 export function previousNames(airline: Airline) {
-  return airline.previous_names ?? []
+  return formerIdentities(airline).flatMap(({ name }) => (name ? [name] : []))
+}
+
+// Whether a search matches one of the codes or callsigns an airline used
+// before, the way it matches the current ones
+export function matchesFormerCode(airline: Airline, q: string) {
+  return formerIdentities(airline).some(
+    (item) =>
+      item.iata?.toLowerCase().startsWith(q) ||
+      item.icao?.toLowerCase().startsWith(q) ||
+      item.callsign?.toLowerCase().includes(q),
+  )
 }
 
 // The airline that carried on a defunct one after a merger, a refounding or a

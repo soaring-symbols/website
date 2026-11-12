@@ -31,6 +31,22 @@
       </div>
     </UPageSection>
 
+    <!-- Names and codes the airline used before, oldest first -->
+    <UPageSection
+      v-if="former.length"
+      id="former"
+      title="Earlier names and codes"
+      :description="`What ${airline.name} flew under before, with the year each stopped. A row lists only what changed then; a dash means it stayed the same.`"
+      :ui="sectionUi"
+      class="scroll-mt-20"
+    >
+      <UTable
+        :data="former"
+        :columns="formerColumns"
+        class="rounded-lg border border-default"
+      />
+    </UPageSection>
+
     <!-- The same marks and data in code: package, CDN and API -->
     <UPageSection
       title="In your project"
@@ -117,6 +133,22 @@ const breadcrumb = [
 
 // Older marks, newest first
 const history = markHistory(airline)
+
+// Former names and codes, oldest first, one row each
+const former = formerIdentities(airline).map((item) => ({
+  name: item.name ?? '—',
+  iata: item.iata ?? '—',
+  icao: item.icao ?? '—',
+  callsign: item.callsign ?? '—',
+  until: item.until,
+}))
+const formerColumns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'iata', header: 'IATA' },
+  { accessorKey: 'icao', header: 'ICAO' },
+  { accessorKey: 'callsign', header: 'Callsign' },
+  { accessorKey: 'until', header: 'Until' },
+]
 
 const description = [
   `Logo, icon and brand colors of ${airline.name}`,
