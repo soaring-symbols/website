@@ -308,7 +308,7 @@ const steps = [
   {
     title: 'Check it',
     description:
-      'The validator flags transforms, stray scripts and artwork that does not fill the canvas.',
+      'The validator flags transforms, stray scripts and artwork that does not fill the canvas, and fixes what it can.',
     action: 'Open the validator',
     to: '/validate',
   },
