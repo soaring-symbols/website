@@ -41,6 +41,7 @@
         :can-merge="canMerge"
         :needed="needsFix"
         :has-title="hasTitle"
+        :mono="candidate.isMono.value"
         @compare="compareWithOriginal"
       />
 

@@ -83,13 +83,14 @@ export function useSvgFix(image: ImageFile) {
     reset()
   }
 
-  function download() {
+  // Saves the fixed file under `name`, the one the repo expects
+  function download(name: string) {
     const file = image.file.value
     if (!file) return
     const url = URL.createObjectURL(file)
     const link = document.createElement('a')
     link.href = url
-    link.download = file.name
+    link.download = name
     link.click()
     URL.revokeObjectURL(url)
   }

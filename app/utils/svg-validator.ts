@@ -1,3 +1,4 @@
+import slugify from 'slugify'
 import type { SvgValidation } from 'soaring-symbols/svg-validator'
 
 export type { SvgValidation }
@@ -58,4 +59,23 @@ export function detectAssetType(
   if (size === 64) return { type: 'logo', source: 'viewBox' }
 
   return null
+}
+
+// The folder name an airline's files go in, made as the package's toSlug()
+// makes it: "T'way Air" gives 'tway-air', "Jet2.com" 'jet2com'. The
+// catalog's own slug wins for an airline it has.
+export function airlineSlug(name: string): string {
+  return slugify(name, { lower: true, strict: true })
+}
+
+// The file name the repo expects for an asset: logo.svg, icon.svg or
+// tail.svg, with -mono for the monochrome variant. A tail is checked as an
+// icon, so the uploaded name tells it apart.
+export function assetFileName(
+  type: AssetType,
+  uploadedName: string,
+  mono: boolean,
+): string {
+  const kind = /(^|[^a-z])tail/i.test(uploadedName) ? 'tail' : type
+  return `${kind}${mono ? '-mono' : ''}.svg`
 }

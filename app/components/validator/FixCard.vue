@@ -52,12 +52,16 @@
                 : 'Nothing the linter can fix'
             }}
           </p>
-          <p class="text-xs text-muted">
-            {{
-              result.fixed
-                ? 'The checks below are for the fixed file. Download it and replace the file in your pull request.'
-                : 'What is left needs your editor.'
-            }}
+          <p v-if="!result.fixed" class="text-xs text-muted">
+            What is left needs your editor.
+          </p>
+          <p v-else class="text-xs text-muted">
+            The checks below are for the fixed file. Download it as
+            <code>{{ fileName }}</code> and put it in your pull request<template
+              v-if="repoPath"
+            >
+              at <code>{{ repoPath }}</code></template
+            >.
           </p>
         </div>
         <div v-if="result.fixed" class="flex flex-wrap gap-2">
@@ -65,7 +69,8 @@
             label="Download"
             :ui="{ label: 'block' }"
             icon="hugeicons:download-04"
-            @click="download"
+            :title="`Save as ${fileName}`"
+            @click="download(fileName)"
           />
           <UButton
             label="Compare with original"
@@ -133,12 +138,28 @@ const props = defineProps({
   needed: Boolean,
   // The file has a <title> whose text the fix can keep
   hasTitle: Boolean,
+  // Drawn in currentColor only, so it saves as a -mono.svg
+  mono: Boolean,
 })
 
 defineEmits(['compare'])
 
 const { fixing, error, mergePaths, original, result, undo, reset, download } =
   props.state
+
+// Where the fixed file goes in a pull request: assets/<slug>/logo.svg and
+// the like, whatever the upload was called
+const { airlines } = useAirlines()
+const fileName = computed(() =>
+  assetFileName(props.type, original.value?.name ?? '', props.mono),
+)
+const repoPath = computed(() => {
+  if (!props.airlineName) return null
+  const slug =
+    airlines.find((a) => a.name === props.airlineName)?.slug ??
+    airlineSlug(props.airlineName)
+  return `assets/${slug}/${fileName.value}`
+})
 
 // A missing <title> is added with the airline's name, so one is needed
 const needsName = computed(() => !props.hasTitle && !props.airlineName)

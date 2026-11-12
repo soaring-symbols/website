@@ -1,41 +1,56 @@
 <template>
   <UCard>
-    <div class="flex flex-wrap items-center gap-3">
-      <URadioGroup
-        :model-value="type"
-        :items="typeOptions"
-        orientation="horizontal"
-        @update:model-value="$emit('update:type', $event)"
-      />
-      <UBadge
-        v-if="detectedFrom"
-        :label="`Detected from the ${detectedFrom}`"
-        icon="hugeicons:magic-wand-01"
-        size="sm"
-      />
-
-      <!-- The name <title> should hold: a catalog airline, or a new one -->
-      <USelectMenu
-        v-if="hasFile"
-        :model-value="airline ?? undefined"
-        :items="airlineNames"
-        placeholder="Airline (for the title)"
-        icon="hugeicons:airplane-01"
-        create-item
-        class="w-full sm:w-64"
-        @update:model-value="$emit('update:airline', $event)"
-        @create="onCreate"
-      />
-
-      <div class="flex items-center gap-2 ms-auto">
-        <UButton
-          :label="hasFile ? 'Replace SVG' : 'Upload SVG'"
-          icon="hugeicons:upload-04"
-          :color="hasFile ? 'neutral' : 'primary'"
-          :variant="hasFile ? 'outline' : 'solid'"
-          @click="$emit('upload')"
+    <!-- Two labeled settings for the checks and the fix, then the upload,
+         each group set apart by a rule: across on phones, upright beside -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-stretch">
+      <UFormField
+        label="Type"
+        :hint="detectedFrom ? `Detected from the ${detectedFrom}` : undefined"
+        :ui="{ hint: 'text-xs' }"
+        class="shrink-0"
+      >
+        <URadioGroup
+          :model-value="type"
+          :items="typeOptions"
+          orientation="horizontal"
+          @update:model-value="$emit('update:type', $event)"
         />
-      </div>
+      </UFormField>
+
+      <template v-if="hasFile">
+        <div aria-hidden="true" :class="divider" />
+
+        <!-- The name <title> should hold: a catalog airline, or a new one -->
+        <UFormField
+          label="Airline"
+          hint="Sets the <title>"
+          :ui="{ hint: 'text-xs' }"
+          class="sm:w-72"
+        >
+          <USelectMenu
+            :model-value="airline ?? undefined"
+            :items="airlineNames"
+            placeholder="Pick or type a name"
+            icon="hugeicons:airplane-01"
+            create-item
+            class="w-full"
+            @update:model-value="$emit('update:airline', $event)"
+            @create="onCreate"
+          />
+        </UFormField>
+      </template>
+
+      <!-- The upload sits at the far end, its rule with it -->
+      <div aria-hidden="true" :class="[divider, 'sm:ms-auto']" />
+      <UButton
+        :label="hasFile ? 'Replace SVG' : 'Upload SVG'"
+        icon="hugeicons:upload-04"
+        :color="hasFile ? 'neutral' : 'primary'"
+        :variant="hasFile ? 'outline' : 'solid'"
+        :ui="{ label: 'block' }"
+        class="justify-center sm:self-center"
+        @click="$emit('upload')"
+      />
     </div>
   </UCard>
 </template>
@@ -65,6 +80,9 @@ function onCreate(name) {
   if (!created.value.includes(name)) created.value.unshift(name)
   emit('update:airline', name)
 }
+
+// A rule between groups: a line across when they stack, upright beside
+const divider = 'border-t border-default sm:border-t-0 sm:border-s'
 
 const typeOptions = [
   {
