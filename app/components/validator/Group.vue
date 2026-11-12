@@ -34,20 +34,32 @@
           :key="check.label"
           class="flex items-start justify-between gap-4 px-4 py-2.5 text-sm"
         >
-          <div class="flex items-start gap-2">
+          <div class="flex items-start gap-2 min-w-0">
             <UIcon
               :name="statusIcon(checkStatus(check))"
               class="size-4 mt-0.5 shrink-0"
               :class="statusColor(checkStatus(check))"
             />
-            <span class="text-default">{{ check.label }}</span>
-            <UBadge
-              v-if="checkStatus(check) === 'warning'"
-              label="Warning"
-              color="warning"
-              variant="subtle"
-              size="sm"
-            />
+            <!-- The label stays on one line; the badges wrap below it -->
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-default whitespace-nowrap">{{
+                check.label
+              }}</span>
+              <UBadge
+                v-if="checkStatus(check) === 'warning'"
+                label="Warning"
+                color="warning"
+                variant="subtle"
+                size="sm"
+              />
+              <!-- What the Fix SVG button can do about it -->
+              <UBadge
+                v-if="!check.pass"
+                v-bind="FIX_BADGES[String(check.fixable)]"
+                variant="outline"
+                size="sm"
+              />
+            </div>
           </div>
           <span
             class="text-muted font-mono text-xs text-right shrink-0 max-w-[50%] truncate"
@@ -82,6 +94,35 @@ const STATUS_COLORS = {
   warning: 'text-warning',
   error: 'text-error',
 }
+// The package's `fixable`: fixed by Fix SVG, fixed once an option is given,
+// or left for the editor
+const FIX_BADGES = {
+  true: {
+    label: 'Auto-fix',
+    icon: 'hugeicons:magic-wand-01',
+    color: 'primary',
+    title: 'Fix SVG fixes this',
+  },
+  mergePaths: {
+    label: 'Fix with Merge paths',
+    icon: 'hugeicons:magic-wand-01',
+    color: 'primary',
+    title: 'Fix SVG fixes this when Merge paths is ticked',
+  },
+  fillColor: {
+    label: 'Fix with a color',
+    icon: 'hugeicons:paint-bucket',
+    color: 'primary',
+    title: 'Fix SVG fixes this once you pick the color to draw it in',
+  },
+  false: {
+    label: 'Fix in editor',
+    icon: 'hugeicons:pen-tool-03',
+    color: 'neutral',
+    title: "Fix SVG can't fix this: change it in your editor",
+  },
+}
+
 const statusIcon = (status) => STATUS_ICONS[status]
 const statusColor = (status) => STATUS_COLORS[status]
 

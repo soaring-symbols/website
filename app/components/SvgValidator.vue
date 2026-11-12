@@ -23,13 +23,9 @@
       >
         <ValidatorToolbar
           :type="type"
-          :detected-from="detectedFrom"
+          :variant="variant"
           :has-file="!!candidate.file.value"
           :airline="airline"
-          :variant="variant"
-          :variant-from="variantFrom"
-          @update:type="onTypeChange"
-          @update:variant="onVariantChange"
           @update:airline="airline = $event"
           @upload="open()"
         />
@@ -158,20 +154,9 @@ const fixState = useSvgFix(candidate)
 // What the upload is, guessed from it and open to a pick by hand, which wins
 // until the next upload: logo or icon, color or mono, and the airline its
 // <title> should name. `…From` says where a guess came from.
-const type = ref('logo')
-const detectedFrom = ref(null)
-const variant = ref('color')
-const variantFrom = ref(null)
+const type = useGuess('logo')
+const variant = useGuess('color')
 const airline = ref(null)
-
-function onTypeChange(value) {
-  type.value = value
-  detectedFrom.value = null
-}
-function onVariantChange(value) {
-  variant.value = value
-  variantFrom.value = null
-}
 
 const title = computed(
   () =>
@@ -190,12 +175,13 @@ watch(
     const name = candidate.file.value?.name ?? ''
 
     const detected = detectAssetType(svg, name)
-    detectedFrom.value = detected?.source ?? null
-    if (detected) type.value = detected.type
+    type.set(detected?.type, detected?.source ?? null)
 
     const namedMono = /-mono\.svg$/i.test(name)
-    variant.value = namedMono || candidate.isMono.value ? 'mono' : 'color'
-    variantFrom.value = namedMono ? 'file name' : 'colors'
+    variant.set(
+      namedMono || candidate.isMono.value ? 'mono' : 'color',
+      namedMono ? 'file name' : 'colors',
+    )
 
     airline.value = airlineByName(title.value, { former: true })?.name ?? null
     offerColor()
@@ -238,11 +224,19 @@ const allChecks = computed(() => {
   )
 })
 
+// What --fix can do about the failing checks, as the package marks them:
+// fix them outright (true), or once given an option ('mergePaths',
+// 'fillColor'), which the fix card then offers
+const failingFixable = (fixable) =>
+  allChecks.value.some((c) => !c.pass && c.fixable === fixable)
+const needsFix = computed(() =>
+  allChecks.value.some((c) => !c.pass && c.fixable !== false),
+)
+const canMerge = computed(() => failingFixable('mergePaths'))
+
 // A color file with no color of its own, as the package's check finds it:
 // one color at most, which the fix draws it in once it is given
-const needsColor = computed(() =>
-  allChecks.value.some((c) => c.label === 'Fill placement' && c.noColor),
-)
+const needsColor = computed(() => failingFixable('fillColor'))
 // The catalog's color for it: the asset's own when it is single-color,
 // else the airline's primary color
 const suggestedColor = computed(() => {
@@ -288,12 +282,6 @@ const groupedChecks = computed(() => {
   }
   return [...groups].map(([title, checks]) => ({ title, checks }))
 })
-
-// Anything failing, warnings included, may be something --fix clears
-const needsFix = computed(() => allChecks.value.some((c) => !c.pass))
-const canMerge = computed(() =>
-  allChecks.value.some((c) => c.label === 'One path per color' && !c.pass),
-)
 
 // Warnings never fail an SVG, as on the Check tab
 const checkSummary = computed(() => {

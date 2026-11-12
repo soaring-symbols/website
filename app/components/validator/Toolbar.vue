@@ -3,33 +3,26 @@
     <!-- Two labeled settings for the checks and the fix, then the upload,
          each group set apart by a rule: across on phones, upright beside -->
     <div class="flex flex-col gap-4 sm:flex-row sm:items-stretch">
-      <!-- What the file is: the checks and the fix follow both -->
+      <!-- What the file is: the checks and the fix follow both. Each is
+           guessed from the upload until picked by hand. -->
       <div class="flex flex-col gap-3 shrink-0">
         <UFormField
-          label="Type"
-          :hint="detectedFrom ? `Detected from the ${detectedFrom}` : undefined"
+          v-for="field in fields"
+          :key="field.label"
+          :label="field.label"
+          :hint="
+            field.guess.from
+              ? `Detected from the ${field.guess.from}`
+              : undefined
+          "
           :ui="{ hint: 'text-xs' }"
         >
           <URadioGroup
-            :model-value="type"
-            :items="typeOptions"
+            :model-value="field.guess.value"
+            :items="field.options"
             orientation="horizontal"
             :ui="{ fieldset: columns }"
-            @update:model-value="$emit('update:type', $event)"
-          />
-        </UFormField>
-
-        <UFormField
-          label="Variant"
-          :hint="variantFrom ? `Detected from the ${variantFrom}` : undefined"
-          :ui="{ hint: 'text-xs' }"
-        >
-          <URadioGroup
-            :model-value="variant"
-            :items="variantOptions"
-            orientation="horizontal"
-            :ui="{ fieldset: columns }"
-            @update:model-value="$emit('update:variant', $event)"
+            @update:model-value="field.guess.pick($event)"
           />
         </UFormField>
       </div>
@@ -73,25 +66,17 @@
 </template>
 
 <script setup>
-defineProps({
-  type: String,
-  // Where the type was detected from, cleared once the user picks one
-  detectedFrom: { type: String, default: null },
+const props = defineProps({
+  // useGuess() of 'logo' or 'icon', and of 'color' or 'mono' (a -mono.svg,
+  // drawn in currentColor)
+  type: { type: Object, required: true },
+  variant: { type: Object, required: true },
   // An SVG is loaded, so the button replaces it
   hasFile: Boolean,
   airline: { type: String, default: null },
-  // 'color' or 'mono' (a -mono.svg, drawn in currentColor), and where it
-  // was detected from, cleared once the user picks one
-  variant: { type: String, default: 'color' },
-  variantFrom: { type: String, default: null },
 })
 
-const emit = defineEmits([
-  'update:type',
-  'update:variant',
-  'update:airline',
-  'upload',
-])
+const emit = defineEmits(['update:airline', 'upload'])
 
 // Catalog names, after any typed for an airline it doesn't have yet (the
 // menu only shows a value that is one of its items)
@@ -123,4 +108,10 @@ const typeOptions = [
   },
   { label: 'Icon', value: 'icon', description: '24×24 viewBox, geometry only' },
 ]
+
+// The two guesses, in the order they are shown
+const fields = computed(() => [
+  { label: 'Type', guess: props.type, options: typeOptions },
+  { label: 'Variant', guess: props.variant, options: variantOptions },
+])
 </script>
