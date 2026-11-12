@@ -44,27 +44,27 @@ const statItems = computed(() => [
   {
     label: 'Dimensions',
     value: props.dimensions ?? '—',
-    icon: 'hugeicons:resize-01',
+    icon: 'solar:ruler-angular-linear',
   },
   {
     label: 'Paths',
     value: props.paths ?? 0,
-    icon: 'hugeicons:bend-tool',
+    icon: 'solar:pen-new-round-linear',
   },
   {
     label: 'Colors',
     value: props.colors ?? 0,
-    icon: 'hugeicons:paint-bucket',
+    icon: 'solar:paint-bucket-linear',
   },
   {
     label: 'File Size',
     value: props.fileSize ?? '—',
-    icon: 'hugeicons:file-01',
+    icon: 'solar:file-linear',
   },
   {
     label: 'viewBox',
     value: props.viewBox ?? '—',
-    icon: 'hugeicons:square',
+    icon: 'solar:stop-linear',
   },
 ])
 </script>

@@ -5,7 +5,7 @@
       color="neutral"
       variant="outline"
       :label="valid ? model : 'Pick a color'"
-      trailing-icon="hugeicons:arrow-down-01"
+      trailing-icon="solar:alt-arrow-down-linear"
       class="w-full font-mono"
       :ui="{ label: 'block flex-1 text-start', trailingIcon: 'text-dimmed' }"
     >

@@ -12,7 +12,7 @@ This project uses **Nuxt UI** for all component development. When working on Vue
 
 1. **Always Use Nuxt UI Components**: For any UI element, prefer Nuxt UI components (UButton, UCard, UContainer, etc.) over custom HTML
 2. **Component Auto-Import**: All Nuxt UI components are auto-imported; no manual imports needed
-3. **Icon System**: Use Hugeicons via `hugeicons:*` format (e.g., `icon="hugeicons:heart-check"`)
+3. **Icon System**: Use Solar (linear style) via `solar:*-linear` format (e.g., `icon="solar:heart-linear"`); brand logos come from `simple-icons:*`
 4. **Dark Mode Support**: Ensure components work in both light and dark modes using Tailwind classes
 
 ## Vue File Conventions
@@ -39,7 +39,7 @@ This project uses **Nuxt UI** for all component development. When working on Vue
 ```vue
 <!-- Button with icon -->
 <UButton
-  icon="hugeicons:refresh"
+  icon="solar:refresh-linear"
   size="sm"
   color="gray"
   variant="ghost"

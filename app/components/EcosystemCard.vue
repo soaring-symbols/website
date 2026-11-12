@@ -37,7 +37,7 @@
         :to="entry.link.to"
         target="_blank"
         :label="entry.link.label"
-        trailing-icon="hugeicons:arrow-up-right-01"
+        trailing-icon="solar:arrow-right-up-linear"
         variant="outline"
         class="mt-4"
         :ui="{ label: 'block' }"
@@ -45,7 +45,7 @@
       <UButton
         v-else-if="entry.snippet"
         :label="entry.snippet.label"
-        icon="hugeicons:copy-01"
+        icon="solar:copy-linear"
         variant="outline"
         class="mt-4"
         :ui="{ label: 'block' }"

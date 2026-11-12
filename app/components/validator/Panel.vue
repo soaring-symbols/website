@@ -14,7 +14,7 @@
             : `${fileName} passes every check.`
         "
         :avatar="{
-          icon: 'hugeicons:checkmark-circle-02',
+          icon: 'solar:check-circle-linear',
           ui: {
             root: 'bg-transparent',
             icon: 'text-4xl text-success',
@@ -31,7 +31,7 @@
         name="Issues found"
         :description="`${fileName} passes ${passed} of ${total} checks. Fix the ${total - passed} issue${total - passed > 1 ? 's' : ''} below to meet the contribution guidelines.`"
         :avatar="{
-          icon: 'hugeicons:cancel-circle',
+          icon: 'solar:close-circle-linear',
           ui: {
             root: 'bg-transparent',
             icon: 'text-4xl text-error',

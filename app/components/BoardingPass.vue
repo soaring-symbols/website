@@ -65,7 +65,7 @@
         <UButton
           :to="`/airlines/${airline.slug}`"
           label="View logos and details"
-          trailing-icon="hugeicons:arrow-right-02"
+          trailing-icon="solar:arrow-right-linear"
           class="btn-signal w-full justify-center"
           :ui="{ label: 'block' }"
         />

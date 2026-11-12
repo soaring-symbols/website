@@ -6,7 +6,7 @@
       :links="[
         {
           label: 'Contribution guidelines',
-          icon: 'hugeicons:github',
+          icon: 'simple-icons:github',
           to: CONTRIBUTING_URL,
           target: '_blank',
           ui: { label: 'block' },

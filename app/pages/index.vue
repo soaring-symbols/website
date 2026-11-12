@@ -28,7 +28,7 @@
             <UInput
               v-model="query"
               size="xl"
-              icon="hugeicons:search-01"
+              icon="solar:magnifier-linear"
               placeholder="Name, code or callsign"
               aria-label="Find an airline"
               class="flex-1"
@@ -68,7 +68,7 @@
             {
               to: '/browse',
               label: 'Browse all airlines',
-              trailingIcon: 'hugeicons:arrow-right-02',
+              trailingIcon: 'solar:arrow-right-linear',
               size: 'lg',
               ui: { label: 'block' },
             },
@@ -131,7 +131,7 @@
           <div class="flex items-center justify-between gap-3 py-2 ps-4 pe-2">
             <code class="truncate font-mono text-sm">{{ installCommand }}</code>
             <UButton
-              :icon="copied ? 'hugeicons:tick-02' : 'hugeicons:copy-01'"
+              :icon="copied ? 'solar:check-linear' : 'solar:copy-linear'"
               :aria-label="copied ? 'Copied' : 'Copy install command'"
               variant="ghost"
               class="text-flap-ink hover:bg-white/10"
@@ -183,7 +183,7 @@ getAssetPath('VN', 'logo')
             {
               to: '/ecosystem',
               label: 'See the ecosystem',
-              trailingIcon: 'hugeicons:arrow-right-02',
+              trailingIcon: 'solar:arrow-right-linear',
               size: 'lg',
               ui: { label: 'block' },
             },
@@ -291,12 +291,12 @@ async function copyInstall() {
 const packageLinks = [
   {
     label: 'npm package',
-    icon: 'hugeicons:package',
+    icon: 'simple-icons:npm',
     to: 'https://www.npmjs.com/package/soaring-symbols',
   },
   {
     label: 'Source on GitHub',
-    icon: 'hugeicons:github',
+    icon: 'simple-icons:github',
     to: 'https://github.com/soaring-symbols/soaring-symbols',
   },
 ]

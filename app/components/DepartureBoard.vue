@@ -45,7 +45,7 @@
           @click="paused = !paused"
         >
           <UIcon
-            :name="paused ? 'hugeicons:play' : 'hugeicons:pause'"
+            :name="paused ? 'solar:play-linear' : 'solar:pause-linear'"
             class="size-3.5"
           />
           {{ paused ? 'Resume' : 'Pause' }}

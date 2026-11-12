@@ -20,7 +20,7 @@
       v-else
       v-model="image.file.value"
       :accept="accept"
-      icon="hugeicons:upload-04"
+      icon="solar:upload-linear"
       :label="dropLabel"
       :description="description"
       class="min-h-80 flex-1"

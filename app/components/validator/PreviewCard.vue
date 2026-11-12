@@ -4,11 +4,14 @@
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 min-w-0">
-          <UIcon name="hugeicons:svg-01" class="size-4 text-muted shrink-0" />
+          <UIcon
+            name="solar:file-code-linear"
+            class="size-4 text-muted shrink-0"
+          />
           <span class="font-medium text-sm truncate">{{ fileName }}</span>
         </div>
         <UButton
-          icon="hugeicons:cancel-01"
+          icon="solar:close-linear"
           variant="ghost"
           size="xs"
           @click="$emit('remove')"
@@ -25,7 +28,7 @@
       <!-- Zoom controls, in a corner so they never cover the artwork -->
       <div class="absolute right-3 top-3 flex items-center gap-1 z-10">
         <UButton
-          icon="hugeicons:minus-sign"
+          icon="solar:minus-linear"
           size="xs"
           variant="subtle"
           aria-label="Zoom out"
@@ -43,7 +46,7 @@
           @click="zoomLevel = 1"
         />
         <UButton
-          icon="hugeicons:add-01"
+          icon="solar:add-linear"
           size="xs"
           variant="subtle"
           aria-label="Zoom in"

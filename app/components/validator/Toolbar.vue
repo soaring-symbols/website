@@ -43,7 +43,7 @@
               :model-value="airline ?? undefined"
               :items="airlineNames"
               placeholder="Pick or type a name"
-              icon="hugeicons:airplane-01"
+              icon="solar:plane-linear"
               create-item
               class="w-full"
               @update:model-value="$emit('update:airline', $event)"
@@ -70,7 +70,7 @@
       <div aria-hidden="true" :class="[divider, 'sm:ms-auto']" />
       <UButton
         :label="hasFile ? 'Replace SVG' : 'Upload SVG'"
-        icon="hugeicons:upload-04"
+        icon="solar:upload-linear"
         :color="hasFile ? 'neutral' : 'primary'"
         :variant="hasFile ? 'outline' : 'solid'"
         :ui="{ label: 'block' }"

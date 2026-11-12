@@ -2,7 +2,7 @@
   <UCard v-if="result || needed">
     <!-- Before a fix: what it does -->
     <div v-if="!result" class="flex flex-wrap items-center gap-3">
-      <UIcon name="hugeicons:magic-wand-01" class="size-5 text-primary" />
+      <UIcon name="solar:magic-stick-3-linear" class="size-5 text-primary" />
       <div class="flex-1 min-w-48">
         <p class="font-medium text-sm">Fix what the linter can</p>
         <p class="text-xs text-muted">
@@ -24,7 +24,7 @@
         color="primary"
         variant="solid"
         :ui="{ label: 'block' }"
-        icon="hugeicons:magic-wand-01"
+        icon="solar:magic-stick-3-linear"
         :loading="fixing"
         :disabled="needsName"
         @click="fix"
@@ -45,8 +45,8 @@
         <UIcon
           :name="
             result.fixed
-              ? 'hugeicons:checkmark-circle-02'
-              : 'hugeicons:information-circle'
+              ? 'solar:check-circle-linear'
+              : 'solar:info-circle-linear'
           "
           class="size-5 shrink-0"
           :class="result.fixed ? 'text-success' : 'text-info'"
@@ -77,14 +77,14 @@
             color="primary"
             variant="solid"
             :ui="{ label: 'block' }"
-            icon="hugeicons:download-04"
+            icon="solar:download-linear"
             :title="`Save as ${fileName}`"
             @click="download(fileName)"
           />
           <UButton
             label="Compare with original"
             :ui="{ label: 'block' }"
-            icon="hugeicons:git-compare"
+            icon="solar:git-diff-linear"
             color="neutral"
             variant="outline"
             @click="$emit('compare', original)"
@@ -92,7 +92,7 @@
           <UButton
             label="Undo"
             :ui="{ label: 'block' }"
-            icon="hugeicons:undo-02"
+            icon="solar:undo-left-linear"
             color="neutral"
             variant="ghost"
             @click="undo"
@@ -100,7 +100,7 @@
         </div>
         <UButton
           v-else
-          icon="hugeicons:cancel-01"
+          icon="solar:close-linear"
           color="neutral"
           variant="ghost"
           size="xs"
@@ -126,7 +126,7 @@
       v-if="error"
       class="mt-3"
       color="error"
-      icon="hugeicons:cancel-circle"
+      icon="solar:close-circle-linear"
       title="Could not fix the SVG"
       :description="error"
     />

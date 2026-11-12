@@ -85,9 +85,9 @@ const checkStatus = (check) => {
 }
 
 const STATUS_ICONS = {
-  pass: 'hugeicons:checkmark-circle-02',
-  warning: 'hugeicons:alert-circle',
-  error: 'hugeicons:cancel-circle',
+  pass: 'solar:check-circle-linear',
+  warning: 'solar:danger-circle-linear',
+  error: 'solar:close-circle-linear',
 }
 const STATUS_COLORS = {
   pass: 'text-success',
@@ -99,25 +99,25 @@ const STATUS_COLORS = {
 const FIX_BADGES = {
   true: {
     label: 'Auto-fix',
-    icon: 'hugeicons:magic-wand-01',
+    icon: 'solar:magic-stick-3-linear',
     color: 'primary',
     title: 'Fix SVG fixes this',
   },
   mergePaths: {
     label: 'Fix with Merge paths',
-    icon: 'hugeicons:magic-wand-01',
+    icon: 'solar:magic-stick-3-linear',
     color: 'primary',
     title: 'Fix SVG fixes this when Merge paths is ticked',
   },
   fillColor: {
     label: 'Fix with a color',
-    icon: 'hugeicons:paint-bucket',
+    icon: 'solar:paint-bucket-linear',
     color: 'primary',
     title: 'Fix SVG fixes this once you pick the color to draw it in',
   },
   false: {
     label: 'Fix in editor',
-    icon: 'hugeicons:pen-tool-03',
+    icon: 'solar:pen-linear',
     color: 'neutral',
     title: "Fix SVG can't fix this: change it in your editor",
   },
