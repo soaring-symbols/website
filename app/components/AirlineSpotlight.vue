@@ -98,12 +98,27 @@
           </div>
           <!-- The group it belongs to, the airlines it owns, and the
                airlines it was renamed or merged into or carried on -->
-          <template v-if="formerNames.length || related.length">
-            <!-- The names a renamed airline flew under before -->
-            <div v-if="formerNames.length" class="col-span-2">
+          <template v-if="former.length || related.length">
+            <!-- What it flew under before, oldest first: each name (or the
+                 codes, when only they changed) links to the table of former
+                 names and codes on its page. On that page the link scrolls
+                 to the table; in the Browse slideover it opens the page
+                 there. -->
+            <div v-if="former.length" class="col-span-2">
               <dt class="text-muted">Formerly</dt>
-              <dd class="font-semibold text-highlighted">
-                {{ formerNames.join(', ') }}
+              <dd class="font-semibold">
+                <template v-for="(label, i) in former" :key="i">
+                  <ULink
+                    :to="formerLink"
+                    :class="linkClass"
+                    @click="scrollToFormer"
+                  >
+                    {{ label }}
+                  </ULink>
+                  <span v-if="i < former.length - 1" class="text-muted"
+                    >,
+                  </span>
+                </template>
               </dd>
             </div>
             <div v-for="row in related" :key="row.label" class="col-span-2">
@@ -186,7 +201,30 @@ const toast = useToast()
 // A faint wash of the airline's own color behind its marks
 const tint = computed(() => brandTint(props.airline))
 
-const formerNames = computed(() => previousNames(props.airline))
+// One label per former identity: its name, or the codes that changed when
+// the name stayed, e.g. ['HAL / HAWAIIAN', 'HA'] for Hawaiian Airlines
+const former = computed(() =>
+  formerIdentities(props.airline).map(
+    ({ name, iata, icao, callsign }) =>
+      name ?? [iata, icao, callsign].filter(Boolean).join(' / '),
+  ),
+)
+
+// The table of former names and codes sits on the airline's page, at the
+// canonical URL with its trailing slash, so the link never goes through a
+// redirect. Already on that page, it scrolls there smoothly instead of
+// navigating, and only updates the hash.
+const route = useRoute()
+const onOwnPage = computed(() => route.params.slug === props.airline.slug)
+const formerLink = computed(() => `/airlines/${props.airline.slug}/#former`)
+
+function scrollToFormer(event) {
+  const table = onOwnPage.value && document.getElementById('former')
+  if (!table) return
+  event.preventDefault()
+  table.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  history.replaceState(history.state, '', '#former')
+}
 
 // Links to other airlines, one row per relation it has
 const related = computed(() => {

@@ -10,20 +10,25 @@ const soaringSymbolsDir = resolve(
 )
 const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
 const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
-const airlines: { slug: string; previous_slugs?: string[] }[] = JSON.parse(
+const airlines: { slug: string; former?: { slug?: string }[] }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
 )
 // A renamed airline's page moves to its new slug; old links get a permanent
-// redirect (previous_slugs, from soaring-symbols 0.3).
+// redirect (the slugs in `former`, from soaring-symbols 0.3.2).
 // Its SVGs stay at the old path too, since the package ships them there.
 const formerSlugRedirects = Object.fromEntries(
   airlines.flatMap((airline) =>
-    (airline.previous_slugs ?? []).map((slug) => [
-      `/airlines/${slug}`,
-      {
-        redirect: { to: `/airlines/${airline.slug}`, statusCode: 301 as const },
-      },
-    ]),
+    (airline.former ?? [])
+      .flatMap(({ slug }) => (slug ? [slug] : []))
+      .map((slug) => [
+        `/airlines/${slug}`,
+        {
+          redirect: {
+            to: `/airlines/${airline.slug}`,
+            statusCode: 301 as const,
+          },
+        },
+      ]),
   ),
 )
 // Country flags, served as files so each loads once, cached, and only where
