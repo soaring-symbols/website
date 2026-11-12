@@ -6,7 +6,9 @@
       <div
         class="grid items-center gap-12 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-14"
       >
-        <div>
+        <!-- Pushed down to sit level with the part of the globe left above
+             the ticket -->
+        <div class="xl:pt-20">
           <h1
             class="text-4xl font-extrabold tracking-tight text-highlighted text-balance sm:text-6xl sm:leading-[1.05]"
           >
