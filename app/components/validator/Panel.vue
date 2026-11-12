@@ -7,11 +7,11 @@
     >
       <UUser
         v-if="allPass"
-        name="SVG Valid"
+        name="Meets the guidelines"
         :description="
           warnings
-            ? `No issues found. This SVG meets the contribution guidelines, with ${warnings} warning${warnings > 1 ? 's' : ''} worth a look.`
-            : 'No issues found. This SVG meets the contribution guidelines.'
+            ? `${fileName} passes every check, with ${warnings} warning${warnings > 1 ? 's' : ''} worth a look.`
+            : `${fileName} passes every check.`
         "
         :avatar="{
           icon: 'hugeicons:checkmark-circle-02',
@@ -28,8 +28,8 @@
       />
       <UUser
         v-else
-        name="Issues Found"
-        :description="`${passed}/${total} checks passed. Fix the ${total - passed} issue${total - passed > 1 ? 's' : ''} below to meet contribution guidelines.`"
+        name="Issues found"
+        :description="`${fileName} passes ${passed} of ${total} checks. Fix the ${total - passed} issue${total - passed > 1 ? 's' : ''} below to meet the contribution guidelines.`"
         :avatar="{
           icon: 'hugeicons:cancel-circle',
           ui: {
@@ -54,6 +54,8 @@
 <script setup>
 const props = defineProps({
   groups: Array,
+  // The file the checks ran on
+  fileName: { type: String, default: 'This SVG' },
 })
 
 // Warnings never fail an SVG, so the counts cover errors only

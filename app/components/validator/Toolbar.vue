@@ -16,9 +16,10 @@
 
       <div class="flex items-center gap-2 ms-auto">
         <UButton
-          label="Upload SVG"
+          :label="hasFile ? 'Replace SVG' : 'Upload SVG'"
           icon="hugeicons:upload-04"
-          color="primary"
+          :color="hasFile ? 'neutral' : 'primary'"
+          :variant="hasFile ? 'outline' : 'solid'"
           @click="$emit('upload')"
         />
       </div>
@@ -31,6 +32,8 @@ defineProps({
   type: String,
   // Where the type was detected from, cleared once the user picks one
   detectedFrom: { type: String, default: null },
+  // An SVG is loaded, so the button replaces it
+  hasFile: Boolean,
 })
 
 defineEmits(['update:type', 'upload'])

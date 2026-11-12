@@ -23,7 +23,7 @@
 const meta = {
   title: 'Check an SVG',
   description:
-    'Upload a logo or icon to check it against the contribution guidelines before you open a pull request. Add the original artwork to compare the two side by side.',
+    'Check a logo or icon against the contribution guidelines before you open a pull request, or compare it with the original artwork to make sure it still looks the same.',
 }
 
 useSeoMeta({

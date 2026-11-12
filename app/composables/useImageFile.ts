@@ -19,6 +19,9 @@ export function useImageFile() {
     return parseSvg(content.value)
   })
 
+  // A -mono.svg: its preview needs the text color, which an <img> can't pass
+  const isMono = computed(() => !!parsed.value && isMonoSvg(parsed.value))
+
   const metadata = computed(() => {
     if (!file.value) return null
     if (isSvg.value) {
@@ -63,5 +66,15 @@ export function useImageFile() {
     if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   })
 
-  return { file, content, previewUrl, bbox, isSvg, parsed, metadata, ready }
+  return {
+    file,
+    content,
+    previewUrl,
+    bbox,
+    isSvg,
+    parsed,
+    isMono,
+    metadata,
+    ready,
+  }
 }

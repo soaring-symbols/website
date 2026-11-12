@@ -46,6 +46,11 @@ export function getSvgColors(svg: SVGSVGElement): Set<string> {
   return colors
 }
 
+// Drawn only in currentColor, with no colors of its own (a -mono.svg)
+export function isMonoSvg(svg: SVGSVGElement): boolean {
+  return /currentColor/i.test(svg.outerHTML) && getSvgColors(svg).size === 0
+}
+
 export function getSvgMetadata(
   svg: SVGSVGElement,
   bytes: number,
@@ -62,7 +67,8 @@ export function getSvgMetadata(
   return {
     dimensions,
     paths: svg.querySelectorAll('path').length,
-    colors: getSvgColors(svg).size,
+    // A -mono.svg has no colors of its own: it takes the text color
+    colors: getSvgColors(svg).size || (isMonoSvg(svg) ? 'currentColor' : 0),
     fileSize: formatBytes(bytes),
     viewBox,
   }
