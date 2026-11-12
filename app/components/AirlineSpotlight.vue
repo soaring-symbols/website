@@ -196,77 +196,21 @@ const props = defineProps({
   headingTag: { type: String, default: 'h2' },
 })
 
-const toast = useToast()
-
 // A faint wash of the airline's own color behind its marks
 const tint = computed(() => brandTint(props.airline))
 
-// One label per former identity: its name, or the codes that changed when
-// the name stayed, e.g. ['HAL / HAWAIIAN', 'HA'] for Hawaiian Airlines
-const former = computed(() =>
-  formerIdentities(props.airline).map(
-    ({ name, iata, icao, callsign }) =>
-      name ?? [iata, icao, callsign].filter(Boolean).join(' / '),
-  ),
-)
+const {
+  former,
+  formerLink,
+  scrollToFormer,
+  related,
+  colors,
+  shownColors,
+  hiddenCount,
+  showAllColors,
+  copyColor: copy,
+} = useAirlineProfile(() => props.airline)
 
-// The table of former names and codes sits on the airline's page, at the
-// canonical URL with its trailing slash, so the link never goes through a
-// redirect. Already on that page, it scrolls there smoothly instead of
-// navigating, and only updates the hash.
-const route = useRoute()
-const onOwnPage = computed(() => route.params.slug === props.airline.slug)
-const formerLink = computed(() => `/airlines/${props.airline.slug}/#former`)
-
-function scrollToFormer(event) {
-  const table = onOwnPage.value && document.getElementById('former')
-  if (!table) return
-  event.preventDefault()
-  table.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  history.replaceState(history.state, '', '#former')
-}
-
-// Links to other airlines, one row per relation it has
-const related = computed(() => {
-  const parent = airlineBySlug(props.airline.parent)
-  const successor = successorOf(props.airline)
-  const predecessors = predecessorsOf(props.airline)
-
-  return [
-    { label: 'Part of', airlines: parent ? [parent] : [] },
-    { label: 'Subsidiaries', airlines: subsidiariesOf(props.airline) },
-    {
-      label: 'Former subsidiaries',
-      airlines: subsidiariesOf(props.airline, { defunct: true }),
-    },
-    { label: 'Succeeded by', airlines: successor ? [successor] : [] },
-    { label: 'Preceded by', airlines: predecessors },
-  ].filter((row) => row.airlines.length)
-})
 const linkClass =
   'text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current'
-
-const colors = computed(() => {
-  const { logo, icon } = props.airline.assets
-  return [...new Set([...(logo?.colors ?? []), ...(icon?.colors ?? [])])]
-})
-
-// Gradient-heavy logos list dozens of stops; show a handful until asked
-const COLOR_LIMIT = 6
-const showAllColors = ref(false)
-watch(
-  () => props.airline.slug,
-  () => (showAllColors.value = false),
-)
-const shownColors = computed(() =>
-  showAllColors.value ? colors.value : colors.value.slice(0, COLOR_LIMIT),
-)
-const hiddenCount = computed(
-  () => colors.value.length - shownColors.value.length,
-)
-
-async function copy(color) {
-  await navigator.clipboard.writeText(color)
-  toast.add({ title: `Copied ${color.toUpperCase()}`, duration: 1500 })
-}
 </script>

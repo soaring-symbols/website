@@ -2,7 +2,7 @@
   <div class="pt-6 pb-16 sm:pt-10">
     <UBreadcrumb :items="breadcrumb" class="mb-6" />
 
-    <AirlineSpotlight :airline="airline" heading-tag="h1" />
+    <AirlineHero :airline="airline" />
 
     <!-- Every SVG the airline ships, with where to get it -->
     <UPageSection
