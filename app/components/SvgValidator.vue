@@ -41,20 +41,19 @@
         color="warning"
         variant="subtle"
         icon="hugeicons:alert-02"
-        :title="`${possessive(airline)} ${derivedMono} is single-color`"
-        :description="`Its ${derivedMono}-mono.svg is generated from ${derivedMono}.svg when the package is built, so a mono file isn't needed. Upload the color ${derivedMono}.svg instead.`"
+        :title="`${possessive(airline)} ${kind} is single-color`"
+        :description="`Its ${kind}-mono.svg is generated from ${kind}.svg when the package is built, so a mono file isn't needed. Upload the color ${kind}.svg instead.`"
       />
 
       <ValidatorFixCard
         v-if="candidate.file.value"
         :state="fixState"
-        :type="type"
-        :file-name="checkName"
-        :airline-name="airline"
-        :is-catalog-name="isCatalogName"
+        :options="fixOptions"
+        :file-name="fileName"
+        :repo-path="repoPath"
         :can-merge="canMerge"
         :needed="needsFix"
-        :has-title="hasTitle"
+        :needs-name="needsName"
         :needs-color="needsColor"
         @compare="compareWithOriginal"
       />
@@ -151,130 +150,125 @@ const tab = computed({
     }),
 })
 
-const type = ref('logo')
 const candidate = useImageFile()
 const reference = useImageFile()
 // A fix of the SVG, kept here so it outlives the Check tab's components
 const fixState = useSvgFix(candidate)
 
+// What the upload is, guessed from it and open to a pick by hand, which wins
+// until the next upload: logo or icon, color or mono, and the airline its
+// <title> should name. `…From` says where a guess came from.
+const type = ref('logo')
 const detectedFrom = ref(null)
-
-// Picking a type by hand overrides the detected one and re-runs the checks
-function onTypeChange(newType) {
-  type.value = newType
-  detectedFrom.value = null
-}
-
-// Pick the type from each new upload; keep the current one if it can't tell
-watch(
-  () => candidate.parsed.value,
-  (svg) => {
-    detectedFrom.value = null
-    if (!svg) return
-    const detected = detectAssetType(svg, candidate.file.value?.name ?? '')
-    if (!detected) return
-    type.value = detected.type
-    detectedFrom.value = detected.source
-  },
-)
-
-// Color or mono: from the file name (-mono.svg), else from the drawing
-// (currentColor and no color of its own). A pick by hand wins until the next
-// upload; a fixed file keeps what the fix was run with.
 const variant = ref('color')
 const variantFrom = ref(null)
+const airline = ref(null)
+
+function onTypeChange(value) {
+  type.value = value
+  detectedFrom.value = null
+}
 function onVariantChange(value) {
   variant.value = value
   variantFrom.value = null
 }
+
+const title = computed(
+  () =>
+    candidate.parsed.value?.querySelector('title')?.textContent?.trim() ?? '',
+)
+
+// Each upload: the type from the file name or viewBox; the variant from the
+// name (-mono.svg), else from the drawing; the airline from the title, by its
+// current or former name. A fixed file keeps what the fix was run with, and
+// its title is the airline picked, which may be one the catalog lacks.
 watch(
   () => candidate.parsed.value,
   (svg) => {
+    // A file being swapped reads as none for a moment; keep the picks
     if (!svg || fixState.result.value) return
     const name = candidate.file.value?.name ?? ''
-    if (/-mono\.svg$/i.test(name)) {
-      variant.value = 'mono'
-      variantFrom.value = 'file name'
-    } else {
-      variant.value = candidate.isMono.value ? 'mono' : 'color'
-      variantFrom.value = 'colors'
-    }
+
+    const detected = detectAssetType(svg, name)
+    detectedFrom.value = detected?.source ?? null
+    if (detected) type.value = detected.type
+
+    const namedMono = /-mono\.svg$/i.test(name)
+    variant.value = namedMono || candidate.isMono.value ? 'mono' : 'color'
+    variantFrom.value = namedMono ? 'file name' : 'colors'
+
+    airline.value = airlineByName(title.value, { former: true })?.name ?? null
+    offerColor()
   },
 )
 
-// The name the checks and the fix go by, and the download gets: logo.svg,
-// icon-mono.svg and so on, whatever the upload was called
-const checkName = computed(() =>
-  assetFileName(
-    type.value,
-    candidate.file.value?.name ?? '',
-    variant.value === 'mono',
-  ),
-)
+// The catalog's entry for the airline picked, if it has one
+const knownAirline = computed(() => airlineByName(airline.value))
+const isCatalogName = computed(() => !!knownAirline.value)
 
-// The airline <title> should name, guessed from the current title when the
-// catalog knows it (by its name or a former one)
-const { airlines } = useAirlines()
-const airline = ref(null)
-watch(
-  () => candidate.parsed.value,
-  (svg) => {
-    // A file being swapped reads as none for a moment; keep the pick
-    if (!svg) return
-    const title = svg.querySelector('title')?.textContent?.trim()
-    const match = airlines.find(
-      (a) => a.name === title || a.previous_names?.includes(title),
-    )
-    // A fixed file's title is the name picked, which may be a new airline
-    airline.value =
-      match?.name ?? (title && title === airline.value ? title : null)
-  },
+// logo, icon or tail, and the name the repo expects for this file
+// (icon-mono.svg and so on), whatever the upload was called
+const kind = computed(() =>
+  assetKind(type.value, candidate.file.value?.name ?? ''),
 )
-const hasTitle = computed(
-  () => !!candidate.parsed.value?.querySelector('title')?.textContent?.trim(),
+const fileName = computed(
+  () => `${kind.value}${variant.value === 'mono' ? '-mono' : ''}.svg`,
 )
-const isCatalogName = computed(() =>
-  airlines.some((a) => a.name === airline.value),
+const repoPath = computed(() =>
+  airline.value
+    ? `assets/${knownAirline.value?.slug ?? airlineSlug(airline.value)}/${fileName.value}`
+    : null,
 )
 
 // A mono file for a catalog airline whose color asset is single-color: the
-// build derives that one, so the color file is what to contribute. Gives the
-// asset's type ('logo', 'icon', 'tail'), or null.
+// build derives that one, so the color file is what to contribute
 const derivedMono = computed(() => {
-  if (variant.value !== 'mono' || !candidate.file.value) return null
-  const kind = checkName.value.replace(/-mono\.svg$/, '')
-  const asset = airlines.find((a) => a.name === airline.value)?.assets?.[kind]
-  return asset?.color && asset.colors.length === 1 ? kind : null
+  if (variant.value !== 'mono' || !candidate.file.value) return false
+  const asset = knownAirline.value?.assets?.[kind.value]
+  return !!asset?.color && asset.colors.length === 1
 })
 
-// A color file with no color of its own (currentColor, or default black):
+const allChecks = computed(() => {
+  if (!candidate.parsed.value) return []
+  return runSvgValidations(
+    candidate.parsed.value,
+    type.value,
+    candidate.bbox.value,
+    { mono: variant.value === 'mono', source: candidate.content.value },
+  )
+})
+
+// A color file with no color of its own, as the package's check finds it:
 // one color at most, which the fix draws it in once it is given
-const needsColor = computed(
-  () =>
-    variant.value === 'color' &&
-    !!candidate.parsed.value &&
-    getSvgColors(candidate.parsed.value).size === 0,
+const needsColor = computed(() =>
+  allChecks.value.some((c) => c.label === 'Fill placement' && c.noColor),
 )
 // The catalog's color for it: the asset's own when it is single-color,
 // else the airline's primary color
 const suggestedColor = computed(() => {
-  const known = airlines.find((a) => a.name === airline.value)
-  if (!known) return null
-  const kind = checkName.value.replace(/(-mono)?\.svg$/, '')
-  const colors = known.assets?.[kind]?.colors ?? []
+  const known = knownAirline.value
+  const colors = known?.assets?.[kind.value]?.colors ?? []
   return colors.length === 1
     ? colors[0]
-    : (known.branding?.primary_color ?? null)
+    : (known?.branding?.primary_color ?? null)
 })
-
-// Offer that color for each new upload, and when the airline or the variant
-// changes, but never over one typed or picked
+// Offered on each upload (above) and when the airline or the variant
+// changes, but never over a color typed or picked
 function offerColor() {
   if (needsColor.value && suggestedColor.value && !fixState.fillColor.value)
     fixState.fillColor.value = suggestedColor.value
 }
-watch(() => candidate.parsed.value, offerColor, { flush: 'post' })
 watch([suggestedColor, needsColor], offerColor)
+
+// What the fix is run with, and what keeps it from running: a missing
+// <title> needs the airline's name
+const fixOptions = computed(() => ({
+  type: kind.value,
+  mono: variant.value === 'mono',
+  airlineName: airline.value ?? undefined,
+  isCatalogName: isCatalogName.value,
+}))
+const needsName = computed(() => !title.value && !airline.value)
 
 // "Vietnam Airlines'" and "SpiceJet's"
 const possessive = (name) => (name.endsWith('s') ? `${name}'` : `${name}'s`)
@@ -284,19 +278,6 @@ function compareWithOriginal(original) {
   reference.file.value = original
   tab.value = 'compare'
 }
-
-const allChecks = computed(() => {
-  if (!candidate.parsed.value) return []
-  return runSvgValidations(
-    candidate.parsed.value,
-    type.value,
-    candidate.bbox.value,
-    {
-      fileName: checkName.value,
-      source: candidate.content.value,
-    },
-  )
-})
 
 // Groups in the order the package lists its checks in
 const groupedChecks = computed(() => {

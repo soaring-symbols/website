@@ -68,14 +68,11 @@ export function airlineSlug(name: string): string {
   return slugify(name, { lower: true, strict: true })
 }
 
-// The file name the repo expects for an asset: logo.svg, icon.svg or
-// tail.svg, with -mono for the monochrome variant. A tail is checked as an
-// icon, so the uploaded name tells it apart.
-export function assetFileName(
+// What an upload is in the repo: a logo, icon or tail. A tail is checked as
+// an icon, so only its file name tells it apart.
+export function assetKind(
   type: AssetType,
   uploadedName: string,
-  mono: boolean,
-): string {
-  const kind = /(^|[^a-z])tail/i.test(uploadedName) ? 'tail' : type
-  return `${kind}${mono ? '-mono' : ''}.svg`
+): AssetType | 'tail' {
+  return /(^|[^a-z])tail/i.test(uploadedName) ? 'tail' : type
 }

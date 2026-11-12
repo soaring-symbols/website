@@ -153,7 +153,7 @@ const alphaDelta = (a: Uint8ClampedArray, b: Uint8ClampedArray, i: number) =>
 const isMonochrome = (svg: string) => {
   if (/currentColor/i.test(svg)) return true
   const el = parseSvg(svg)
-  return !!el && !el.querySelector('style') && getSvgColors(el).size === 0
+  return !!el && hasNoOwnColor(el)
 }
 
 export async function compareSvgs(

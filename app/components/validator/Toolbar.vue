@@ -95,12 +95,9 @@ const emit = defineEmits([
 
 // Catalog names, after any typed for an airline it doesn't have yet (the
 // menu only shows a value that is one of its items)
-const { airlines } = useAirlines()
+const catalogNames = useAirlines().airlines.map((a) => a.name)
 const created = ref([])
-const airlineNames = computed(() => [
-  ...created.value,
-  ...airlines.map((a) => a.name),
-])
+const airlineNames = computed(() => [...created.value, ...catalogNames])
 
 function onCreate(name) {
   if (!created.value.includes(name)) created.value.unshift(name)

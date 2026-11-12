@@ -170,19 +170,18 @@
 const props = defineProps({
   // useSvgFix() of the uploaded SVG, kept by the page
   state: { type: Object, required: true },
-  type: { type: String, required: true },
-  // What <title> should hold, and whether it is a catalog name
-  airlineName: { type: String, default: null },
-  isCatalogName: Boolean,
-  // A warning --merge-paths could clear, so offer it
-  canMerge: Boolean,
+  // What the fix is run with: type, mono, airlineName, isCatalogName
+  options: { type: Object, required: true },
+  // The name the repo expects (logo.svg, icon-mono.svg...), which the
+  // download takes, and where it goes in a pull request
+  fileName: { type: String, required: true },
+  repoPath: { type: String, default: null },
   // Some check fails, so there may be something to fix
   needed: Boolean,
-  // The file has a <title> whose text the fix can keep
-  hasTitle: Boolean,
-  // The name the repo expects (logo.svg, icon-mono.svg...): the fix checks
-  // by it, and the download takes it
-  fileName: { type: String, required: true },
+  // A warning --merge-paths could clear, so offer it
+  canMerge: Boolean,
+  // The file has no <title> and no airline is picked to add one with
+  needsName: Boolean,
   // A color file with no color of its own, so it needs one to be filled
   needsColor: Boolean,
 })
@@ -210,19 +209,6 @@ const pickerColor = computed({
   },
 })
 
-// Where the fixed file goes in a pull request: assets/<slug>/<fileName>
-const { airlines } = useAirlines()
-const repoPath = computed(() => {
-  if (!props.airlineName) return null
-  const slug =
-    airlines.find((a) => a.name === props.airlineName)?.slug ??
-    airlineSlug(props.airlineName)
-  return `assets/${slug}/${props.fileName}`
-})
-
-// A missing <title> is added with the airline's name, so one is needed
-const needsName = computed(() => !props.hasTitle && !props.airlineName)
-
 // What the fix reported, a repeated line (one per path) shown once
 const fixedList = computed(() => {
   const counts = new Map()
@@ -231,16 +217,11 @@ const fixedList = computed(() => {
   return [...counts].map(([text, count]) => ({ text, count }))
 })
 
+// The package ignores a fill color that isn't needed or isn't hex
 function fix() {
   props.state.fix({
-    fileName: props.fileName,
-    type: props.type,
-    fillColor:
-      props.needsColor && validColor.value
-        ? fillColor.value.toLowerCase()
-        : undefined,
-    airlineName: props.airlineName ?? undefined,
-    isCatalogName: props.isCatalogName,
+    ...props.options,
+    fillColor: fillColor.value || undefined,
   })
 }
 </script>

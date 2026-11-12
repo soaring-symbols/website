@@ -5,12 +5,15 @@ let loading: Promise<typeof SvgFixer> | null = null
 // `lint-svg.js --fix` in the browser. It bundles SVGO and needs resvg's
 // WebAssembly (a few MB together), so both load on the first fix only.
 export function loadSvgFixer() {
+  // The wasm download starts with the fixer's, not after it
   loading ??= Promise.all([
     import('soaring-symbols/svg-fixer'),
-    import('@resvg/resvg-wasm/index_bg.wasm?url'),
+    import('@resvg/resvg-wasm/index_bg.wasm?url').then(({ default: url }) =>
+      fetch(url),
+    ),
   ])
-    .then(async ([fixer, { default: wasmUrl }]) => {
-      await fixer.initSvgFixer(fetch(wasmUrl))
+    .then(async ([fixer, wasm]) => {
+      await fixer.initSvgFixer(wasm)
       return fixer
     })
     .catch((error) => {
@@ -60,8 +63,6 @@ export function useSvgFix(image: ImageFile) {
     }
   })
 
-  // `fileName` is the name to check by (a -mono.svg is held to currentColor);
-  // it defaults to the uploaded file's
   async function fix(options: SvgFixer.SvgFixOptions) {
     const file = image.file.value
     if (!file || !image.content.value) return
@@ -70,7 +71,6 @@ export function useSvgFix(image: ImageFile) {
     try {
       const { fixSvg } = await loadSvgFixer()
       const fixed = fixSvg(image.content.value, {
-        fileName: file.name,
         ...options,
         mergePaths: mergePaths.value,
       })

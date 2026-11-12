@@ -46,6 +46,12 @@ export function getSvgColors(svg: SVGSVGElement): Set<string> {
   return colors
 }
 
+// No color of its own: no fill or stroke color, and no <style> that could
+// hold one, so it draws in currentColor or the default black
+export function hasNoOwnColor(svg: SVGSVGElement): boolean {
+  return !svg.querySelector('style') && getSvgColors(svg).size === 0
+}
+
 // Drawn only in currentColor, with no colors of its own (a -mono.svg)
 export function isMonoSvg(svg: SVGSVGElement): boolean {
   return /currentColor/i.test(svg.outerHTML) && getSvgColors(svg).size === 0
