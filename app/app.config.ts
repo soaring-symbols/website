@@ -125,10 +125,11 @@ export default defineAppConfig({
       },
     },
     // Sections sit inside the layout's container, one under another with a
-    // rule between them, headed on the left like the rest of the site
+    // rule between them (none above the first, right under the page header),
+    // headed on the left like the rest of the site
     pageSection: {
       slots: {
-        root: 'border-t border-default',
+        root: 'border-t border-default first-of-type:border-t-0',
         container: 'px-0 sm:px-0 lg:px-0 sm:py-16 lg:py-24 gap-10 sm:gap-10',
         // A one-column template, so a long line in a feature cannot widen it
         features: 'grid-cols-1',
