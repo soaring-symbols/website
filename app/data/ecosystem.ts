@@ -51,12 +51,29 @@ export const ecosystem: EcosystemEntry[] = [
     details: [
       'Swap logo for icon or tail, and add -mono before .svg for the monochrome mark.',
       'Older logos are under <slug>/history/<year>/, by the year each came in.',
-      'Pin a release line such as soaring-symbols@0.2 for fixes without breaking changes, or an exact release to keep files as they are.',
+      'Pin a release line such as soaring-symbols@0.3 for fixes without breaking changes, or an exact release to keep files as they are.',
       'A renamed airline’s old slug keeps working and shows its current marks.',
     ],
     snippet: {
       label: 'Copy URL',
       code: 'https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/<slug>/logo.svg',
+    },
+  },
+  {
+    id: 'unpkg',
+    name: 'unpkg CDN',
+    icon: 'simple-icons:unpkg',
+    group: 'data',
+    description:
+      'The same files from the npm package on another CDN, at the same paths, so either one can stand in for the other.',
+    details: [
+      'A release line such as soaring-symbols@0.3 redirects to the newest release in it within minutes of publishing.',
+      'Pages without a bundler can import the library as an ES module from dist/index.js.',
+      'Add ?module to import the SVG fixer, which then loads its resvg dependency from unpkg too.',
+    ],
+    snippet: {
+      label: 'Copy URL',
+      code: 'https://unpkg.com/soaring-symbols/dist/assets/<slug>/logo.svg',
     },
   },
   {
