@@ -108,11 +108,22 @@
                   {{ formerNames.join(', ') }}
                 </span>
                 <span v-if="formerNames.length" class="text-muted"> · </span>
+                <!-- On the airline's own page it scrolls to the table; in
+                     the Browse slideover it opens the page there -->
                 <ULink
-                  :to="`/airlines/${airline.slug}#former`"
-                  :class="linkClass"
+                  :to="formerLink"
+                  :class="['inline-flex items-center gap-1', linkClass]"
+                  @click="scrollToFormer"
                 >
                   {{ formerNames.length ? 'Names and codes' : 'Earlier codes' }}
+                  <UIcon
+                    :name="
+                      onOwnPage
+                        ? 'solar:arrow-down-linear'
+                        : 'solar:arrow-right-linear'
+                    "
+                    class="size-3.5 shrink-0"
+                  />
                 </ULink>
               </dd>
             </div>
@@ -198,6 +209,22 @@ const tint = computed(() => brandTint(props.airline))
 
 const hasFormer = computed(() => formerIdentities(props.airline).length > 0)
 const formerNames = computed(() => previousNames(props.airline))
+
+// The table of former names and codes sits on the airline's page, at the
+// canonical URL with its trailing slash, so the link never goes through a
+// redirect. Already on that page, it scrolls there smoothly instead of
+// navigating, and only updates the hash.
+const route = useRoute()
+const onOwnPage = computed(() => route.params.slug === props.airline.slug)
+const formerLink = computed(() => `/airlines/${props.airline.slug}/#former`)
+
+function scrollToFormer(event) {
+  const table = onOwnPage.value && document.getElementById('former')
+  if (!table) return
+  event.preventDefault()
+  table.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  history.replaceState(history.state, '', '#former')
+}
 
 // Links to other airlines, one row per relation it has
 const related = computed(() => {
