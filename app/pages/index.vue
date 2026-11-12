@@ -1,9 +1,8 @@
 <template>
   <div>
-    <!-- Hero: what this is, a way in, and the board -->
-    <section class="relative isolate pt-6 pb-16 sm:pt-12 lg:pb-24">
-      <HeroFlight />
-
+    <!-- Hero: what this is and a way in, beside the globe; below, the
+         board and the pass for the airline picked on it, as one ticket -->
+    <section class="pt-6 pb-16 sm:pt-12 lg:pb-24">
       <div
         class="grid items-center gap-12 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-14"
       >
@@ -43,12 +42,16 @@
           </form>
         </div>
 
-        <DepartureBoard v-model:selected="selectedSlug" :airlines="airlines" />
+        <!-- Taller than its row: the bottom of the globe tucks under the
+             ticket -->
+        <HeroGlobe
+          class="-mt-4 -mb-16 h-96 sm:-mb-20 sm:h-[32rem] xl:mt-0 xl:-mb-48 xl:h-[44rem]"
+        />
       </div>
 
-      <div class="mt-8 rounded-xl bg-surface p-5 sm:p-6" aria-live="polite">
-        <AirlineSpotlight v-if="selected" :airline="selected" steady />
-      </div>
+      <BoardingPass :airline="selected" class="relative mt-4 xl:mt-8">
+        <DepartureBoard v-model:selected="selectedSlug" :airlines="airlines" />
+      </BoardingPass>
     </section>
 
     <!-- The whole collection at a glance -->
@@ -251,7 +254,7 @@ defineOgImage('Site')
 // using its parent's logo) would only repeat that icon
 const withIcons = airlines.filter((a) => !a.marks && hasAsset(a, 'icon'))
 
-// The first row of the departure board, set here so the spotlight renders
+// The first row of the departure board, set here so the pass renders
 // the same on the server and in the browser
 const selectedSlug = ref('vietnam-airlines')
 const selected = computed(() =>

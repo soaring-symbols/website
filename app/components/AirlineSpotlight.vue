@@ -1,6 +1,6 @@
 <template>
   <!-- Stacks in narrow places like the slideover; spreads into three
-       columns of steady height when there is room, as under the board -->
+       columns when there is room -->
   <article class="@container">
     <div
       class="grid gap-5 @4xl:grid-cols-[16rem_minmax(0,1fr)_17rem] @4xl:gap-8"
@@ -18,23 +18,16 @@
 
       <div class="flex flex-col gap-5">
         <div class="flex items-start justify-between gap-4">
-          <!-- A steady spotlight keeps room for a two-line name and a tagline
-               under the pair, so the tagline still sits right below the name -->
-          <div class="min-w-0" :class="steady && 'min-h-[5.75rem]'">
+          <div class="min-w-0">
             <component
               :is="headingTag"
               class="text-2xl font-extrabold tracking-tight text-highlighted text-balance"
-              :class="steady && 'line-clamp-2'"
             >
               {{ airline.name }}
             </component>
             <div class="mt-1 flex items-center gap-2 empty:hidden">
               <CeasedBadge :airline="airline" />
-              <p
-                v-if="airline.branding?.tagline"
-                class="min-w-0 text-muted"
-                :class="steady && 'line-clamp-1'"
-              >
+              <p v-if="airline.branding?.tagline" class="min-w-0 text-muted">
                 “{{ airline.branding.tagline }}”
               </p>
             </div>
@@ -61,47 +54,41 @@
             <dt class="text-muted">ICAO code</dt>
             <dd class="font-semibold text-highlighted">{{ airline.icao }}</dd>
           </div>
-          <!-- Callsign and years, then hubs below country and alliance;
-               left out of a steady spotlight, which keeps one height
-               for every airline. Both cells always show, so the pairs
-               below stay side by side. -->
-          <template v-if="!steady">
-            <div>
-              <dt class="text-muted">Callsign</dt>
-              <dd class="font-semibold text-highlighted">
-                {{ airline.callsign ?? '—' }}
-              </dd>
-            </div>
-            <div>
-              <dt class="text-muted">
-                {{ airline.ceased ? 'Operated' : 'Founded' }}
-              </dt>
-              <dd class="font-semibold text-highlighted">
-                {{ operatingYears(airline) ?? '—' }}
-              </dd>
-            </div>
-          </template>
+          <!-- Callsign and years, then hubs below country and alliance.
+               Both cells always show, so the pairs below stay side by
+               side. -->
+          <div>
+            <dt class="text-muted">Callsign</dt>
+            <dd class="font-semibold text-highlighted">
+              {{ airline.callsign ?? '—' }}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-muted">
+              {{ airline.ceased ? 'Operated' : 'Founded' }}
+            </dt>
+            <dd class="font-semibold text-highlighted">
+              {{ operatingYears(airline) ?? '—' }}
+            </dd>
+          </div>
           <div>
             <dt class="text-muted">Country</dt>
             <dd
               class="flex items-center gap-1.5 font-semibold text-highlighted"
             >
               <CountryFlags :iso="airline.country" />
-              <span class="min-w-0" :class="steady && 'truncate'">
+              <span class="min-w-0">
                 {{ countryName(airline.country) }}
               </span>
             </dd>
           </div>
           <div>
             <dt class="text-muted">Alliance</dt>
-            <dd
-              class="font-semibold text-highlighted"
-              :class="steady && 'truncate'"
-            >
+            <dd class="font-semibold text-highlighted">
               {{ airline.alliance ?? 'None' }}
             </dd>
           </div>
-          <div v-if="!steady && airline.hubs?.length" class="col-span-2">
+          <div v-if="airline.hubs?.length" class="col-span-2">
             <dt class="text-muted">
               {{ airline.hubs.length > 1 ? 'Hubs' : 'Hub' }}
             </dt>
@@ -111,7 +98,7 @@
           </div>
           <!-- The group it belongs to, the airlines it owns, and the
                airlines it was renamed or merged into or carried on -->
-          <template v-if="!steady">
+          <template v-if="formerNames.length || related.length">
             <!-- The names a renamed airline flew under before -->
             <div v-if="formerNames.length" class="col-span-2">
               <dt class="text-muted">Formerly</dt>
@@ -159,15 +146,9 @@
       </div>
 
       <div class="flex flex-col gap-5">
-        <div v-if="steady || colors.length" class="flex flex-col gap-2">
+        <div v-if="colors.length" class="flex flex-col gap-2">
           <p class="text-sm text-muted">Brand colors</p>
-          <ul
-            :class="
-              steady
-                ? 'grid grid-cols-2 grid-rows-[repeat(3,1.75rem)] gap-2'
-                : 'flex flex-wrap gap-2'
-            "
-          >
+          <ul class="flex flex-wrap gap-2">
             <li v-for="color in shownColors" :key="color">
               <button
                 type="button"
@@ -228,9 +209,6 @@ const props = defineProps({
   headingTag: { type: String, default: 'h2' },
   // Off on the airline's own page, which this would link back to
   pageLink: { type: Boolean, default: true },
-  // Keeps the same height for every airline, for places that swap airlines
-  // on their own like the home page, so the page below does not jump
-  steady: { type: Boolean, default: false },
 })
 
 const toast = useToast()
@@ -265,16 +243,15 @@ const colors = computed(() => {
   return [...new Set([...(logo?.colors ?? []), ...(icon?.colors ?? [])])]
 })
 
-// Gradient-heavy logos list dozens of stops; show a handful until asked.
-// A steady spotlight fills three rows of two, the last one left for "more".
-const COLOR_LIMIT = computed(() => (props.steady ? 5 : 6))
+// Gradient-heavy logos list dozens of stops; show a handful until asked
+const COLOR_LIMIT = 6
 const showAllColors = ref(false)
 watch(
   () => props.airline.slug,
   () => (showAllColors.value = false),
 )
 const shownColors = computed(() =>
-  showAllColors.value ? colors.value : colors.value.slice(0, COLOR_LIMIT.value),
+  showAllColors.value ? colors.value : colors.value.slice(0, COLOR_LIMIT),
 )
 const hiddenCount = computed(
   () => colors.value.length - shownColors.value.length,
