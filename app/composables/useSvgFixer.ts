@@ -33,6 +33,8 @@ export function useSvgFix(image: ImageFile) {
   const fixing = ref(false)
   const error = ref<string | null>(null)
   const mergePaths = ref(false)
+  // The color a color file with none of its own is drawn in
+  const fillColor = ref('')
   // The file as uploaded, and what the fix did
   const original = shallowRef<File | null>(null)
   const result = shallowRef<SvgFixer.SvgFixResult | null>(null)
@@ -51,7 +53,11 @@ export function useSvgFix(image: ImageFile) {
   }
   watch(image.file, () => {
     if (replacing) replacing = false
-    else reset()
+    else {
+      // A new upload may be another airline's, in another color
+      fillColor.value = ''
+      reset()
+    }
   })
 
   // `fileName` is the name to check by (a -mono.svg is held to currentColor);
@@ -101,6 +107,7 @@ export function useSvgFix(image: ImageFile) {
     fixing,
     error,
     mergePaths,
+    fillColor,
     original,
     result,
     fix,

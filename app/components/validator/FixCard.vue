@@ -11,6 +11,30 @@
           editor.
         </p>
       </div>
+      <!-- A color file with no color of its own: the one it is drawn in -->
+      <UFormField
+        v-if="needsColor"
+        label="Color"
+        :error="fillColor && !validColor ? 'Six-digit hex' : undefined"
+        :ui="{ label: 'text-xs' }"
+      >
+        <UInput
+          v-model="fillColor"
+          placeholder="#rrggbb"
+          class="w-36 font-mono"
+          :ui="{ leading: 'ps-1.5' }"
+        >
+          <template #leading>
+            <input
+              type="color"
+              aria-label="Pick the color"
+              :value="validColor ? fillColor : '#000000'"
+              class="size-6 cursor-pointer rounded border-0 bg-transparent p-0"
+              @input="fillColor = $event.target.value"
+            />
+          </template>
+        </UInput>
+      </UFormField>
       <UCheckbox
         v-if="canMerge"
         v-model="mergePaths"
@@ -26,6 +50,10 @@
         :disabled="needsName"
         @click="fix"
       />
+      <p v-if="needsColor" class="basis-full text-xs text-warning">
+        This color file has no color of its own. Pick the color to draw it in,
+        or set Variant to Mono if it is the monochrome version.
+      </p>
       <p v-if="needsName" class="basis-full text-xs text-warning">
         The file has no &lt;title&gt;: pick the airline above first, so the fix
         can add it.
@@ -141,12 +169,25 @@ const props = defineProps({
   // The name the repo expects (logo.svg, icon-mono.svg...): the fix checks
   // by it, and the download takes it
   fileName: { type: String, required: true },
+  // A color file with no color of its own, so it needs one to be filled
+  needsColor: Boolean,
 })
 
 defineEmits(['compare'])
 
-const { fixing, error, mergePaths, original, result, undo, reset, download } =
-  props.state
+const {
+  fixing,
+  error,
+  mergePaths,
+  fillColor,
+  original,
+  result,
+  undo,
+  reset,
+  download,
+} = props.state
+
+const validColor = computed(() => /^#[0-9a-f]{6}$/i.test(fillColor.value ?? ''))
 
 // Where the fixed file goes in a pull request: assets/<slug>/<fileName>
 const { airlines } = useAirlines()
@@ -173,6 +214,10 @@ function fix() {
   props.state.fix({
     fileName: props.fileName,
     type: props.type,
+    fillColor:
+      props.needsColor && validColor.value
+        ? fillColor.value.toLowerCase()
+        : undefined,
     airlineName: props.airlineName ?? undefined,
     isCatalogName: props.isCatalogName,
   })

@@ -55,6 +55,7 @@
         :can-merge="canMerge"
         :needed="needsFix"
         :has-title="hasTitle"
+        :needs-color="needsColor"
         @compare="compareWithOriginal"
       />
 
@@ -245,6 +246,35 @@ const derivedMono = computed(() => {
   const asset = airlines.find((a) => a.name === airline.value)?.assets?.[kind]
   return asset?.color && asset.colors.length === 1 ? kind : null
 })
+
+// A color file with no color of its own (currentColor, or default black):
+// one color at most, which the fix draws it in once it is given
+const needsColor = computed(
+  () =>
+    variant.value === 'color' &&
+    !!candidate.parsed.value &&
+    getSvgColors(candidate.parsed.value).size === 0,
+)
+// The catalog's color for it: the asset's own when it is single-color,
+// else the airline's primary color
+const suggestedColor = computed(() => {
+  const known = airlines.find((a) => a.name === airline.value)
+  if (!known) return null
+  const kind = checkName.value.replace(/(-mono)?\.svg$/, '')
+  const colors = known.assets?.[kind]?.colors ?? []
+  return colors.length === 1
+    ? colors[0]
+    : (known.branding?.primary_color ?? null)
+})
+
+// Offer that color for each new upload, and when the airline or the variant
+// changes, but never over one typed or picked
+function offerColor() {
+  if (needsColor.value && suggestedColor.value && !fixState.fillColor.value)
+    fixState.fillColor.value = suggestedColor.value
+}
+watch(() => candidate.parsed.value, offerColor, { flush: 'post' })
+watch([suggestedColor, needsColor], offerColor)
 
 // "Vietnam Airlines'" and "SpiceJet's"
 const possessive = (name) => (name.endsWith('s') ? `${name}'` : `${name}'s`)
