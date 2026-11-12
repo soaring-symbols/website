@@ -78,4 +78,16 @@ const nav = [
 .brand-mark {
   --flap: 1.1rem;
 }
+
+/* Dark flaps vanish into the dark header, so dark mode sets them on the
+   signal-yellow tile of the favicon. A ring, not padding, keeps the title
+   from shifting when the theme changes */
+.dark .brand-mark {
+  /* The yellow already sets the flaps apart: keep the favicon's colors */
+  --color-flap: #2b3139;
+  --flap-edge: transparent;
+  border-radius: 3px;
+  background: var(--color-signal-500);
+  box-shadow: 0 0 0 3px var(--color-signal-500);
+}
 </style>

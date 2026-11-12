@@ -61,6 +61,10 @@
   --ui-border: #262d35;
   --ui-primary: var(--ui-color-primary-400);
   --surface: #1a1f25;
+  /* The light-mode flaps all but vanish on dark cards: lift them a step
+     and give each a faint edge */
+  --color-flap: #38404b;
+  --flap-edge: rgb(255 255 255 / 0.08);
 }
 
 body {

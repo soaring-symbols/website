@@ -92,6 +92,7 @@ watch(
     color-mix(in srgb, var(--color-flap), black 12%) 50% 100%
   );
   color: var(--color-flap-ink);
+  box-shadow: inset 0 0 0 1px var(--flap-edge, transparent);
   font-size: calc(var(--flap, 1.25rem) * 0.82);
   font-weight: 800;
   line-height: 1;
