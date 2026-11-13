@@ -546,7 +546,7 @@ onMounted(() => {
   airports = AIRPORTS.map(place)
   hubs = props.hubs
     .filter((code) => HUBS[code])
-    .map((code) => place([code, ...HUBS[code]]))
+    .map((code) => place([code, HUBS[code].lat, HUBS[code].lon]))
   let lon = START_LON
   if (hubs.length) {
     // Flights reach the world's hubs; the globe stands over the airline's,
@@ -556,7 +556,7 @@ onMounted(() => {
       ...airports,
       ...Object.entries(HUBS)
         .filter(([code]) => !known.has(code))
-        .map(([code, [lat, lon]]) => place([code, lat, lon])),
+        .map(([code, { lat, lon }]) => place([code, lat, lon])),
     ]
     hubs = hubs.map((hub) => airports.find((a) => a.code === hub.code))
     const mean = (f) => hubs.reduce((sum, h) => sum + f(h), 0) / hubs.length
