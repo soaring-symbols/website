@@ -10,6 +10,8 @@ const soaringSymbolsDir = resolve(
 )
 const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
 const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
+// Where each airline's hubs are, for the globe on its page
+const airportsFile = resolve(soaringSymbolsDir, 'dist/airports.json')
 const airlines: { slug: string; former?: { slug?: string }[] }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
 )
@@ -81,6 +83,7 @@ export default defineNuxtConfig({
 
   alias: {
     '#airlines-data': airlinesFile,
+    '#airports-data': airportsFile,
   },
 
   runtimeConfig: {

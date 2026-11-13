@@ -98,37 +98,14 @@
           </div>
           <!-- The group it belongs to, the airlines it owns, and the
                airlines it was renamed or merged into or carried on -->
-          <template v-if="former.length || related.length">
-            <!-- What it flew under most recently, newest first, and how
-                 many more: each name (or the codes, when only they changed)
-                 links to the table of every former name and code on its
-                 page. On that page the link scrolls
-                 to the table; in the Browse slideover it opens the page
-                 there. -->
-            <div v-if="former.length" class="col-span-2">
-              <dt class="text-muted">Formerly</dt>
+          <template v-if="historySummary || related.length">
+            <!-- What it was before, in a few words, linking to the History
+                 section of its page: names and codes, alliances, logos -->
+            <div v-if="historySummary" class="col-span-2">
+              <dt class="text-muted">History</dt>
               <dd class="font-semibold">
-                <template v-for="(label, i) in former" :key="i">
-                  <ULink
-                    :to="formerLink"
-                    :class="linkClass"
-                    @click="scrollToFormer"
-                  >
-                    {{ label }}
-                  </ULink>
-                  <span
-                    v-if="i < former.length - 1 || formerMore"
-                    class="text-muted"
-                    >,
-                  </span>
-                </template>
-                <ULink
-                  v-if="formerMore"
-                  :to="formerLink"
-                  :class="linkClass"
-                  @click="scrollToFormer"
-                >
-                  {{ formerMore }} more
+                <ULink :to="historyLink" :class="linkClass">
+                  {{ historySummary }}
                 </ULink>
               </dd>
             </div>
@@ -211,10 +188,8 @@ const props = defineProps({
 const tint = computed(() => brandTint(props.airline))
 
 const {
-  former,
-  formerMore,
-  formerLink,
-  scrollToFormer,
+  historySummary,
+  historyLink,
   related,
   colors,
   shownColors,

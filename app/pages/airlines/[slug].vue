@@ -14,37 +14,65 @@
       <AirlineFileRows :airline="airline" />
     </UPageSection>
 
-    <!-- Marks the airline used before its current ones, newest first -->
+    <!-- What the airline was before: its names and codes, the alliances
+         it left and its older marks, one part each when it has them. The
+         hero's History button leads here. -->
     <UPageSection
-      v-if="history.length"
-      title="Earlier marks"
-      :description="`Logos ${airline.name} used before its current ones, kept for reference, with the years each was in use.`"
-      :ui="sectionUi"
-    >
-      <div class="flex flex-col gap-12">
-        <section v-for="mark in history" :key="mark.since">
-          <h3 class="mb-6 text-lg font-bold text-highlighted">
-            {{ markHeading(airline, mark) }}
-          </h3>
-          <AirlineFileRows :airline="airline" :mark="mark" />
-        </section>
-      </div>
-    </UPageSection>
-
-    <!-- Names and codes the airline used before, oldest first -->
-    <UPageSection
-      v-if="former.length"
-      id="former"
-      title="Earlier names and codes"
-      :description="`What ${airline.name} flew under before, with the year each stopped. A row lists only what changed then; a dash means it stayed the same.`"
+      v-if="hasHistory"
+      id="history"
+      title="History"
+      :description="historyDescription"
       :ui="sectionUi"
       class="scroll-mt-20"
     >
-      <UTable
-        :data="former"
-        :columns="formerColumns"
-        class="rounded-lg border border-default"
-      />
+      <div class="flex flex-col gap-12">
+        <section v-if="former.length" id="former" class="scroll-mt-20">
+          <h3 class="text-lg font-bold text-highlighted">
+            Earlier names and codes
+          </h3>
+          <p class="mt-1 mb-5 text-muted">
+            What {{ airline.name }} flew under before, with the year each
+            stopped. A row lists only what changed then; a dash means it stayed
+            the same.
+          </p>
+          <UTable
+            :data="former"
+            :columns="formerColumns"
+            class="rounded-lg border border-default"
+          />
+        </section>
+
+        <section
+          v-if="pastAlliances.length"
+          id="alliances"
+          class="scroll-mt-20"
+        >
+          <h3 class="text-lg font-bold text-highlighted">Alliances</h3>
+          <p class="mt-1 mb-5 text-muted">{{ allianceDescription }}</p>
+          <UTable
+            :data="pastAlliances"
+            :columns="allianceColumns"
+            class="rounded-lg border border-default"
+          />
+        </section>
+
+        <!-- Marks the airline used before its current ones, newest first -->
+        <section v-if="history.length" id="marks" class="scroll-mt-20">
+          <h3 class="text-lg font-bold text-highlighted">Earlier marks</h3>
+          <p class="mt-1 mb-6 text-muted">
+            Logos {{ airline.name }} used before its current ones, kept for
+            reference, with the years each was in use.
+          </p>
+          <div class="flex flex-col gap-10">
+            <section v-for="mark in history" :key="mark.since">
+              <h4 class="mb-5 font-bold text-highlighted">
+                {{ markHeading(airline, mark) }}
+              </h4>
+              <AirlineFileRows :airline="airline" :mark="mark" />
+            </section>
+          </div>
+        </section>
+      </div>
     </UPageSection>
 
     <!-- The same marks and data in code: package, CDN and API -->
@@ -149,6 +177,30 @@ const formerColumns = [
   { accessorKey: 'callsign', header: 'Callsign' },
   { accessorKey: 'until', header: 'Until' },
 ]
+
+// Alliances it left, oldest first, one row each
+const pastAlliances = (airline.alliance_history ?? []).map((item) => ({
+  alliance: item.alliance,
+  since: item.since ?? '—',
+  until: item.until,
+}))
+const allianceColumns = [
+  { accessorKey: 'alliance', header: 'Alliance' },
+  { accessorKey: 'since', header: 'Joined' },
+  { accessorKey: 'until', header: 'Left' },
+]
+const allianceDescription = `The alliances ${airline.name} was a member of before${airline.alliance ? ` joining ${airline.alliance}` : ''}, with the years it joined and left.`
+
+const hasHistory =
+  former.length > 0 || pastAlliances.length > 0 || history.length > 0
+const historyDescription = `What ${airline.name} was before: ${[
+  former.length && 'the names and codes it flew under',
+  pastAlliances.length && 'the alliances it left',
+  history.length && 'the logos it used',
+]
+  .filter(Boolean)
+  .join(', ')
+  .replace(/, ([^,]*)$/, ' and $1')}.`
 
 const description = [
   `Logo, icon and brand colors of ${airline.name}`,

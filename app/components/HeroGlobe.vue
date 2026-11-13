@@ -1,8 +1,10 @@
 <template>
   <!-- Decoration only: a dotted globe that turns slowly, with planes flying
-       between its airports. Hidden from screen readers; anyone who asks for
-       less motion gets the globe standing still, without planes. The page
-       gives it its size -->
+       between its airports. Given an airline's hubs it stands still over
+       them instead and marks each with a pulse, and no planes: the catalog
+       knows an airline's hubs, not its routes. Hidden from screen readers;
+       anyone who asks for less motion gets the globe standing still, without
+       planes or pulses. The page gives it its size -->
   <div ref="sky" class="hero-globe" aria-hidden="true">
     <canvas ref="canvas" />
   </div>
@@ -10,6 +12,7 @@
 
 <script setup>
 import { AIRPORTS } from '~/data/airports'
+import { HUBS } from '~/data/hubs'
 import { LAND_DOTS, LAND_STEP } from '~/data/land-dots'
 
 // Seen from above, nose along +x, about 36 units long
@@ -36,6 +39,11 @@ const APART = { airports: 0.12, labels: 0.09, planes: 0.12 }
 // Shades the dots are drawn in, from the limb to the middle
 const SHADES = 6
 
+const props = defineProps({
+  // IATA codes of an airline's hubs; without them the globe tours the world
+  hubs: { type: Array, default: () => [] },
+})
+
 const sky = ref()
 const canvas = ref()
 const colorMode = useColorMode()
@@ -43,11 +51,28 @@ const colorMode = useColorMode()
 let ctx
 let plane
 let dots
+// Degrees between the dots drawn: the home page's spinning globe draws every
+// other row of the land's grid, which keeps each frame light
+const HOME_STEP = 1.2
+let landStep = HOME_STEP
+// How far the eye is from the globe's centre, in radii: 0 is from afar, the
+// whole half facing us; closer, the middle grows and less shows towards the
+// rim, which still lands on the globe's edge
+let near = 0
+// The land drawn once, while the globe stands still
+let landCache = null
 let airports
 let width = 0
 let height = 0
 let globe = { x: 0, y: 0, r: 0 }
 let view = { lon: START_LON, c: [], e: [], n: [] }
+// How far the view is tilted and how fast it turns: the defaults, or still
+// over an airline's hubs
+let tilt = TILT
+let spin = SPIN
+let hubs = []
+// Seconds the globe has run, for the hubs' pulses
+let clock = 0
 let frame = 0
 let last = 0
 let visible = true
@@ -73,23 +98,42 @@ function toVector(lat, lon) {
   ]
 }
 
-// The land dots as unit vectors, unpacked from one bit per dot of the grid
-// that scripts/land-dots.mjs walks
-function readDots() {
+// Rows of `step` degrees from pole to pole, each with fewer dots towards
+// the poles so they sit evenly on the sphere: the grid scripts/land-dots.mjs
+// walks
+function gridRows(step) {
+  return Array.from({ length: Math.round(180 / step) }, (_, r) => {
+    const lat = 90 - (r + 0.5) * step
+    const cols = Math.max(1, Math.round((360 / step) * Math.cos(lat * RAD)))
+
+    return { lat, cols }
+  })
+}
+
+// The land dots as unit vectors, for a grid of `step` degrees (LAND_STEP or a
+// multiple of it), each on land when the dot of LAND_DOTS it falls in is
+function readDots(step) {
   const bytes = Uint8Array.from(atob(LAND_DOTS), (ch) => ch.charCodeAt(0))
+  const land = gridRows(LAND_STEP)
+  // Where each row's bits start
+  const starts = []
+  let start = 0
+  for (const row of land) {
+    starts.push(start)
+    start += row.cols
+  }
+  const onLand = (lat, lon) => {
+    const r = Math.min(land.length - 1, Math.floor((90 - lat) / LAND_STEP))
+    const c = Math.floor(((lon + 180) / 360) * land[r].cols)
+    const i = starts[r] + c
+
+    return bytes[i >> 3] & (128 >> (i & 7))
+  }
   const out = []
-  let i = 0
-  const rows = Math.round(180 / LAND_STEP)
-  for (let r = 0; r < rows; r++) {
-    const lat = 90 - (r + 0.5) * LAND_STEP
-    const cols = Math.max(
-      1,
-      Math.round((360 / LAND_STEP) * Math.cos(lat * RAD)),
-    )
-    for (let c = 0; c < cols; c++, i++) {
-      if (bytes[i >> 3] & (128 >> (i & 7))) {
-        out.push(...toVector(lat, -180 + ((c + 0.5) * 360) / cols))
-      }
+  for (const { lat, cols } of gridRows(step)) {
+    for (let c = 0; c < cols; c++) {
+      const lon = -180 + ((c + 0.5) * 360) / cols
+      if (onLand(lat, lon)) out.push(...toVector(lat, lon))
     }
   }
 
@@ -99,7 +143,7 @@ function readDots() {
 // The axes of the screen for a globe turned to `lon`: c points at us,
 // e to the right, n up
 function turn(lon) {
-  const lat = TILT * RAD
+  const lat = tilt * RAD
   const l = lon * RAD
   view = {
     lon,
@@ -118,22 +162,32 @@ function turn(lon) {
 }
 
 // Where a point lands on screen, and whether the globe hides it
+// How much a point `z` towards us is enlarged: by 1 from afar; from `near`
+// radii away, so that the rim still lands on the globe's edge
+function scaleAt(z) {
+  return near ? Math.sqrt(near * near - 1) / (near - z) : 1
+}
+
+// How far towards us a point must be to show over the rim
+const horizon = () => (near ? 1 / near : 0)
+
 function project(v) {
   const x = dot3(v, view.e)
   const y = dot3(v, view.n)
   const z = dot3(v, view.c)
+  const k = scaleAt(z)
 
   return {
-    x: globe.x + x * globe.r,
-    y: globe.y - y * globe.r,
+    x: globe.x + x * k * globe.r,
+    y: globe.y - y * k * globe.r,
     z,
-    shown: z > 0 || x * x + y * y > 1,
+    shown: z > horizon() || x * x + y * y > 1,
   }
 }
 
 // How squarely a point faces us once the globe has turned to `lon`
 function facing(v, lon) {
-  const lat = TILT * RAD
+  const lat = tilt * RAD
 
   return (
     Math.cos(lat) * (v[0] * Math.cos(lon * RAD) + v[1] * Math.sin(lon * RAD)) +
@@ -172,19 +226,27 @@ function routePoints(f, steps = 24) {
 
 // Whether a new flight keeps clear of the ones in the air: its airports
 // away from theirs, neither route passing over the other's airport codes,
-// and the planes never meeting while both fly
+// and the planes never meeting while both fly. Two flights may share an
+// airport (an airline's hub), whose code is drawn once.
 function keepsClear(f) {
   const ends = [f.from.v, f.to.v]
   const route = routePoints(f)
+  const near = (a, b, gap) => a !== b && distance(a, b) < gap
   for (const g of flights) {
     const theirs = [g.from.v, g.to.v]
-    if (ends.some((a) => theirs.some((b) => distance(a, b) < APART.airports)))
+    const shared = theirs.filter((b) => ends.includes(b))
+    const others = (list) => list.filter((b) => !shared.includes(b))
+    if (ends.some((a) => theirs.some((b) => near(a, b, APART.airports))))
       return false
-    if (route.some((p) => theirs.some((b) => distance(p, b) < APART.labels)))
+    if (
+      route.some((p) =>
+        others(theirs).some((b) => distance(p, b) < APART.labels),
+      )
+    )
       return false
     if (
       routePoints(g).some((p) =>
-        ends.some((a) => distance(p, a) < APART.labels),
+        others(ends).some((a) => distance(p, a) < APART.labels),
       )
     )
       return false
@@ -198,17 +260,19 @@ function keepsClear(f) {
   return true
 }
 
+const pick = (list) => list[Math.floor(Math.random() * list.length)]
+
 // A new flight between two airports that face us for all of it, clear of
 // the flights already in the air
 function takeOff() {
   for (let tries = 0; tries < 120; tries++) {
-    const from = airports[Math.floor(Math.random() * airports.length)]
-    const to = airports[Math.floor(Math.random() * airports.length)]
+    const from = pick(airports)
+    const to = pick(airports)
     if (from === to) continue
     const angle = Math.acos(clamp(dot3(from.v, to.v), -1, 1))
     if (angle < ROUTE[0] * RAD || angle > ROUTE[1] * RAD) continue
     const duration = 2.6 + angle * 5
-    const end = view.lon - SPIN * (duration + LANDED)
+    const end = view.lon - spin * (duration + LANDED)
     const seen = (v) => facing(v, view.lon) > 0.3 && facing(v, end) > 0.3
     if (!seen(from.v) || !seen(to.v)) continue
     const flight = {
@@ -284,40 +348,90 @@ function drawGlobe() {
     ctx.stroke()
   }
 
-  // The land, one path per shade so the whole globe takes a few fills
-  const size = clamp(r * LAND_STEP * RAD * 0.42, 1.2, 3)
-  const half = size / 2
+  drawLand()
+}
+
+// The land, one path per shade so the whole globe takes a few fills. A
+// globe that stands still draws it once and copies it after that.
+function drawLand() {
+  // Hidden (display: none on a narrow screen), there is nothing to draw on
+  if (!canvas.value.width || !canvas.value.height) return
+  const key = [
+    canvas.value.width,
+    canvas.value.height,
+    colors.land,
+    colors.landAlpha,
+  ].join()
+  if (landCache?.key === key) {
+    ctx.drawImage(landCache.canvas, 0, 0, width, height)
+    return
+  }
+  const target = spin ? ctx : landLayer()
+  const { x, y, r } = globe
+  // Up close the dots grow with the globe, so they start smaller and fainter
+  // than the home page's to keep the land light
+  const base = clamp(r * landStep * RAD * (near ? 0.34 : 0.42), 1.2, 3)
+  const alpha = colors.landAlpha * (near ? 0.7 : 1)
   const shades = Array.from({ length: SHADES }, () => new Path2D())
   const { c, e, n } = view
+  const h = horizon()
   for (let i = 0; i < dots.length; i += 3) {
     const z = dots[i] * c[0] + dots[i + 1] * c[1] + dots[i + 2] * c[2]
-    if (z <= 0) continue
+    if (z <= h) continue
+    const k = scaleAt(z)
+    const size = base * k
     const sx =
-      x + (dots[i] * e[0] + dots[i + 1] * e[1] + dots[i + 2] * e[2]) * r
+      x + (dots[i] * e[0] + dots[i + 1] * e[1] + dots[i + 2] * e[2]) * k * r
     const sy =
-      y - (dots[i] * n[0] + dots[i + 1] * n[1] + dots[i + 2] * n[2]) * r
-    shades[Math.min(SHADES - 1, Math.floor(z * SHADES))].rect(
-      sx - half,
-      sy - half,
+      y - (dots[i] * n[0] + dots[i + 1] * n[1] + dots[i + 2] * n[2]) * k * r
+    shades[Math.min(SHADES - 1, Math.floor(((z - h) / (1 - h)) * SHADES))].rect(
+      sx - size / 2,
+      sy - size / 2,
       size,
       size,
     )
   }
-  ctx.fillStyle = colors.land
+  target.fillStyle = colors.land
   shades.forEach((shade, i) => {
-    ctx.globalAlpha = colors.landAlpha * (0.2 + (0.8 * (i + 1)) / SHADES)
-    ctx.fill(shade)
+    target.globalAlpha = alpha * (0.2 + (0.8 * (i + 1)) / SHADES)
+    target.fill(shade)
   })
-  ctx.globalAlpha = 1
+  target.globalAlpha = 1
+  if (!spin) {
+    landCache.key = key
+    ctx.drawImage(landCache.canvas, 0, 0, width, height)
+  }
+}
+
+// A cleared offscreen canvas the size of the visible one, for the land
+function landLayer() {
+  const layer = document.createElement('canvas')
+  layer.width = canvas.value.width
+  layer.height = canvas.value.height
+  const layerCtx = layer.getContext('2d')
+  layerCtx.setTransform(ctx.getTransform())
+  landCache = { key: null, canvas: layer }
+
+  return layerCtx
 }
 
 function drawAirports() {
   const active = new Set(flights.flatMap((f) => [f.from.code, f.to.code]))
-  ctx.fillStyle = colors.airport
+  const own = new Set(hubs)
   for (const a of airports) {
     if (active.has(a.code)) continue
     const p = project(a.v)
-    if (p.z <= 0.05) continue
+    if (p.z <= horizon() + 0.05) continue
+    // The airline's hubs stand out from the rest
+    if (own.has(a)) {
+      ctx.globalAlpha = 1
+      ctx.fillStyle = colors.route
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2)
+      ctx.fill()
+      continue
+    }
+    ctx.fillStyle = colors.airport
     ctx.globalAlpha = 0.35 + 0.5 * p.z
     ctx.beginPath()
     ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2)
@@ -359,7 +473,7 @@ function drawRoute(f, u, fade) {
 
 function drawEndpoint(airport, fade, pulse) {
   const p = project(airport.v)
-  if (p.z <= 0) return
+  if (p.z <= horizon()) return
   ctx.globalAlpha = fade
   ctx.fillStyle = colors.route
   ctx.beginPath()
@@ -425,10 +539,24 @@ function drawPlane(f, u) {
   ctx.restore()
 }
 
+// An airline's hubs, each labelled and sending out a ring every few
+// seconds, out of step with the others. Hubs in one city (Seoul's GMP and
+// ICN) share the first one's label rather than pile up.
+function drawHubs() {
+  const labelled = []
+  hubs.forEach((hub, i) => {
+    if (labelled.some((other) => distance(hub.v, other.v) < APART.airports))
+      return
+    labelled.push(hub)
+    drawEndpoint(hub, 1, still ? 0 : (clock / 2.4 + i * 0.37) % 1)
+  })
+}
+
 function draw() {
   ctx.clearRect(0, 0, width, height)
   drawGlobe()
   drawAirports()
+  if (hubs.length) drawHubs()
   for (const f of flights) {
     const u = progress(f, f.t)
     const fade = 1 - f.landed / LANDED
@@ -445,7 +573,8 @@ function tick(now) {
   colorsAge += dt
   if (colorsAge > 0.5) readColors()
 
-  turn(view.lon - SPIN * dt)
+  clock += dt
+  turn(view.lon - spin * dt)
   for (const f of flights) {
     if (f.t < f.duration) f.t += dt
     else f.landed += dt
@@ -453,7 +582,7 @@ function tick(now) {
   for (let i = flights.length - 1; i >= 0; i--) {
     if (flights[i].landed >= LANDED) flights.splice(i, 1)
   }
-  if (flights.length < MAX_FLIGHTS && (wait -= dt) <= 0) {
+  if (!hubs.length && flights.length < MAX_FLIGHTS && (wait -= dt) <= 0) {
     takeOff()
     wait = rand(...GAP)
   }
@@ -503,12 +632,40 @@ onMounted(() => {
   still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   ctx = canvas.value.getContext('2d')
   plane = new Path2D(PLANE_PATH)
-  dots = readDots()
-  airports = AIRPORTS.map(([code, lat, lon]) => ({
+  const place = ([code, lat, lon]) => ({
     code,
+    lat,
+    lon,
     v: toVector(lat, lon),
-  }))
-  turn(START_LON)
+  })
+  airports = AIRPORTS.map(place)
+  hubs = props.hubs
+    .filter((code) => HUBS[code])
+    .map((code) => place([code, HUBS[code].lat, HUBS[code].lon]))
+  let lon = START_LON
+  if (hubs.length) {
+    // Only its hubs on the globe, which stands over them, at their middle,
+    // tilted towards them
+    airports = hubs
+    const mean = (f) => hubs.reduce((sum, h) => sum + f(h), 0) / hubs.length
+    lon =
+      Math.atan2(
+        mean((h) => Math.sin(h.lon * RAD)),
+        mean((h) => Math.cos(h.lon * RAD)),
+      ) / RAD
+    tilt = clamp(
+      mean((h) => h.lat),
+      -50,
+      60,
+    )
+    spin = 0
+    // A closer look than the home page's, with finer land to see the
+    // country by, while the rim still shows it is a globe
+    near = 1.5
+  }
+  landStep = hubs.length ? LAND_STEP : HOME_STEP
+  dots = readDots(landStep)
+  turn(lon)
   readColors()
   resize()
   resizeObserver = new ResizeObserver(resize)
