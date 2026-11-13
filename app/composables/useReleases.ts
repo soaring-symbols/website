@@ -13,14 +13,12 @@ export interface Release {
   // When the release commit was made, which is when the version reached
   // npm; GitHub's published_at is when its release page was created
   date: string
-  url: string
   html: string
 }
 
 interface GitHubRelease {
   tag_name: string
   created_at: string
-  html_url: string
   body_html?: string
   draft: boolean
   prerelease: boolean
@@ -38,7 +36,6 @@ export async function fetchReleases(): Promise<Release[]> {
     .map((release) => ({
       tag: release.tag_name,
       date: release.created_at,
-      url: release.html_url,
       html: release.body_html ?? '',
     }))
 }

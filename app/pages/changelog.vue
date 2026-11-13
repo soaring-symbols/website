@@ -62,17 +62,6 @@
           <!-- eslint-disable-next-line vue/no-v-html -->
           <div class="release-notes mt-4" v-html="release.html" />
         </template>
-
-        <template #actions>
-          <ULink
-            :to="release.url"
-            target="_blank"
-            class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-highlighted"
-          >
-            <UIcon name="simple-icons:github" class="size-4" />
-            <span class="cap-center">{{ release.tag }} on GitHub</span>
-          </ULink>
-        </template>
       </UChangelogVersion>
     </UChangelogVersions>
 
