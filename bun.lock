@@ -9,7 +9,7 @@
         "@resvg/resvg-wasm": "^2.6.2",
         "nuxt": "^4.6.4",
         "slugify": "^1.6.6",
-        "soaring-symbols": "^0.3.2",
+        "soaring-symbols": "^0.3.3",
       },
       "devDependencies": {
         "@commitlint/cli": "^21.2.4",
@@ -1848,7 +1848,7 @@
 
     "smob": ["smob@1.6.2", "", {}, "sha512-RQsvleCbF8cVHEv+xuDGaA4pOizFqJ0GgjtMSRo6oP8pnN7WsigHgVGey6aILRBKv4W2YOMHLqbKdnB6hpB9fw=="],
 
-    "soaring-symbols": ["soaring-symbols@0.3.2", "", { "peerDependencies": { "@resvg/resvg-wasm": "2.6.2" }, "optionalPeers": ["@resvg/resvg-wasm"] }, "sha512-+o6Y4bwSMrt5GBRlFgWYDOZ6WebncZ4G7TQIKBhVcge33p4plH7IMcffSoRp8jHtrY6gwt09pB93evH9OZ1YkA=="],
+    "soaring-symbols": ["soaring-symbols@0.3.3", "", { "peerDependencies": { "@resvg/resvg-wasm": "2.6.2" }, "optionalPeers": ["@resvg/resvg-wasm"] }, "sha512-oPA2B8ISGUlmpjY0HodLZkNoyqMxR/6vSQw3Ag/FlsH6ZLFBt1mVucg5o5LBz7fdrUS+QCP4Fz3AurNhjbGx7w=="],
 
     "source-map": ["source-map@0.7.6", "", {}, "sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ=="],
 
