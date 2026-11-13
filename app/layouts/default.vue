@@ -65,6 +65,7 @@ const nav = [
   { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
   { label: 'Validate', to: '/validate', icon: 'solar:check-circle-linear' },
   { label: 'Ecosystem', to: '/ecosystem', icon: 'solar:widget-add-linear' },
+  { label: 'Changelog', to: '/changelog', icon: 'solar:history-linear' },
 ]
 </script>
 
