@@ -28,7 +28,7 @@
     <UChangelogVersions
       v-if="releases?.length"
       class="py-12 sm:py-16"
-      :ui="{ indicator: 'overflow-visible' }"
+      :ui="{ indicator: 'overflow-visible z-10' }"
     >
       <template #indicator>
         <FlightPathIndicator />

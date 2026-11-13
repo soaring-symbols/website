@@ -14,81 +14,116 @@
 
 <script setup>
 // The indicator for UChangelogVersions (its #indicator slot): a plane that
-// waits at a release's dot while it is read and flies down the line to the
-// next one as that release reaches the reading line, leaving a trail. It
-// faces the way the page scrolls.
+// stands in for the dot of the release being read and flies down the line to
+// the next one as that release nears the reading line, leaving a trail. It
+// faces the way it flies.
 
 // Where the eye reads, as a share of the viewport height from the top
 const READING_LINE = 0.35
-// How much of the way to the next dot the plane flies over, at most in pixels
-const FLIGHT_SHARE = 0.4
-const FLIGHT_MAX = 200
+// The share of the scroll between two dots the flight takes: the rest of the
+// way, the plane waits at the release being read
+const FLIGHT_SHARE = 0.7
+// How quickly the plane catches up with the scroll, in milliseconds: it
+// glides rather than jumping when the page moves fast
+const GLIDE = 280
+// How close to a dot the plane is parked on it, in pixels
+const PARKED = 2
 
 const track = ref(null)
 const y = ref(0)
 const heading = ref('down')
 
+let target = 0
+let dots = []
+
 // Ease in and out, so the plane leaves and lands gently
 const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2)
 
-// The dots' centers, from the top of the track
-function dotCenters(trackTop) {
-  const root = track.value?.parentElement?.parentElement
-  if (!root) return []
+const reducedMotion = () =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  return [...root.querySelectorAll('[data-slot="dot"]')].map((dot) => {
-    const rect = dot.getBoundingClientRect()
-    return rect.top + rect.height / 2 - trackTop
-  })
-}
-
-function update() {
+// Where the plane should be for the current scroll
+function measure() {
   const el = track.value
-  if (!el) return
+  const root = el?.parentElement?.parentElement
+  if (!root) return
 
   const trackTop = el.getBoundingClientRect().top
-  const dots = dotCenters(trackTop)
+  dots = [...root.querySelectorAll('[data-slot="dot"]')].map((dot) => {
+    const rect = dot.getBoundingClientRect()
+    return { el: dot, y: rect.top + rect.height / 2 - trackTop }
+  })
   if (!dots.length) return
 
   const reading = window.innerHeight * READING_LINE - trackTop
-  let next = dots[0]
+  const first = dots[0].y
+  const last = dots.at(-1).y
 
-  if (reading >= dots.at(-1)) {
-    next = dots.at(-1)
-  } else if (reading > dots[0]) {
-    const i = dots.findIndex((dot) => dot > reading) - 1
-    const from = dots[i]
-    const to = dots[i + 1]
-    const flight = Math.min((to - from) * FLIGHT_SHARE, FLIGHT_MAX)
+  if (reading <= first) {
+    target = first
+  } else if (reading >= last) {
+    target = last
+  } else {
+    const i = dots.findIndex((dot) => dot.y > reading) - 1
+    const from = dots[i].y
+    const to = dots[i + 1].y
+    const flight = (to - from) * FLIGHT_SHARE
     const t = Math.min(Math.max((reading - (to - flight)) / flight, 0), 1)
-    next = from + (to - from) * ease(t)
+    target = from + (to - from) * ease(t)
   }
+}
 
-  if (next !== y.value) heading.value = next > y.value ? 'down' : 'up'
-  y.value = next
+// The plane takes the place of the dot it is parked on
+function park() {
+  for (const dot of dots) {
+    dot.el.style.transition = 'opacity 150ms'
+    dot.el.style.opacity = Math.abs(dot.y - y.value) < PARKED ? '0' : ''
+  }
 }
 
 let frame = 0
+let last = 0
 let observer
-function schedule() {
-  cancelAnimationFrame(frame)
-  frame = requestAnimationFrame(update)
+
+function step(now) {
+  const dt = last ? now - last : 16
+  last = now
+
+  const gap = target - y.value
+  if (Math.abs(gap) < 0.25 || reducedMotion()) {
+    y.value = target
+  } else {
+    heading.value = gap > 0 ? 'down' : 'up'
+    y.value += gap * (1 - Math.exp(-dt / GLIDE))
+  }
+  park()
+
+  frame = y.value === target ? 0 : requestAnimationFrame(step)
+  if (!frame) last = 0
+}
+
+function update() {
+  measure()
+  if (!frame) frame = requestAnimationFrame(step)
 }
 
 onMounted(() => {
-  update()
+  measure()
+  y.value = target
+  park()
   // The dots move when fonts load or the releases are read again
-  observer = new ResizeObserver(schedule)
+  observer = new ResizeObserver(update)
   observer.observe(track.value.parentElement.parentElement)
-  window.addEventListener('scroll', schedule, { passive: true })
-  window.addEventListener('resize', schedule, { passive: true })
+  window.addEventListener('scroll', update, { passive: true })
+  window.addEventListener('resize', update, { passive: true })
 })
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(frame)
   observer?.disconnect()
-  window.removeEventListener('scroll', schedule)
-  window.removeEventListener('resize', schedule)
+  window.removeEventListener('scroll', update)
+  window.removeEventListener('resize', update)
+  for (const dot of dots) dot.el.style.opacity = ''
 })
 </script>
 
