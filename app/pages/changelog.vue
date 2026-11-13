@@ -40,6 +40,7 @@
         :key="release.tag"
         :title="release.tag"
         :date="release.date"
+        :authors="authors"
         :badge="
           index === 0
             ? {
@@ -62,7 +63,7 @@
           <div class="release-notes mt-4" v-html="release.html" />
         </template>
 
-        <template #footer>
+        <template #actions>
           <ULink
             :to="release.url"
             target="_blank"
@@ -110,6 +111,26 @@ useSeoMeta({
 defineOgImage('Site', { title: meta.title, description: meta.description })
 
 const releases = useReleases()
+
+// Who makes the releases: the maintainer, with Claude Code
+const authors = [
+  {
+    name: 'Anh Thang',
+    description: '@anhthang',
+    avatar: { src: 'https://github.com/anhthang.png?size=64', loading: 'lazy' },
+    to: 'https://github.com/anhthang',
+    target: '_blank',
+    ui: { wrapper: 'cap-center' },
+  },
+  {
+    name: 'Claude',
+    description: 'Claude Code',
+    avatar: { icon: 'simple-icons:claude', ui: { icon: 'text-[#d97757]' } },
+    to: 'https://claude.com/claude-code',
+    target: '_blank',
+    ui: { wrapper: 'cap-center' },
+  },
+]
 </script>
 
 <style scoped>
