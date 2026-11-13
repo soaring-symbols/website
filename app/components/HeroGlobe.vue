@@ -1,8 +1,9 @@
 <template>
   <!-- Decoration only: a dotted globe that turns slowly, with planes flying
-       between its airports. Hidden from screen readers; anyone who asks for
-       less motion gets the globe standing still, without planes. The page
-       gives it its size -->
+       between its airports. Given an airline's hubs it stands still over
+       them instead, every flight leaving or reaching one. Hidden from screen
+       readers; anyone who asks for less motion gets the globe standing
+       still, without planes. The page gives it its size -->
   <div ref="sky" class="hero-globe" aria-hidden="true">
     <canvas ref="canvas" />
   </div>
@@ -10,6 +11,7 @@
 
 <script setup>
 import { AIRPORTS } from '~/data/airports'
+import { HUBS } from '~/data/hubs'
 import { LAND_DOTS, LAND_STEP } from '~/data/land-dots'
 
 // Seen from above, nose along +x, about 36 units long
@@ -36,6 +38,11 @@ const APART = { airports: 0.12, labels: 0.09, planes: 0.12 }
 // Shades the dots are drawn in, from the limb to the middle
 const SHADES = 6
 
+const props = defineProps({
+  // IATA codes of an airline's hubs; without them the globe tours the world
+  hubs: { type: Array, default: () => [] },
+})
+
 const sky = ref()
 const canvas = ref()
 const colorMode = useColorMode()
@@ -48,6 +55,11 @@ let width = 0
 let height = 0
 let globe = { x: 0, y: 0, r: 0 }
 let view = { lon: START_LON, c: [], e: [], n: [] }
+// How far the view is tilted and how fast it turns: the defaults, or still
+// over an airline's hubs
+let tilt = TILT
+let spin = SPIN
+let hubs = []
 let frame = 0
 let last = 0
 let visible = true
@@ -99,7 +111,7 @@ function readDots() {
 // The axes of the screen for a globe turned to `lon`: c points at us,
 // e to the right, n up
 function turn(lon) {
-  const lat = TILT * RAD
+  const lat = tilt * RAD
   const l = lon * RAD
   view = {
     lon,
@@ -133,7 +145,7 @@ function project(v) {
 
 // How squarely a point faces us once the globe has turned to `lon`
 function facing(v, lon) {
-  const lat = TILT * RAD
+  const lat = tilt * RAD
 
   return (
     Math.cos(lat) * (v[0] * Math.cos(lon * RAD) + v[1] * Math.sin(lon * RAD)) +
@@ -172,19 +184,27 @@ function routePoints(f, steps = 24) {
 
 // Whether a new flight keeps clear of the ones in the air: its airports
 // away from theirs, neither route passing over the other's airport codes,
-// and the planes never meeting while both fly
+// and the planes never meeting while both fly. Two flights may share an
+// airport (an airline's hub), whose code is drawn once.
 function keepsClear(f) {
   const ends = [f.from.v, f.to.v]
   const route = routePoints(f)
+  const near = (a, b, gap) => a !== b && distance(a, b) < gap
   for (const g of flights) {
     const theirs = [g.from.v, g.to.v]
-    if (ends.some((a) => theirs.some((b) => distance(a, b) < APART.airports)))
+    const shared = theirs.filter((b) => ends.includes(b))
+    const others = (list) => list.filter((b) => !shared.includes(b))
+    if (ends.some((a) => theirs.some((b) => near(a, b, APART.airports))))
       return false
-    if (route.some((p) => theirs.some((b) => distance(p, b) < APART.labels)))
+    if (
+      route.some((p) =>
+        others(theirs).some((b) => distance(p, b) < APART.labels),
+      )
+    )
       return false
     if (
       routePoints(g).some((p) =>
-        ends.some((a) => distance(p, a) < APART.labels),
+        others(ends).some((a) => distance(p, a) < APART.labels),
       )
     )
       return false
@@ -198,17 +218,20 @@ function keepsClear(f) {
   return true
 }
 
+const pick = (list) => list[Math.floor(Math.random() * list.length)]
+
 // A new flight between two airports that face us for all of it, clear of
-// the flights already in the air
+// the flights already in the air; on an airline's globe, one end is a hub
 function takeOff() {
   for (let tries = 0; tries < 120; tries++) {
-    const from = airports[Math.floor(Math.random() * airports.length)]
-    const to = airports[Math.floor(Math.random() * airports.length)]
+    let from = hubs.length ? pick(hubs) : pick(airports)
+    let to = pick(airports)
+    if (hubs.length && Math.random() < 0.5) [from, to] = [to, from]
     if (from === to) continue
     const angle = Math.acos(clamp(dot3(from.v, to.v), -1, 1))
     if (angle < ROUTE[0] * RAD || angle > ROUTE[1] * RAD) continue
     const duration = 2.6 + angle * 5
-    const end = view.lon - SPIN * (duration + LANDED)
+    const end = view.lon - spin * (duration + LANDED)
     const seen = (v) => facing(v, view.lon) > 0.3 && facing(v, end) > 0.3
     if (!seen(from.v) || !seen(to.v)) continue
     const flight = {
@@ -313,11 +336,21 @@ function drawGlobe() {
 
 function drawAirports() {
   const active = new Set(flights.flatMap((f) => [f.from.code, f.to.code]))
-  ctx.fillStyle = colors.airport
+  const own = new Set(hubs)
   for (const a of airports) {
     if (active.has(a.code)) continue
     const p = project(a.v)
     if (p.z <= 0.05) continue
+    // The airline's hubs stand out from the rest
+    if (own.has(a)) {
+      ctx.globalAlpha = 1
+      ctx.fillStyle = colors.route
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2)
+      ctx.fill()
+      continue
+    }
+    ctx.fillStyle = colors.airport
     ctx.globalAlpha = 0.35 + 0.5 * p.z
     ctx.beginPath()
     ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2)
@@ -445,7 +478,7 @@ function tick(now) {
   colorsAge += dt
   if (colorsAge > 0.5) readColors()
 
-  turn(view.lon - SPIN * dt)
+  turn(view.lon - spin * dt)
   for (const f of flights) {
     if (f.t < f.duration) f.t += dt
     else f.landed += dt
@@ -504,11 +537,42 @@ onMounted(() => {
   ctx = canvas.value.getContext('2d')
   plane = new Path2D(PLANE_PATH)
   dots = readDots()
-  airports = AIRPORTS.map(([code, lat, lon]) => ({
+  const place = ([code, lat, lon]) => ({
     code,
+    lat,
+    lon,
     v: toVector(lat, lon),
-  }))
-  turn(START_LON)
+  })
+  airports = AIRPORTS.map(place)
+  hubs = props.hubs
+    .filter((code) => HUBS[code])
+    .map((code) => place([code, ...HUBS[code]]))
+  let lon = START_LON
+  if (hubs.length) {
+    // Flights reach the world's hubs; the globe stands over the airline's,
+    // at their middle, tilted towards them
+    const known = new Set(AIRPORTS.map(([code]) => code))
+    airports = [
+      ...airports,
+      ...Object.entries(HUBS)
+        .filter(([code]) => !known.has(code))
+        .map(([code, [lat, lon]]) => place([code, lat, lon])),
+    ]
+    hubs = hubs.map((hub) => airports.find((a) => a.code === hub.code))
+    const mean = (f) => hubs.reduce((sum, h) => sum + f(h), 0) / hubs.length
+    lon =
+      Math.atan2(
+        mean((h) => Math.sin(h.lon * RAD)),
+        mean((h) => Math.cos(h.lon * RAD)),
+      ) / RAD
+    tilt = clamp(
+      mean((h) => h.lat),
+      -50,
+      60,
+    )
+    spin = 0
+  }
+  turn(lon)
   readColors()
   resize()
   resizeObserver = new ResizeObserver(resize)
