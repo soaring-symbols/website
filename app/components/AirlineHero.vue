@@ -2,9 +2,13 @@
   <!-- The top of an airline's page: who it is, its codes and relations, and
        its brand colors, with its hubs on a globe. One layout for every
        airline; only the data, the marks and the colors change. On a wide
-       screen the globe takes a third; narrower, it is left out. -->
+       screen the globe takes a third; narrower, or for an airline without
+       a hub to show, it is left out. -->
   <article class="grid gap-10 xl:grid-cols-3">
-    <div class="flex min-w-0 flex-col gap-8 xl:col-span-2">
+    <div
+      class="flex min-w-0 flex-col gap-8"
+      :class="mappedHubs.length ? 'xl:col-span-2' : 'xl:col-span-3'"
+    >
       <!-- Identity: the logo, then the name with its tagline and a line of
            where it is from, its alliance and its years -->
       <header
@@ -105,7 +109,7 @@
       <!-- Codes first, a cell each; relations to other airlines take a wider
          cell, since some list a dozen names. No boxes: the icon tiles and
          the spacing set the cells apart. -->
-      <dl class="grid grid-cols-2 gap-x-6 gap-y-5 md:grid-cols-4">
+      <dl class="grid grid-cols-2 gap-x-6 gap-y-5 md:grid-cols-3">
         <div
           v-for="item in facts"
           :key="item.label"
@@ -280,6 +284,6 @@ const facts = computed(() => {
 function span(item) {
   if (!item.wide) return ''
 
-  return item.links?.length > 3 ? 'col-span-2 md:col-span-4' : 'col-span-2'
+  return item.links?.length > 3 ? 'col-span-2 md:col-span-3' : 'col-span-2'
 }
 </script>
