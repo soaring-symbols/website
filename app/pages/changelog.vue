@@ -11,7 +11,7 @@
           target: '_blank',
           color: 'neutral',
           variant: 'outline',
-          ui: { label: 'block cap-center' },
+          ui: { label: 'block' },
         },
         {
           label: 'RSS feed',
@@ -20,7 +20,7 @@
           target: '_blank',
           color: 'neutral',
           variant: 'outline',
-          ui: { label: 'block cap-center' },
+          ui: { label: 'block' },
         },
       ]"
     />
@@ -48,13 +48,11 @@
                 label: 'Latest',
                 color: 'primary',
                 variant: 'subtle',
-                ui: { label: 'cap-center' },
               }
             : undefined
         "
         :ui="{
           container: 'max-w-2xl',
-          date: 'cap-center',
           title: 'font-mono',
         }"
       >

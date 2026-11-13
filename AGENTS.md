@@ -17,12 +17,11 @@ Instructions for AI coding agents working on the Soaring Symbols website. `READM
 
 ### Line up text with `cap-center`
 
-Overpass, the site's font, sits its capitals high in the line box, so text set next to an icon or inside a button, badge or other box looks about a tenth of an em too high. The `cap-center` utility (`app/assets/main.css`) moves it down to line up. Add it every time, without being asked:
+Overpass, the site's font, sits its capitals high in the line box, so text set next to an icon or inside a button, badge or other box looks about a tenth of an em too high. The `cap-center` utility (`app/assets/main.css`) moves it down to line up.
+
+`app.config.ts` already applies it to button, badge, tab and radio labels, the navigation menu's link labels and changelog dates, so don't add it to those; a button label shown on phones only needs `ui: { label: 'block' }`. Page header titles (`pageHeader.title`) have it too. Add it yourself, without being asked, everywhere else text lines up with an icon or box:
 
 - Text beside an icon in the same row: `<UIcon … /><span class="cap-center">Label</span>`.
-- Button labels, which `app.config.ts` hides below `md`: show and line one up with `ui: { label: 'block cap-center' }` (or `'cap-center'` when it may stay hidden on phones).
-- Badge labels: `ui: { label: 'cap-center' }`, also on a `badge` passed as an object to another component.
-- Short text set level with a mark in another column, such as a date beside a timeline dot (`ui: { date: 'cap-center' }`).
-- Already applied, so don't add it again: page header titles (`pageHeader.title` in `app.config.ts`) and the header navigation labels (`app/layouts/default.vue`).
+- A component whose label `app.config.ts` doesn't cover: add it to that component's slot there rather than on each use, when every use needs it.
 
 Leave it off paragraphs and other running text, and never nest it (the shift adds up). Check the result in a zoomed screenshot: the middle of the capitals should sit level with the middle of the icon or box.

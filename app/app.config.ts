@@ -62,7 +62,12 @@ export default defineAppConfig({
         variant: 'soft',
       },
     },
+    // Overpass sits its capitals high (cap-center in main.css), so the labels
+    // set beside an icon or in a box drop to line up, here once for all
     badge: {
+      slots: {
+        label: 'cap-center',
+      },
       defaultVariants: {
         color: 'neutral',
         variant: 'soft',
@@ -71,11 +76,26 @@ export default defineAppConfig({
     button: {
       slots: {
         base: 'cursor-pointer',
-        label: 'hidden md:block',
+        label: 'hidden md:block cap-center',
       },
       defaultVariants: {
         color: 'neutral',
         variant: 'soft',
+      },
+    },
+    navigationMenu: {
+      slots: {
+        linkLabel: 'cap-center',
+      },
+    },
+    tabs: {
+      slots: {
+        label: 'cap-center',
+      },
+    },
+    changelogVersion: {
+      slots: {
+        date: 'cap-center',
       },
     },
     formField: {
@@ -92,8 +112,9 @@ export default defineAppConfig({
     },
     radioGroup: {
       slots: {
+        label: 'cap-center',
         fieldset: 'gap-x-4',
-        description: 'text-xs',
+        description: 'cap-center text-xs',
       },
     },
     pageCard: {
