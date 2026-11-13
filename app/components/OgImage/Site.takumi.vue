@@ -15,12 +15,14 @@ const {
     class="flex h-full w-full font-sans flex-col justify-between p-20"
     :style="{ backgroundColor: '#1f242b', color: '#ecebe4' }"
   >
-    <div class="flex flex-row items-center">
+    <!-- Overpass sits its capitals 0.1em high, so the dots rise to meet
+         them: a 0.2em bottom margin lifts a centered dot by 0.1em -->
+    <div class="flex flex-row items-center text-3xl">
       <div
-        class="h-6 w-6 rounded-full"
+        class="mb-[0.2em] h-6 w-6 rounded-full"
         :style="{ backgroundColor: '#ffc20e' }"
       />
-      <span class="ml-4 text-3xl font-bold">Soaring Symbols</span>
+      <span class="ml-4 font-bold">Soaring Symbols</span>
     </div>
 
     <div class="flex flex-col">

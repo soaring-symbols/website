@@ -23,5 +23,6 @@ Overpass, the site's font, sits its capitals high in the line box, so text set n
 
 - Text beside an icon in the same row: `<UIcon … /><span class="cap-center">Label</span>`.
 - A component whose label `app.config.ts` doesn't cover: add it to that component's slot there rather than on each use, when every use needs it.
+- Social cards (`app/components/OgImage/`) lift the mark instead: a dot or icon centered beside text takes `mb-[0.2em]`, with the text size set on their row so `em` matches it.
 
 Leave it off paragraphs and other running text, and never nest it (the shift adds up). Check the result in a zoomed screenshot: the middle of the capitals should sit level with the middle of the icon or box.
