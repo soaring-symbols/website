@@ -79,6 +79,24 @@
             cleanUrl(airline.website)
           }}</span>
         </a>
+
+        <!-- One way down to everything it was before: names and codes,
+             alliances and logos, in the History section of the page -->
+        <!-- A link styled as a button: UButton's own click handling lets
+             the router scroll back to the top after the smooth scroll -->
+        <ULink
+          v-if="historySummary"
+          :to="historyLink"
+          class="inline-flex w-fit max-w-full items-center gap-1.5 rounded-md bg-elevated px-2.5 py-1.5 text-sm font-medium text-default transition-colors hover:bg-accented/75 focus-visible:outline-2 focus-visible:outline-primary"
+          @click="scrollToHistory"
+        >
+          <UIcon name="solar:history-bold-duotone" class="size-5 shrink-0" />
+          <span class="cap-center truncate">
+            History
+            <span class="font-normal text-muted">· {{ historySummary }}</span>
+          </span>
+          <UIcon name="solar:arrow-down-linear" class="size-5 shrink-0" />
+        </ULink>
       </div>
     </header>
 
@@ -102,11 +120,7 @@
           <dd class="mt-0.5 font-semibold text-highlighted">
             <template v-if="item.links">
               <template v-for="(link, i) in item.links" :key="link.label">
-                <ULink
-                  :to="link.to"
-                  :class="linkClass"
-                  @click="link.onClick?.($event)"
-                >
+                <ULink :to="link.to" :class="linkClass">
                   {{ link.label }}
                 </ULink>
                 <span v-if="i < item.links.length - 1" class="text-muted"
@@ -171,10 +185,9 @@ const props = defineProps({
 const tint = computed(() => brandTint(props.airline))
 
 const {
-  former,
-  formerMore,
-  formerLink,
-  scrollToFormer,
+  historySummary,
+  historyLink,
+  scrollToHistory,
   related,
   colors,
   shownColors,
@@ -198,8 +211,9 @@ const RELATION_ICONS = {
 }
 
 // Every cell of the grid: both codes always, a dash for one it lacks, then
-// whatever else the airline has: callsign, hubs, former identities and
-// relations. What it doesn't have is left out rather than shown empty.
+// whatever else the airline has: callsign, hubs and relations. What it
+// doesn't have is left out rather than shown empty; its history is a button
+// in the card above.
 const facts = computed(() => {
   const { airline } = props
   const hubs = airline.hubs ?? []
@@ -225,19 +239,6 @@ const facts = computed(() => {
       value: hubs.join(', '),
       icon: 'solar:map-point-bold-duotone',
       wide: hubs.length > 4,
-    },
-    former.value.length && {
-      label: 'Formerly',
-      icon: 'solar:history-bold-duotone',
-      wide: true,
-      links: [
-        ...former.value,
-        ...(formerMore.value ? [`${formerMore.value} more`] : []),
-      ].map((label) => ({
-        label,
-        to: formerLink.value,
-        onClick: scrollToFormer,
-      })),
     },
     ...related.value.map((row) => ({
       label: row.label,
