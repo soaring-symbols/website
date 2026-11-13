@@ -147,6 +147,7 @@ export default defineNuxtConfig({
         '/browse',
         '/validate',
         '/ecosystem',
+        '/changelog',
         '/sitemap.xml',
         ...airlines.map((airline) => `/airlines/${airline.slug}`),
       ],
