@@ -1,9 +1,10 @@
 <template>
   <!-- Decoration only: a dotted globe that turns slowly, with planes flying
        between its airports. Given an airline's hubs it stands still over
-       them instead, every flight leaving or reaching one. Hidden from screen
-       readers; anyone who asks for less motion gets the globe standing
-       still, without planes. The page gives it its size -->
+       them instead and marks each with a pulse, and no planes: the catalog
+       knows an airline's hubs, not its routes. Hidden from screen readers;
+       anyone who asks for less motion gets the globe standing still, without
+       planes or pulses. The page gives it its size -->
   <div ref="sky" class="hero-globe" aria-hidden="true">
     <canvas ref="canvas" />
   </div>
@@ -60,6 +61,8 @@ let view = { lon: START_LON, c: [], e: [], n: [] }
 let tilt = TILT
 let spin = SPIN
 let hubs = []
+// Seconds the globe has run, for the hubs' pulses
+let clock = 0
 let frame = 0
 let last = 0
 let visible = true
@@ -221,12 +224,11 @@ function keepsClear(f) {
 const pick = (list) => list[Math.floor(Math.random() * list.length)]
 
 // A new flight between two airports that face us for all of it, clear of
-// the flights already in the air; on an airline's globe, one end is a hub
+// the flights already in the air
 function takeOff() {
   for (let tries = 0; tries < 120; tries++) {
-    let from = hubs.length ? pick(hubs) : pick(airports)
-    let to = pick(airports)
-    if (hubs.length && Math.random() < 0.5) [from, to] = [to, from]
+    const from = pick(airports)
+    const to = pick(airports)
     if (from === to) continue
     const angle = Math.acos(clamp(dot3(from.v, to.v), -1, 1))
     if (angle < ROUTE[0] * RAD || angle > ROUTE[1] * RAD) continue
@@ -458,10 +460,24 @@ function drawPlane(f, u) {
   ctx.restore()
 }
 
+// An airline's hubs, each labelled and sending out a ring every few
+// seconds, out of step with the others. Hubs in one city (Seoul's GMP and
+// ICN) share the first one's label rather than pile up.
+function drawHubs() {
+  const labelled = []
+  hubs.forEach((hub, i) => {
+    if (labelled.some((other) => distance(hub.v, other.v) < APART.airports))
+      return
+    labelled.push(hub)
+    drawEndpoint(hub, 1, still ? 0 : (clock / 2.4 + i * 0.37) % 1)
+  })
+}
+
 function draw() {
   ctx.clearRect(0, 0, width, height)
   drawGlobe()
   drawAirports()
+  if (hubs.length) drawHubs()
   for (const f of flights) {
     const u = progress(f, f.t)
     const fade = 1 - f.landed / LANDED
@@ -478,6 +494,7 @@ function tick(now) {
   colorsAge += dt
   if (colorsAge > 0.5) readColors()
 
+  clock += dt
   turn(view.lon - spin * dt)
   for (const f of flights) {
     if (f.t < f.duration) f.t += dt
@@ -486,7 +503,7 @@ function tick(now) {
   for (let i = flights.length - 1; i >= 0; i--) {
     if (flights[i].landed >= LANDED) flights.splice(i, 1)
   }
-  if (flights.length < MAX_FLIGHTS && (wait -= dt) <= 0) {
+  if (!hubs.length && flights.length < MAX_FLIGHTS && (wait -= dt) <= 0) {
     takeOff()
     wait = rand(...GAP)
   }
@@ -549,16 +566,9 @@ onMounted(() => {
     .map((code) => place([code, HUBS[code].lat, HUBS[code].lon]))
   let lon = START_LON
   if (hubs.length) {
-    // Flights reach the world's hubs; the globe stands over the airline's,
-    // at their middle, tilted towards them
-    const known = new Set(AIRPORTS.map(([code]) => code))
-    airports = [
-      ...airports,
-      ...Object.entries(HUBS)
-        .filter(([code]) => !known.has(code))
-        .map(([code, { lat, lon }]) => place([code, lat, lon])),
-    ]
-    hubs = hubs.map((hub) => airports.find((a) => a.code === hub.code))
+    // Only its hubs on the globe, which stands over them, at their middle,
+    // tilted towards them
+    airports = hubs
     const mean = (f) => hubs.reduce((sum, h) => sum + f(h), 0) / hubs.length
     lon =
       Math.atan2(
