@@ -118,6 +118,7 @@ export const HUBS: Record<string, [lat: number, lon: number]> = {
   RUH: [24.96, 46.7],
   SAL: [13.44, -89.06],
   SAN: [32.73, -117.19],
+  SCL: [-33.39, -70.79],
   SEA: [47.45, -122.31],
   SFO: [37.62, -122.38],
   SGN: [10.82, 106.65],
