@@ -11,7 +11,7 @@
           target: '_blank',
           color: 'neutral',
           variant: 'outline',
-          ui: { label: 'block' },
+          ui: { label: 'block cap-center' },
         },
         {
           label: 'RSS feed',
@@ -20,7 +20,7 @@
           target: '_blank',
           color: 'neutral',
           variant: 'outline',
-          ui: { label: 'block' },
+          ui: { label: 'block cap-center' },
         },
       ]"
     />
@@ -28,8 +28,12 @@
     <UChangelogVersions
       v-if="releases?.length"
       class="py-12 sm:py-16"
-      :indicator-motion="false"
+      :ui="{ indicator: 'overflow-visible' }"
     >
+      <template #indicator>
+        <FlightPathIndicator />
+      </template>
+
       <UChangelogVersion
         v-for="(release, index) in releases"
         :id="release.tag"
@@ -38,10 +42,19 @@
         :date="release.date"
         :badge="
           index === 0
-            ? { label: 'Latest', color: 'primary', variant: 'subtle' }
+            ? {
+                label: 'Latest',
+                color: 'primary',
+                variant: 'subtle',
+                ui: { label: 'cap-center' },
+              }
             : undefined
         "
-        :ui="{ container: 'max-w-2xl', title: 'font-mono' }"
+        :ui="{
+          container: 'max-w-2xl',
+          date: 'cap-center',
+          title: 'font-mono',
+        }"
       >
         <template #body>
           <!-- GitHub renders and sanitizes the notes -->
@@ -56,7 +69,7 @@
             class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-highlighted"
           >
             <UIcon name="simple-icons:github" class="size-4" />
-            {{ release.tag }} on GitHub
+            <span class="cap-center">{{ release.tag }} on GitHub</span>
           </ULink>
         </template>
       </UChangelogVersion>
