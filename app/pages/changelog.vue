@@ -40,6 +40,7 @@
         :key="release.tag"
         :title="release.tag"
         :date="release.date"
+        :description="release.summary || undefined"
         :authors="authors"
         :badge="
           index === 0

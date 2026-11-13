@@ -13,6 +13,8 @@ export interface Release {
   // When the release commit was made, which is when the version reached
   // npm; GitHub's published_at is when its release page was created
   date: string
+  // The notes' opening sentence, shown under the version
+  summary: string
   html: string
 }
 
@@ -36,8 +38,32 @@ export async function fetchReleases(): Promise<Release[]> {
     .map((release) => ({
       tag: release.tag_name,
       date: release.created_at,
-      html: release.body_html ?? '',
+      ...splitSummary(release.body_html ?? ''),
     }))
+}
+
+// Notes open with a one-sentence summary, a paragraph before the first
+// section: take it out as plain text, and leave the rest as the body
+function splitSummary(html: string) {
+  const match = /^\s*<p[^>]*>([\s\S]*?)<\/p>\s*/.exec(html)
+  // A release not written up yet holds only its compare link
+  if (!match || match[1].includes('Full Changelog'))
+    return { summary: '', html }
+
+  const summary = match[1]
+    .replace(/<[^>]+>/g, '')
+    .replace(/&(amp|lt|gt|quot|#39);/g, (_, entity) => ENTITIES[entity])
+    .trim()
+
+  return { summary, html: html.slice(match[0].length) }
+}
+
+const ENTITIES: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  '#39': "'",
 }
 
 // Read while the page is prerendered, so it works without JavaScript and
