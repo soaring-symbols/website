@@ -1,7 +1,7 @@
 <template>
   <span class="flap-text" :aria-label="text">
     <span v-for="(char, i) in chars" :key="i" class="flap" aria-hidden="true">
-      <span :key="ticks[i]" class="flap-face">{{ char }}</span>
+      <span :key="ticks[i]" class="flap-face cap-center">{{ char }}</span>
     </span>
   </span>
 </template>
@@ -109,7 +109,6 @@ watch(
 }
 
 .flap-face {
-  padding-top: 0.12em;
   animation: flip 70ms ease-in;
 }
 
