@@ -5,7 +5,7 @@
     <!-- Filters stay in reach while the list scrolls; on phones the bar
          would cover a third of the screen, so it scrolls away there -->
     <div
-      class="z-10 sm:sticky sm:top-(--ui-header-height) -mx-4 mt-8 border-b border-default bg-default/90 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+      class="z-10 sm:sticky sm:top-(--ui-header-height) -mx-4 mt-8 bg-default/90 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
     >
       <div class="grid grid-cols-2 items-center gap-3 sm:flex sm:flex-wrap">
         <UInput
@@ -27,19 +27,21 @@
           :ui="{ base: 'bg-surface' }"
         />
 
-        <USelect
+        <USelectMenu
           v-model="selectedCountries"
           multiple
+          value-key="value"
           placeholder="Any country"
           aria-label="Country"
           :items="countryOptions"
+          :search-input="{ placeholder: 'Search countries' }"
           class="w-full sm:w-44"
           :ui="{ base: 'bg-surface' }"
         >
           <template #item-leading="{ item }">
             <CountryFlags :iso="item.value" />
           </template>
-        </USelect>
+        </USelectMenu>
 
         <USwitch v-model="flagCarrierOnly" label="Flag carriers only" />
 
@@ -202,12 +204,27 @@ watch(search, (q) => {
   })
 })
 
+// Every alliance in the catalog, active ones first. An active alliance
+// finds its members (those that ceased while in it included); a disbanded
+// one, every airline that flew in it, since none is a member any more.
+const { alliances } = useAlliances()
+const toOption = (a) => ({ value: a.name, label: a.name })
+const disbanded = alliances.filter((a) => a.defunct)
 const allianceOptions = [
-  ...[...new Set(airlines.map((a) => a.alliance).filter(Boolean))]
-    .sort()
-    .map((a) => ({ value: a, label: a })),
-  { value: '__none__', label: 'No alliance' },
+  alliances.filter((a) => !a.defunct).map(toOption),
+  [{ type: 'label', label: 'Disbanded' }, ...disbanded.map(toOption)],
+  [{ value: '__none__', label: 'No alliance' }],
 ]
+
+function inAlliances(airline, names) {
+  if (names.includes(airline.alliance ?? '__none__')) return true
+
+  return (airline.alliance_history ?? []).some(
+    (item) =>
+      names.includes(item.alliance) &&
+      disbanded.some((a) => a.name === item.alliance),
+  )
+}
 
 const countryOptions = [...new Set(airlines.map((a) => a.country))]
   .sort((a, b) => countryName(a).localeCompare(countryName(b)))
@@ -252,9 +269,7 @@ const filtered = computed(() => {
   }
 
   if (selectedAlliances.value.length) {
-    list = list.filter((a) =>
-      selectedAlliances.value.includes(a.alliance ?? '__none__'),
-    )
+    list = list.filter((a) => inAlliances(a, selectedAlliances.value))
   }
 
   if (selectedCountries.value.length) {
