@@ -70,21 +70,27 @@ export function formerMembersOf(alliance: Alliance, airlines: Airline[]) {
     .sort((a, b) => b.until - a.until)
 }
 
-// How many of the alliance's airlines the collection has, for its card
-// and its page: those flying in it now, or for a disbanded alliance those
-// that flew in it. Never the alliance's own member count, which the
-// collection doesn't track: "14 airlines in the collection".
+// The alliance's airlines in the collection, for its card and its page:
+// those flying in it now, or for a disbanded alliance those that flew in it
+// (members when they ceased, then those that left)
+export function collectionAirlines(alliance: Alliance, airlines: Airline[]) {
+  const flying = membersOf(alliance, airlines)
+  if (flying.length || !alliance.defunct) return flying
+
+  return [
+    ...membersOf(alliance, airlines, { defunct: true }),
+    ...formerMembersOf(alliance, airlines).map(({ airline }) => airline),
+  ]
+}
+
+// How many those are, never the alliance's own member count, which the
+// collection doesn't track: "14 airlines in the collection", or "1 airline
+// in the collection flew in it" for a disbanded alliance
 export function collectionCount(alliance: Alliance, airlines: Airline[]) {
-  const flying = membersOf(alliance, airlines).length
-  const flew =
-    membersOf(alliance, airlines, { defunct: true }).length +
-    formerMembersOf(alliance, airlines).length
-  const airlinesIn = (n: number) =>
-    `${n} airline${n === 1 ? '' : 's'} in the collection`
+  const n = collectionAirlines(alliance, airlines).length
+  const airlinesIn = `${n} airline${n === 1 ? '' : 's'} in the collection`
 
-  if (flying || !alliance.defunct) return airlinesIn(flying)
-
-  return flew ? `${airlinesIn(flew)} flew in it` : airlinesIn(0)
+  return alliance.defunct && n ? `${airlinesIn} flew in it` : airlinesIn
 }
 
 export function useAlliances() {
