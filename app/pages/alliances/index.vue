@@ -144,5 +144,5 @@ const items = alliances.map((alliance) => {
 })
 
 const chipClass =
-  'flex items-center rounded-full bg-accented/70 px-2.5 py-0.5 font-semibold text-highlighted dark:bg-elevated'
+  'flex items-center rounded-full bg-accented/70 px-2.5 py-0.5 font-semibold text-highlighted dark:bg-white/10'
 </script>
