@@ -1,4 +1,4 @@
-import type { Airline, AssetType } from 'soaring-symbols'
+import type { Airline, Alliance, AssetType } from 'soaring-symbols'
 import type { H3Event } from 'h3'
 import { version } from 'soaring-symbols/package.json'
 
@@ -28,6 +28,30 @@ export function toApiAirline(airline: Airline, origin: string) {
   }
 
   return { ...airline, links }
+}
+
+// The package entry as is, plus absolute links to the alliance's page and
+// to every SVG it ships, keyed like the file names ('icon', 'icon-mono')
+export function toApiAlliance(alliance: Alliance, origin: string) {
+  const links: Record<string, string> = {
+    page: new URL(`/alliances/${alliance.slug}`, origin).href,
+  }
+  for (const type of ['icon', 'logo'] as const) {
+    const asset = alliance.assets[type]
+    for (const variant of [
+      asset?.color && type,
+      asset?.mono && `${type}-mono`,
+    ]) {
+      if (variant) {
+        links[variant] = new URL(
+          `/alliances/${alliance.slug}/${variant}.svg`,
+          origin,
+        ).href
+      }
+    }
+  }
+
+  return { ...alliance, links }
 }
 
 // Readable from any site, and cached for a day: the data only changes with

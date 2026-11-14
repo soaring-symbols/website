@@ -58,6 +58,11 @@ const year = new Date().getFullYear()
 
 const nav = [
   { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
+  {
+    label: 'Alliances',
+    to: '/alliances',
+    icon: 'solar:users-group-rounded-linear',
+  },
   { label: 'Validate', to: '/validate', icon: 'solar:check-circle-linear' },
   { label: 'Ecosystem', to: '/ecosystem', icon: 'solar:widget-add-linear' },
   { label: 'Changelog', to: '/changelog', icon: 'solar:history-linear' },

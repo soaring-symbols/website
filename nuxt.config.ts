@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import app from './package.json'
@@ -12,6 +12,13 @@ const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
 const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
 // Where each airline's hubs are, for the globe on its page
 const airportsFile = resolve(soaringSymbolsDir, 'dist/airports.json')
+// The alliances airlines name, and the marks of those the collection has
+// (from soaring-symbols 0.3.4)
+const alliancesFile = resolve(soaringSymbolsDir, 'dist/alliances.json')
+const allianceAssetsDir = resolve(soaringSymbolsDir, 'dist/alliances')
+const alliances: { slug: string }[] = JSON.parse(
+  readFileSync(alliancesFile, 'utf8'),
+)
 const airlines: { slug: string; former?: { slug?: string }[] }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
 )
@@ -84,6 +91,7 @@ export default defineNuxtConfig({
   alias: {
     '#airlines-data': airlinesFile,
     '#airports-data': airportsFile,
+    '#alliances-data': alliancesFile,
   },
 
   runtimeConfig: {
@@ -106,6 +114,10 @@ export default defineNuxtConfig({
           driver: 'fs-lite',
           base: assetsDir,
         }
+        config.storage['root:public:alliances'] = {
+          driver: 'fs-lite',
+          base: allianceAssetsDir,
+        }
       })
     },
   },
@@ -125,6 +137,11 @@ export default defineNuxtConfig({
         // Airline pages live under the same prefix as the SVGs
         fallthrough: true,
       },
+      // Alliance marks, under the prefix of the alliance pages like the
+      // airlines'; the folder exists once an alliance has SVGs
+      ...(existsSync(allianceAssetsDir)
+        ? [{ baseURL: '/alliances', dir: allianceAssetsDir, fallthrough: true }]
+        : []),
       { baseURL: '/flags', dir: flagsDir, maxAge: 60 * 60 * 24 * 365 },
     ],
     // The image API reads the SVGs to tint and render them, and a Worker
@@ -148,8 +165,10 @@ export default defineNuxtConfig({
         '/validate',
         '/ecosystem',
         '/changelog',
+        '/alliances',
         '/sitemap.xml',
         ...airlines.map((airline) => `/airlines/${airline.slug}`),
+        ...alliances.map((alliance) => `/alliances/${alliance.slug}`),
       ],
       failOnError: true,
     },
