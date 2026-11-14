@@ -14,13 +14,14 @@
           ui: { label: 'block' },
         },
         {
-          label: 'RSS feed',
           icon: 'solar:rss-linear',
           to: RELEASES_FEED_URL,
           target: '_blank',
           color: 'neutral',
           variant: 'outline',
-          ui: { label: 'block' },
+          square: true,
+          'aria-label': 'RSS feed',
+          title: 'RSS feed',
         },
       ]"
     />
