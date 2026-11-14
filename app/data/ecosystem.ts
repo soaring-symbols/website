@@ -82,11 +82,12 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'solar:code-square-linear',
     group: 'data',
     description:
-      'Look up an airline and get its codes, callsign, hubs, brand colors, history and links to every SVG. Open to any site, no key needed.',
+      'Look up an airline and get its codes, callsign, hubs, brand colors, history and links to every SVG, or an alliance and its marks. Open to any site, no key needed.',
     details: [
       '/api/airlines lists every airline, with the package version and a count.',
       '/api/airlines/<code> takes an IATA or ICAO code, a slug or a name, current or former, and returns a 404 with a hint when nothing matches.',
       'A renamed airline lists its former names, and each older logo comes with the years it was used.',
+      '/api/alliances lists the alliances, and /api/alliances/<name> takes a name or slug, such as skyteam, with its slogan, years, color and links to its marks.',
     ],
     snippet: {
       label: 'Copy URL',
@@ -99,11 +100,12 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'solar:gallery-linear',
     group: 'data',
     description:
-      'Load any mark by IATA or ICAO code, as SVG or as PNG for apps that can’t render SVG, with monochrome marks in the color you pick.',
+      'Load any airline’s mark by IATA or ICAO code, or an alliance’s by name, as SVG or as PNG for apps that can’t render SVG, with monochrome marks in the color you pick.',
     details: [
       'The file is logo, icon or tail, with -mono for the monochrome mark, ending in .svg or .png.',
       'color takes a hex color such as fff, and dark the one a monochrome SVG switches to in dark mode.',
       'size sets the PNG width in pixels, from 16 to 1024 (256 by default).',
+      'Alliance marks work the same way at /api/alliances/<slug>/, with icon and logo files.',
     ],
     snippet: {
       label: 'Copy URL',
