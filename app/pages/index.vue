@@ -70,6 +70,8 @@
               label: 'Browse all airlines',
               trailingIcon: 'solar:arrow-right-linear',
               size: 'lg',
+              // Phones get the button under the wall instead
+              class: 'max-sm:hidden',
               ui: { label: 'block' },
             },
           ]"
@@ -95,6 +97,18 @@
           </UTooltip>
         </li>
       </ul>
+
+      <!-- On phones the wall stops after a few rows (see .icon-wall) -->
+      <UButton
+        to="/browse"
+        :label="`See all ${withIcons.length} icons`"
+        trailing-icon="solar:arrow-right-linear"
+        size="lg"
+        variant="solid"
+        block
+        class="-mt-4 sm:hidden"
+        :ui="{ label: 'block' }"
+      />
     </UPageSection>
 
     <!-- For developers -->
@@ -333,6 +347,19 @@ const steps = [
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(3.5rem, 1fr));
   gap: 0.5rem;
+}
+
+/* On phones the whole wall runs to some twenty rows: show the first
+   thirty icons, fading out, and leave the rest to /browse. Thirty fills
+   every row at five and six columns, what phones 360-430px wide get */
+@media (width < 40rem) {
+  .icon-wall {
+    mask-image: linear-gradient(to bottom, #000 70%, transparent);
+  }
+
+  .icon-wall > li:nth-child(n + 31) {
+    display: none;
+  }
 }
 
 .step-number {
