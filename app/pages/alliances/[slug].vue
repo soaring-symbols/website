@@ -169,6 +169,27 @@
         </section>
       </div>
     </UPageSection>
+
+    <!-- The same marks and data in code: package, CDN and API -->
+    <UPageSection
+      title="In your project"
+      :description="`Use ${alliance.name}’s ${mark ? 'marks and data' : 'data'} in your own code. None of it needs a key or an account.`"
+      orientation="horizontal"
+      :features="usageFeatures"
+      :links="[
+        {
+          to: '/ecosystem',
+          label: 'See the ecosystem',
+          trailingIcon: 'solar:arrow-right-linear',
+          variant: 'outline',
+          size: 'md',
+          ui: { label: 'block' },
+        },
+      ]"
+      :ui="{ ...sectionUi, features: 'gap-5', footer: 'mt-6' }"
+    >
+      <AllianceUsage :alliance="alliance" />
+    </UPageSection>
   </div>
 </template>
 
@@ -247,6 +268,28 @@ const linkClass =
   'font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current'
 const memberClass =
   'flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-primary'
+
+// The CDN only serves files, so it is left out until there is a mark
+const usageFeatures = [
+  {
+    title: 'npm package',
+    description:
+      'The alliance’s data and marks, typed, for Node and the browser. Look it up by name or slug and get file paths to bundle.',
+    icon: 'simple-icons:npm',
+  },
+  allianceMark(alliance) && {
+    title: 'CDN',
+    description:
+      'Link a file straight from the package on jsDelivr or unpkg, with nothing to install. Pin a release line to keep it stable.',
+    icon: 'solar:global-linear',
+  },
+  {
+    title: 'API',
+    description:
+      'Fetch the data as JSON, or a mark as SVG or PNG, with monochrome marks in the color you pick.',
+    icon: 'solar:code-square-linear',
+  },
+].filter(Boolean)
 
 const breadcrumb = [
   {
