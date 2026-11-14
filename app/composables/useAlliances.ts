@@ -2,7 +2,7 @@ import type { Airline, Alliance } from 'soaring-symbols'
 import alliancesData from '#alliances-data'
 
 // Every alliance an airline may name in `alliance`, sorted by name, from
-// soaring-symbols 0.3.4: those without marks yet are listed too, with empty
+// soaring-symbols 0.4.0: those without marks yet are listed too, with empty
 // `assets`
 const alliances = alliancesData as unknown as Alliance[]
 

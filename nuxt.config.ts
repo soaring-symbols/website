@@ -13,7 +13,7 @@ const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
 // Where each airline's hubs are, for the globe on its page
 const airportsFile = resolve(soaringSymbolsDir, 'dist/airports.json')
 // The alliances airlines name, and the marks of those the collection has
-// (from soaring-symbols 0.3.4)
+// (from soaring-symbols 0.4.0)
 const alliancesFile = resolve(soaringSymbolsDir, 'dist/alliances.json')
 const allianceAssetsDir = resolve(soaringSymbolsDir, 'dist/alliances')
 const alliances: { slug: string }[] = JSON.parse(
