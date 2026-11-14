@@ -17,9 +17,9 @@ const tabs = computed(() => {
   const { slug } = alliance
   const variant = allianceMark(alliance)
   const api = `${site.homepage}/api/alliances/${slug}`
-  const mono = ALLIANCE_MARK_TYPES.map((t) => `${t.variant}-mono`).find((v) =>
-    hasAllianceAsset(alliance, v),
-  )
+  const mono = MARK_SOURCES.alliances.types
+    .map((t) => `${t.variant}-mono`)
+    .find((v) => hasAsset(alliance, v))
   const brand = brandColor(alliance).replace('#', '')
 
   return [
@@ -36,7 +36,7 @@ const tabs = computed(() => {
         variant && {
           label: 'Path to a file',
           code: `getAllianceAssetPath('${slug}', '${variant}')`,
-          result: `// 'soaring-symbols/alliances/${allianceAssetPath(alliance, variant)}'`,
+          result: `// '${packagePath(alliance, variant, undefined, 'alliances')}'`,
         },
       ].filter(Boolean),
     },
@@ -47,7 +47,7 @@ const tabs = computed(() => {
         { label: 'jsDelivr', code: allianceCdnUrl(alliance, variant) },
         {
           label: 'unpkg',
-          code: `https://unpkg.com/soaring-symbols/dist/alliances/${allianceAssetPath(alliance, variant)}`,
+          code: `https://unpkg.com/soaring-symbols/dist/alliances/${assetPath(alliance, variant)}`,
         },
         {
           label: 'HTML',
@@ -93,7 +93,9 @@ const tabs = computed(() => {
 // What getAlliance() returns, cut to the fields worth showing
 function lookupResult(alliance) {
   const q = usageQuote
-  const marks = ALLIANCE_MARK_TYPES.filter((t) => alliance.assets[t.variant])
+  const marks = MARK_SOURCES.alliances.types.filter(
+    (t) => alliance.assets[t.variant],
+  )
   const fields = [
     ['name', q(alliance.name)],
     ['slug', q(alliance.slug)],

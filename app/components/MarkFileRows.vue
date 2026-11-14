@@ -1,6 +1,6 @@
 <template>
-  <!-- One row per mark, its color file beside its monochrome one, so every
-       row is full whichever marks the airline has -->
+  <!-- One row per mark of an airline or an alliance, its color file beside
+       its monochrome one, so every row is full whichever marks it has -->
   <div class="flex flex-col gap-3">
     <div
       class="hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)]"
@@ -34,8 +34,8 @@
               :style="{ backgroundImage: tint }"
             >
               <img
-                :src="assetUrl(airline, file.variant, mark)"
-                :alt="`${airline.name} ${file.kind} ${row.label.toLowerCase()}${mark ? ` introduced in ${mark.since}` : ''}`"
+                :src="assetUrl(entry, file.variant, mark, source)"
+                :alt="`${entry.name} ${file.kind} ${row.label.toLowerCase()}${mark ? ` introduced in ${mark.since}` : ''}`"
                 loading="lazy"
                 class="size-full object-contain"
               />
@@ -58,9 +58,9 @@
                   @click="copyCdnUrl(file.variant)"
                 />
                 <UButton
-                  :to="assetUrl(airline, file.variant, mark)"
+                  :to="assetUrl(entry, file.variant, mark, source)"
                   external
-                  :download="downloadName(airline, file.variant, mark)"
+                  :download="downloadName(entry, file.variant, mark)"
                   icon="solar:download-linear"
                   variant="outline"
                   :aria-label="`Download ${fileName(file.variant)}`"
@@ -91,27 +91,31 @@
 </template>
 
 <script setup>
-// The files of one set of marks: the airline's current ones, or with `mark`
-// (an entry of markHistory()) an older set, headed by its year
+// The files of one set of marks of an airline or, with `source`
+// 'alliances', an alliance: its current ones, or with `mark` (an entry of
+// markHistory()) an older set, headed by its year
 const props = defineProps({
-  airline: { type: Object, required: true },
+  entry: { type: Object, required: true },
+  source: { type: String, default: 'airlines' },
   mark: { type: Object, default: undefined },
 })
 
-const tint = brandTint(props.airline)
+const tint = brandTint(props.entry)
+const { types, asked } = MARK_SOURCES[props.source]
 
-// Every current mark type gets a row, so each airline page lists the same
-// rows and asks for what is missing; an older set lists only the types it
-// had. A slot is empty (variant null) when that file is not shipped yet.
-const rows = MARK_TYPES.flatMap(({ variant, label }) => {
+// The mark types the source asks for always get a row, so each page lists
+// the same rows and asks for what is missing; the others, and every type of
+// an older set, only when there is a file. A slot is empty (variant null)
+// when that file is not shipped yet.
+const rows = types.flatMap(({ variant, label }) => {
   const name = label.toLowerCase()
-  const has = (v) => hasAsset(props.airline, v, props.mark)
+  const has = (v) => hasAsset(props.entry, v, props.mark)
   const color = has(variant) ? variant : null
   const mono = has(`${variant}-mono`) ? `${variant}-mono` : null
 
   if (!color && !mono) {
     // With neither file, one placeholder spans the row
-    return props.mark
+    return props.mark || !asked.includes(variant)
       ? []
       : [
           {
@@ -136,10 +140,10 @@ const rows = MARK_TYPES.flatMap(({ variant, label }) => {
   ]
 })
 
-// The path under the airline's folder, e.g. 'history/1984/logo.svg'
+// The path under the entry's folder, e.g. 'history/1984/logo.svg'
 function fileName(variant) {
-  return assetPath(props.airline, variant, props.mark).slice(
-    props.airline.slug.length + 1,
+  return assetPath(props.entry, variant, props.mark).slice(
+    props.entry.slug.length + 1,
   )
 }
 
@@ -147,7 +151,7 @@ const toast = useToast()
 
 async function copyCdnUrl(variant) {
   await navigator.clipboard.writeText(
-    cdnUrl(props.airline, variant, props.mark),
+    cdnUrl(props.entry, variant, props.mark, props.source),
   )
   toast.add({ title: 'Copied the CDN link', duration: 1500 })
 }

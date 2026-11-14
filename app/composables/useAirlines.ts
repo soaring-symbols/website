@@ -1,4 +1,9 @@
-import type { Airline, AssetType, HistoricalMarks } from 'soaring-symbols'
+import type {
+  Airline,
+  Alliance,
+  AssetType,
+  HistoricalMarks,
+} from 'soaring-symbols'
 import airlinesData from '#airlines-data'
 
 const airlines = airlinesData as unknown as Airline[]
@@ -33,72 +38,107 @@ export const MARK_TYPES = [
   { variant: 'tail', label: 'Tail' },
 ] as const
 
+// Where each kind of entry keeps its marks: the site's prefix, the package's
+// folder, its mark types in page order, and those whose row asks for a
+// contribution when missing. An alliance shows its symbol far more often
+// than a logo with its name, so only its icon is asked for.
+export const MARK_SOURCES = {
+  airlines: {
+    site: '/airlines',
+    dir: 'assets',
+    types: MARK_TYPES,
+    asked: ['logo', 'icon', 'tail'],
+  },
+  alliances: {
+    site: '/alliances',
+    dir: 'alliances',
+    types: [
+      { variant: 'icon', label: 'Icon' },
+      { variant: 'logo', label: 'Logo' },
+    ],
+    asked: ['icon'],
+  },
+} as const
+
+export type MarkSource = keyof typeof MARK_SOURCES
+// An airline or an alliance: what the mark helpers below read
+type MarkEntry = Pick<Airline | Alliance, 'slug' | 'assets'>
+
 // Whether the package ships a variant, e.g. 'logo' or 'logo-mono'. Every
 // single-color mark has a mono file; multi-color ones only when hand-drawn.
 // Without `mark` it looks at the current marks; with an entry of
 // markHistory(), at that older set.
 export function hasAsset(
-  airline: Airline,
+  entry: MarkEntry,
   variant: string,
   mark?: HistoricalMarks,
 ) {
   const [type, mono] = variant.split('-') as [AssetType, string?]
-  const asset = (mark?.assets ?? airline.assets)[type]
+  const asset = (mark?.assets ?? (entry.assets as Airline['assets']))[type]
 
   return Boolean(mono ? asset?.mono : asset?.color)
 }
 
-// The first color mark a set ships, e.g. 'logo'; undefined when none
-export function firstVariant(airline: Airline, mark?: HistoricalMarks) {
-  return MARK_TYPES.find(({ variant }) => hasAsset(airline, variant, mark))
-    ?.variant
+// The first color mark a set ships in the source's order, e.g. 'logo' for
+// an airline or 'icon' for an alliance; undefined when none
+export function firstVariant(
+  entry: MarkEntry,
+  mark?: HistoricalMarks,
+  source: MarkSource = 'airlines',
+) {
+  return MARK_SOURCES[source].types.find(({ variant }) =>
+    hasAsset(entry, variant, mark),
+  )?.variant
 }
 
-// A file's path inside the package's assets folder, e.g.
+// A file's path inside the source's folder of the package, e.g.
 // 'korean-air/logo.svg' or 'korean-air/history/1984/logo.svg'. The site,
 // jsDelivr and the npm package each put their own root in front.
 export function assetPath(
-  airline: Airline,
+  entry: MarkEntry,
   variant: string,
   mark?: HistoricalMarks,
 ) {
-  const dir = mark ? `${airline.slug}/history/${mark.since}` : airline.slug
+  const dir = mark ? `${entry.slug}/history/${mark.since}` : entry.slug
 
   return `${dir}/${variant}.svg`
 }
 
 export function assetUrl(
-  airline: Airline,
+  entry: MarkEntry,
   variant: string,
   mark?: HistoricalMarks,
+  source: MarkSource = 'airlines',
 ) {
-  return `/airlines/${assetPath(airline, variant, mark)}`
+  return `${MARK_SOURCES[source].site}/${assetPath(entry, variant, mark)}`
 }
 
 export function cdnUrl(
-  airline: Airline,
+  entry: MarkEntry,
   variant: string,
   mark?: HistoricalMarks,
+  source: MarkSource = 'airlines',
 ) {
-  return `https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/${assetPath(airline, variant, mark)}`
+  return `https://cdn.jsdelivr.net/npm/soaring-symbols/dist/${MARK_SOURCES[source].dir}/${assetPath(entry, variant, mark)}`
 }
 
-// What getAssetPath() returns for the file
+// What getAssetPath() (or getAllianceAssetPath()) returns for the file
 export function packagePath(
-  airline: Airline,
+  entry: MarkEntry,
   variant: string,
   mark?: HistoricalMarks,
+  source: MarkSource = 'airlines',
 ) {
-  return `soaring-symbols/assets/${assetPath(airline, variant, mark)}`
+  return `soaring-symbols/${MARK_SOURCES[source].dir}/${assetPath(entry, variant, mark)}`
 }
 
 // The name a downloaded file gets, e.g. 'korean-air-1984-logo.svg'
 export function downloadName(
-  airline: Airline,
+  entry: MarkEntry,
   variant: string,
   mark?: HistoricalMarks,
 ) {
-  return [airline.slug, mark?.since, variant].filter(Boolean).join('-') + '.svg'
+  return [entry.slug, mark?.since, variant].filter(Boolean).join('-') + '.svg'
 }
 
 // The heading of an older mark: the years it was used ("2010–2026"), after

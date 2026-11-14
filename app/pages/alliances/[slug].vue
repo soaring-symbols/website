@@ -84,7 +84,7 @@
       class="mt-16"
       :ui="sectionUi"
     >
-      <AllianceFileRows :alliance="alliance" />
+      <MarkFileRows :entry="alliance" source="alliances" />
     </UPageSection>
 
     <!-- The airlines in it, the ones that ceased while members, and the

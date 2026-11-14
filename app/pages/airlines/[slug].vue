@@ -11,7 +11,7 @@
       class="mt-16"
       :ui="sectionUi"
     >
-      <AirlineFileRows :airline="airline" />
+      <MarkFileRows :entry="airline" />
     </UPageSection>
 
     <!-- What the airline was before: its names and codes, the alliances
@@ -77,7 +77,7 @@
               <h4 class="mb-5 font-bold text-highlighted">
                 {{ markHeading(airline, mark) }}
               </h4>
-              <AirlineFileRows :airline="airline" :mark="mark" />
+              <MarkFileRows :entry="airline" :mark="mark" />
             </section>
           </div>
         </section>
