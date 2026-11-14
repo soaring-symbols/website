@@ -85,6 +85,7 @@ export const ecosystem: EcosystemEntry[] = [
       'Look up an airline and get its codes, callsign, hubs, brand colors, history and links to every SVG. Open to any site, no key needed.',
     details: [
       '/api/airlines lists every airline, with the package version and a count.',
+      '/api/airlines?code=<code> lists every airline holding an IATA or ICAO code, such as SL for Thai Lion Air and SAS Connect; add &former=true for those that held it before.',
       '/api/airlines/<code> takes an IATA or ICAO code, a slug or a name, current or former, and returns a 404 with a hint when nothing matches.',
       'A renamed airline lists its former names, and each older logo comes with the years it was used.',
     ],
