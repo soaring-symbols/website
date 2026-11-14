@@ -57,25 +57,24 @@ useSeoMeta({
 
 defineOgImage('Site', { title: meta.title, description: meta.description })
 
-// Active alliances first, each group by name; a line under each name says
-// when it was founded and how many airlines it has in the collection
-const items = [...alliances]
-  .sort((a, b) => Boolean(a.defunct) - Boolean(b.defunct))
-  .map((alliance) => {
-    const members =
-      membersOf(alliance, airlines).length +
-      membersOf(alliance, airlines, { defunct: true }).length
-    const former = formerMembersOf(alliance, airlines).length
+// By name, as the catalog lists them, disbanded ones among the rest; a line
+// under each name says when it was founded and how many airlines it has in
+// the collection
+const items = alliances.map((alliance) => {
+  const members =
+    membersOf(alliance, airlines).length +
+    membersOf(alliance, airlines, { defunct: true }).length
+  const former = formerMembersOf(alliance, airlines).length
 
-    return {
-      alliance,
-      summary: [
-        allianceYears(alliance),
-        members && `${members} member${members > 1 ? 's' : ''}`,
-        former && `${former} former`,
-      ]
-        .filter(Boolean)
-        .join(' · '),
-    }
-  })
+  return {
+    alliance,
+    summary: [
+      allianceYears(alliance),
+      members && `${members} member${members > 1 ? 's' : ''}`,
+      former && `${former} former`,
+    ]
+      .filter(Boolean)
+      .join(' · '),
+  }
+})
 </script>
