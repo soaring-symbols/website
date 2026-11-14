@@ -45,7 +45,7 @@ const { alliances } = useAlliances()
 const meta = {
   title: 'Alliances',
   description:
-    'The airline alliances in the collection, with their marks and the airlines that fly in them, past members included.',
+    'The airline alliances in the collection, with their marks and the airlines in the collection that fly in them, past members included.',
 }
 
 useSeoMeta({
@@ -58,23 +58,13 @@ useSeoMeta({
 defineOgImage('Site', { title: meta.title, description: meta.description })
 
 // By name, as the catalog lists them, disbanded ones among the rest; a line
-// under each name says when it was founded and how many airlines it has in
-// the collection
-const items = alliances.map((alliance) => {
-  // Those flying in it and those that ceased while in it
-  const members = airlines.filter((a) => a.alliance === alliance.name).length
-  const former = formerMembersOf(alliance, airlines).length
-
-  return {
-    alliance,
-    disbanded: disbandedLabel(alliance),
-    summary: [
-      operatingYears(alliance),
-      members && `${members} member${members > 1 ? 's' : ''}`,
-      former && `${former} former`,
-    ]
-      .filter(Boolean)
-      .join(' · '),
-  }
-})
+// under each name says when it was founded and how many of its airlines the
+// collection has, counted as on the alliance's page
+const items = alliances.map((alliance) => ({
+  alliance,
+  disbanded: disbandedLabel(alliance),
+  summary: [operatingYears(alliance), collectionCount(alliance, airlines)]
+    .filter(Boolean)
+    .join(' · '),
+}))
 </script>

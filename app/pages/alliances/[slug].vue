@@ -234,13 +234,8 @@ const formerColumns = [
   { accessorKey: 'until', header: 'Left' },
 ]
 
-const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
-// A disbanded alliance whose airlines all left counts those instead of
-// saying it has none
-const memberCount =
-  members.length || !formerMembers.length
-    ? plural(members.length, 'member')
-    : plural(formerMembers.length, 'former member')
+// The same count as on the alliance's card, never its own member count
+const memberCount = collectionCount(alliance, airlines)
 
 const membersDescription = alliance.defunct
   ? `The airlines in the collection that flew in ${alliance.name}. Affiliates flying under a member’s membership aren’t listed.`
@@ -298,7 +293,7 @@ const breadcrumb = [
 
 const description = [
   `Icon and brand colors of ${alliance.name} as SVG,`,
-  `with the ${memberCount} in the collection.`,
+  `and the airlines in the collection that fly or flew in it.`,
 ].join(' ')
 
 useSeoMeta({
