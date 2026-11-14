@@ -127,7 +127,7 @@ export function markHistory(airline: Airline) {
 
 // Always six hex digits, so callers can append an alpha channel: a short
 // #rgb plus '14' would read as an invalid five-digit color
-export function brandColor(airline: Airline) {
+export function brandColor(airline: Pick<Airline, 'branding'>) {
   const color = airline.branding?.primary_color || '#64748b'
 
   return color.replace(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i, '#$1$1$2$2$3$3')
@@ -135,9 +135,18 @@ export function brandColor(airline: Airline) {
 
 // A faint wash of the airline's own color, laid over a white tile so logos
 // drawn for light backgrounds stay legible in dark mode too
-export function brandTint(airline: Airline) {
+export function brandTint(airline: Pick<Airline, 'branding'>) {
   const tint = `${brandColor(airline)}14`
   return `linear-gradient(${tint}, ${tint})`
+}
+
+// A logo tile's wash in the brand's color: a faint tint all over, strongest
+// in the top left corner, so the tile reads without a border. For an airline
+// or an alliance.
+export function brandWash(entry: Pick<Airline, 'branding'>) {
+  const color = brandColor(entry)
+
+  return `radial-gradient(circle at 0% 0%, ${color}33, transparent 70%), linear-gradient(${color}0f, ${color}0f)`
 }
 
 // "Ceased 2017" for an airline that no longer flies, "Defunct" when the
@@ -148,9 +157,9 @@ export function ceasedLabel(airline: Airline) {
   return airline.defunct ? 'Defunct' : undefined
 }
 
-// "1956", or "1946–2019" for an airline that has ceased operations;
-// undefined when neither year is known
-export function operatingYears(airline: Airline) {
+// "1956", or "1946–2019" for an airline that has ceased operations (or an
+// alliance that was disbanded); undefined when neither year is known
+export function operatingYears(airline: Pick<Airline, 'founded' | 'ceased'>) {
   const { founded, ceased } = airline
   if (ceased) return `${founded ?? '?'}–${ceased}`
 

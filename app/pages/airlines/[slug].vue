@@ -53,7 +53,16 @@
             :data="pastAlliances"
             :columns="allianceColumns"
             class="rounded-lg border border-default"
-          />
+          >
+            <template #alliance-cell="{ row }">
+              <ULink
+                :to="`/alliances/${row.original.slug}`"
+                class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
+              >
+                {{ row.original.alliance }}
+              </ULink>
+            </template>
+          </UTable>
         </section>
 
         <!-- Marks the airline used before its current ones, newest first -->
@@ -181,6 +190,8 @@ const formerColumns = [
 // Alliances it left, oldest first, one row each
 const pastAlliances = (airline.alliance_history ?? []).map((item) => ({
   alliance: item.alliance,
+  // Every alliance an airline may name has an entry (validateAlliances)
+  slug: allianceByName(item.alliance).slug,
   since: item.since ?? '—',
   until: item.until,
 }))

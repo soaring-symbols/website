@@ -21,7 +21,7 @@
 
       <template #body>
         <UNavigationMenu
-          :items="nav"
+          :items="mobileNav"
           orientation="vertical"
           class="-mx-3"
           :ui="{
@@ -56,12 +56,71 @@
 <script setup>
 const year = new Date().getFullYear()
 
-const nav = [
-  { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
+const route = useRoute()
+
+// Whether the current page is under one of the given paths, e.g. /alliances
+// for /alliances/skyteam
+const under = (...paths) =>
+  paths.some((p) => route.path === p || route.path.startsWith(`${p}/`))
+
+// Browse opens the two halves of the collection, airlines and alliances, and
+// Ecosystem its two groups; each stays lit on any page below it
+const nav = computed(() => [
+  {
+    label: 'Browse',
+    icon: 'solar:plane-linear',
+    active: under('/browse', '/airlines', '/alliances'),
+    // The phone menu lists these in Browse's place
+    flatten: true,
+    children: [
+      {
+        label: 'Airlines',
+        description: 'Search every airline by name, code or callsign.',
+        to: '/browse',
+        icon: 'solar:plane-linear',
+        active: under('/browse', '/airlines'),
+      },
+      {
+        label: 'Alliances',
+        description: 'oneworld, SkyTeam, Star Alliance and the rest.',
+        to: '/alliances',
+        icon: 'solar:users-group-rounded-linear',
+        active: under('/alliances'),
+      },
+    ],
+  },
   { label: 'Validate', to: '/validate', icon: 'solar:check-circle-linear' },
-  { label: 'Ecosystem', to: '/ecosystem', icon: 'solar:widget-add-linear' },
+  {
+    label: 'Ecosystem',
+    to: '/ecosystem',
+    icon: 'solar:widget-add-linear',
+    active: under('/ecosystem'),
+    children: [
+      {
+        label: 'Files and APIs',
+        description: 'CDN links and a JSON and image API.',
+        to: '/ecosystem#data',
+        icon: 'solar:code-square-linear',
+      },
+      {
+        label: 'Apps and plugins',
+        description: 'Raycast, Figma and more.',
+        to: '/ecosystem#apps',
+        icon: 'solar:widget-add-linear',
+      },
+    ],
+  },
   { label: 'Changelog', to: '/changelog', icon: 'solar:history-linear' },
-]
+])
+
+// The phone menu has room for every page, so Browse's two halves are listed
+// in its place rather than folded behind another tap; Ecosystem's groups are
+// one page, so it stays a single link
+const mobileNav = computed(() =>
+  nav.value.flatMap(({ children, flatten, ...item }) =>
+    flatten ? children.map(({ description, ...child }) => child) : [item],
+  ),
+)
 </script>
 
 <style scoped>

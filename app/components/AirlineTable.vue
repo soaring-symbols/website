@@ -59,6 +59,11 @@ const columns = [
   { accessorKey: 'iata', header: 'IATA' },
   { accessorKey: 'name', header: 'Airline' },
   { accessorKey: 'icao', header: 'ICAO' },
+  {
+    accessorKey: 'callsign',
+    header: 'Callsign',
+    cell: ({ row }) => row.original.callsign ?? '',
+  },
   { accessorKey: 'country', header: 'Country' },
   {
     accessorKey: 'alliance',

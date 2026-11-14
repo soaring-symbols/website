@@ -45,12 +45,16 @@
               <CountryFlags :iso="airline.country" />
               <span class="cap-center">{{ countryName(airline.country) }}</span>
             </li>
-            <li v-if="airline.alliance" :class="chipClass">
-              <UIcon
-                name="solar:users-group-rounded-bold-duotone"
-                class="size-4 text-muted"
-              />
-              <span class="cap-center">{{ airline.alliance }}</span>
+            <!-- Its alliance, with the alliance's icon, leads to the
+               alliance's page -->
+            <li v-if="alliance">
+              <ULink
+                :to="`/alliances/${alliance.slug}`"
+                :class="[chipClass, 'transition-colors hover:bg-accented']"
+              >
+                <AllianceMark :alliance="alliance" decorative class="size-4" />
+                <span class="cap-center">{{ alliance.name }}</span>
+              </ULink>
             </li>
             <!-- The year it started; a ceased airline's end year is in its
                badge, so this says "Founded" rather than "Since" -->
@@ -199,18 +203,16 @@ const props = defineProps({
   airline: { type: Object, required: true },
 })
 
-// The logo's white tile, washed with the airline's color: a faint tint all
-// over, strongest in the top left corner, so it reads without a border
+// Its alliance's entry, for the chip's icon and link
+const alliance = computed(() => allianceByName(props.airline.alliance))
+
 // The hubs the globe can place
 const mappedHubs = computed(() =>
   (props.airline.hubs ?? []).filter((code) => HUBS[code]),
 )
 
-const logoWash = computed(() => {
-  const color = brandColor(props.airline)
-
-  return `radial-gradient(circle at 0% 0%, ${color}33, transparent 70%), linear-gradient(${color}0f, ${color}0f)`
-})
+// The logo's white tile, washed with the airline's color
+const logoWash = computed(() => brandWash(props.airline))
 
 const {
   historySummary,

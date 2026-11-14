@@ -12,6 +12,13 @@ const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
 const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
 // Where each airline's hubs are, for the globe on its page
 const airportsFile = resolve(soaringSymbolsDir, 'dist/airports.json')
+// The alliances airlines name, and the marks of those the collection has
+// (from soaring-symbols 0.4.0)
+const alliancesFile = resolve(soaringSymbolsDir, 'dist/alliances.json')
+const allianceAssetsDir = resolve(soaringSymbolsDir, 'dist/alliances')
+const alliances: { slug: string }[] = JSON.parse(
+  readFileSync(alliancesFile, 'utf8'),
+)
 const airlines: { slug: string; former?: { slug?: string }[] }[] = JSON.parse(
   readFileSync(airlinesFile, 'utf8'),
 )
@@ -84,6 +91,7 @@ export default defineNuxtConfig({
   alias: {
     '#airlines-data': airlinesFile,
     '#airports-data': airportsFile,
+    '#alliances-data': alliancesFile,
   },
 
   runtimeConfig: {
@@ -106,6 +114,10 @@ export default defineNuxtConfig({
           driver: 'fs-lite',
           base: assetsDir,
         }
+        config.storage['root:public:alliances'] = {
+          driver: 'fs-lite',
+          base: allianceAssetsDir,
+        }
       })
     },
   },
@@ -125,11 +137,18 @@ export default defineNuxtConfig({
         // Airline pages live under the same prefix as the SVGs
         fallthrough: true,
       },
+      // Alliance marks, under the prefix of the alliance pages like the
+      // airlines'
+      { baseURL: '/alliances', dir: allianceAssetsDir, fallthrough: true },
       { baseURL: '/flags', dir: flagsDir, maxAge: 60 * 60 * 24 * 365 },
     ],
     // The image API reads the SVGs to tint and render them, and a Worker
-    // cannot read its static files: bundle a copy as server assets
-    serverAssets: [{ baseName: 'airlines', dir: assetsDir }],
+    // cannot read its static files: bundle a copy of the airlines' and the
+    // alliances' as server assets
+    serverAssets: [
+      { baseName: 'airlines', dir: assetsDir },
+      { baseName: 'alliances', dir: allianceAssetsDir },
+    ],
     // Lets the image API import resvg's WebAssembly module
     experimental: {
       wasm: true,
@@ -148,8 +167,10 @@ export default defineNuxtConfig({
         '/validate',
         '/ecosystem',
         '/changelog',
+        '/alliances',
         '/sitemap.xml',
         ...airlines.map((airline) => `/airlines/${airline.slug}`),
+        ...alliances.map((alliance) => `/alliances/${alliance.slug}`),
       ],
       failOnError: true,
     },

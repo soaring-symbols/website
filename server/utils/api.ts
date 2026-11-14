@@ -1,34 +1,44 @@
-import type { Airline, AssetType } from 'soaring-symbols'
+import type { Airline, Alliance } from 'soaring-symbols'
 import type { H3Event } from 'h3'
 import { version } from 'soaring-symbols/package.json'
-
-const ASSET_TYPES: AssetType[] = ['icon', 'logo', 'tail']
+import { MARK_TYPES, type MarkSource } from './images'
 
 export const packageVersion = version
 
-// The package entry as is, plus absolute links to the airline's page and to
-// every SVG it ships, keyed like the file names ('logo', 'logo-mono')
-export function toApiAirline(airline: Airline, origin: string) {
+// The package entry as is, plus absolute links to its page and to every SVG
+// it ships, keyed like the file names ('logo', 'logo-mono'): an airline's
+// under /airlines, an alliance's under /alliances
+function withLinks<T extends Airline | Alliance>(
+  entry: T,
+  source: MarkSource,
+  origin: string,
+) {
   const links: Record<string, string> = {
-    page: new URL(`/airlines/${airline.slug}`, origin).href,
+    page: new URL(`/${source}/${entry.slug}`, origin).href,
   }
-  for (const type of ASSET_TYPES) {
-    const asset = airline.assets[type]
+  for (const type of MARK_TYPES[source]) {
+    const asset = (entry.assets as Airline['assets'])[type]
     for (const variant of [
       asset?.color && type,
       asset?.mono && `${type}-mono`,
     ]) {
       if (variant) {
         links[variant] = new URL(
-          `/airlines/${airline.slug}/${variant}.svg`,
+          `/${source}/${entry.slug}/${variant}.svg`,
           origin,
         ).href
       }
     }
   }
 
-  return { ...airline, links }
+  return { ...entry, links }
 }
+
+export const toApiAirline = (airline: Airline, origin: string) =>
+  withLinks(airline, 'airlines', origin)
+
+export const toApiAlliance = (alliance: Alliance, origin: string) =>
+  withLinks(alliance, 'alliances', origin)
 
 // Readable from any site, and cached for a day: the data only changes with
 // a package release, which redeploys the Worker
