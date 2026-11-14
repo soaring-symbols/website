@@ -6,7 +6,7 @@
       class="grid gap-5 @4xl:grid-cols-[16rem_minmax(0,1fr)_17rem] @4xl:gap-8"
     >
       <div
-        class="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-white p-6"
+        class="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-tile p-6"
         :style="{ backgroundImage: tint }"
       >
         <img
@@ -34,7 +34,7 @@
           </div>
           <div
             v-if="hasAsset(airline, 'icon')"
-            class="grid size-16 shrink-0 place-items-center rounded-lg bg-white p-3"
+            class="grid size-16 shrink-0 place-items-center rounded-lg bg-tile p-3"
             :style="{ backgroundImage: tint }"
           >
             <img

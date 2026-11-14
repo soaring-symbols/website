@@ -27,7 +27,7 @@
       <div class="pass-body">
         <div class="pass-main">
           <div
-            class="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-white p-3"
+            class="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-tile p-3"
             :style="{ backgroundImage: tint }"
           >
             <img

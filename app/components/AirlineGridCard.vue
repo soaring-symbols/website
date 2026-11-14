@@ -5,7 +5,7 @@
     @click="$emit('open', airline)"
   >
     <div
-      class="flex aspect-[2/1] w-full sm:aspect-[4/3] items-center justify-center overflow-hidden rounded-lg bg-white p-6"
+      class="flex aspect-[2/1] w-full sm:aspect-[4/3] items-center justify-center overflow-hidden rounded-lg bg-tile p-6"
       :style="{ backgroundImage: brandTint(airline) }"
     >
       <img

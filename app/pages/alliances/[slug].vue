@@ -102,7 +102,7 @@
           <li v-for="airline in members" :key="airline.slug">
             <ULink :to="`/airlines/${airline.slug}`" :class="memberClass">
               <span
-                class="flex h-12 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white p-1.5"
+                class="flex h-12 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-tile p-1.5"
                 :style="{ backgroundImage: brandTint(airline) }"
               >
                 <img

@@ -30,7 +30,7 @@
             class="flex flex-col gap-4 rounded-xl bg-surface p-4"
           >
             <div
-              class="flex aspect-[5/2] items-center justify-center overflow-hidden rounded-lg bg-white p-6"
+              class="flex aspect-[5/2] items-center justify-center overflow-hidden rounded-lg bg-tile p-6"
               :style="{ backgroundImage: tint }"
             >
               <img

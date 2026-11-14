@@ -11,7 +11,7 @@
           <!-- Who it is: its mark, its name and slogan, and its years -->
           <span class="flex gap-4 p-4">
             <span
-              class="grid size-20 shrink-0 place-items-center overflow-hidden rounded-lg bg-white p-3"
+              class="grid size-20 shrink-0 place-items-center overflow-hidden rounded-lg bg-tile p-3"
               :style="{ backgroundImage: brandTint(item.alliance) }"
             >
               <AllianceMark
@@ -64,7 +64,7 @@
               <span
                 v-for="airline in item.avatars"
                 :key="airline.slug"
-                class="grid size-8 place-items-center overflow-hidden rounded-full bg-white p-1 ring-2 ring-surface transition-colors group-hover:ring-(--ui-bg-elevated) inset-ring inset-ring-black/10 dark:inset-ring-white/15"
+                class="grid size-8 place-items-center overflow-hidden rounded-full bg-tile p-1 ring-2 ring-surface transition-colors group-hover:ring-(--ui-bg-elevated) inset-ring inset-ring-black/10 dark:inset-ring-white/15"
                 :style="{ backgroundImage: brandTint(airline) }"
               >
                 <img
