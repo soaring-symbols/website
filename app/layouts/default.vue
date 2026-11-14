@@ -21,7 +21,7 @@
 
       <template #body>
         <UNavigationMenu
-          :items="nav"
+          :items="mobileNav"
           orientation="vertical"
           class="-mx-3"
           :ui="{
@@ -56,17 +56,42 @@
 <script setup>
 const year = new Date().getFullYear()
 
-const nav = [
-  { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
+const route = useRoute()
+
+// Browse opens the two halves of the collection, airlines and alliances,
+// and stays lit on any page of either
+const nav = computed(() => [
   {
-    label: 'Alliances',
-    to: '/alliances',
-    icon: 'solar:users-group-rounded-linear',
+    label: 'Browse',
+    icon: 'solar:plane-linear',
+    active: /^\/(browse|airlines|alliances)(\/|$)/.test(route.path),
+    children: [
+      {
+        label: 'Airlines',
+        description: 'Search every airline by name, code or callsign.',
+        to: '/browse',
+        icon: 'solar:plane-linear',
+      },
+      {
+        label: 'Alliances',
+        description: 'oneworld, SkyTeam, Star Alliance and the rest.',
+        to: '/alliances',
+        icon: 'solar:users-group-rounded-linear',
+      },
+    ],
   },
   { label: 'Validate', to: '/validate', icon: 'solar:check-circle-linear' },
   { label: 'Ecosystem', to: '/ecosystem', icon: 'solar:widget-add-linear' },
   { label: 'Changelog', to: '/changelog', icon: 'solar:history-linear' },
-]
+])
+
+// The phone menu has room for every page, so Browse's two halves are
+// listed in its place rather than folded behind another tap
+const mobileNav = computed(() =>
+  nav.value.flatMap(({ children, ...item }) =>
+    children ? children.map(({ description, ...child }) => child) : [item],
+  ),
+)
 </script>
 
 <style scoped>
