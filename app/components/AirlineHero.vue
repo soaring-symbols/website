@@ -15,7 +15,7 @@
         class="grid items-center gap-6 sm:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-10"
       >
         <div
-          class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-white p-6"
+          class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-tile p-6"
           :style="{ backgroundImage: logoWash }"
         >
           <img

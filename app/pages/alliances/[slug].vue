@@ -7,7 +7,7 @@
       class="grid items-center gap-6 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-10"
     >
       <div
-        class="flex aspect-square w-40 items-center justify-center overflow-hidden rounded-xl bg-white p-6 sm:w-auto sm:p-8"
+        class="flex aspect-square w-40 items-center justify-center overflow-hidden rounded-xl bg-tile p-6 sm:w-auto sm:p-8"
         :style="{ backgroundImage: wash }"
       >
         <AllianceMark :alliance="alliance" class="size-full" />
