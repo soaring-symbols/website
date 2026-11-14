@@ -38,7 +38,9 @@
               type="submit"
               size="xl"
               label="Find airline"
-              class="btn-signal justify-center"
+              color="primary"
+              variant="solid"
+              class="justify-center"
               :ui="{ label: 'block' }"
             />
           </form>

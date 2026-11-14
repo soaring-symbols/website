@@ -71,21 +71,6 @@ body {
   font-feature-settings: 'tnum' 1;
 }
 
-/* The one solid call to action per view: black lettering on signal yellow */
-.btn-signal {
-  background-color: var(--color-signal-500);
-  color: #18202b;
-}
-
-.btn-signal:hover {
-  background-color: var(--color-signal-400);
-}
-
-.btn-signal:focus-visible {
-  outline: 2px solid var(--ui-text-highlighted);
-  outline-offset: 2px;
-}
-
 /* Overpass sits its capitals high in the line box. Text set beside a button
    or icon, like a title next to its links, drops by this much to line up */
 @utility cap-center {

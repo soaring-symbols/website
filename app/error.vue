@@ -7,7 +7,8 @@
         :clear="{
           label: 'Browse all airlines',
           size: 'lg',
-          class: 'btn-signal',
+          color: 'primary',
+          variant: 'solid',
           ui: { label: 'block' },
         }"
       />

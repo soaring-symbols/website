@@ -78,6 +78,17 @@ export default defineAppConfig({
         base: 'cursor-pointer',
         label: 'hidden md:block cap-center',
       },
+      // The one solid call to action per view: black lettering on signal
+      // yellow in both themes. --ui-primary stays the text's ink on light
+      // pages (main.css), so the solid button sets its colors itself
+      compoundVariants: [
+        {
+          color: 'primary',
+          variant: 'solid',
+          class:
+            'bg-signal-500 text-[#18202b] hover:bg-signal-400 active:bg-signal-400 disabled:bg-signal-500 aria-disabled:bg-signal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-text-highlighted)',
+        },
+      ],
       defaultVariants: {
         color: 'neutral',
         variant: 'soft',

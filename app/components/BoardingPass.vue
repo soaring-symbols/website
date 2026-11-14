@@ -66,7 +66,9 @@
           :to="`/airlines/${airline.slug}`"
           label="View logos and details"
           trailing-icon="solar:arrow-right-linear"
-          class="btn-signal w-full justify-center"
+          color="primary"
+          variant="solid"
+          class="w-full justify-center"
           :ui="{ label: 'block' }"
         />
       </div>

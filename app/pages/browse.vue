@@ -147,7 +147,8 @@
           trailing-icon="solar:arrow-right-linear"
           size="lg"
           block
-          class="btn-signal"
+          color="primary"
+          variant="solid"
           :ui="{ label: 'block' }"
         />
       </template>
