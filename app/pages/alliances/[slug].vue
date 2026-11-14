@@ -250,11 +250,7 @@ const color = alliance.branding?.primary_color
 
 // The mark's white tile, washed with the alliance's color as an airline's
 // logo is
-const wash = (() => {
-  const c = brandColor(alliance)
-
-  return `radial-gradient(circle at 0% 0%, ${c}33, transparent 70%), linear-gradient(${c}0f, ${c}0f)`
-})()
+const wash = brandWash(alliance)
 
 const sectionUi = {
   container: 'py-12 sm:py-12 lg:py-12 gap-8 sm:gap-8',

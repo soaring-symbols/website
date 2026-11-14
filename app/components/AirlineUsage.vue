@@ -112,7 +112,7 @@ const tabs = computed(() => {
 
 // What getAirline() returns, cut to the fields worth showing
 function lookupResult(airline) {
-  const q = (value) => `'${String(value).replace(/'/g, "\\'")}'`
+  const q = usageQuote
   const fields = [
     ['name', q(airline.name)],
     airline.iata && ['iata', q(airline.iata)],

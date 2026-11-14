@@ -209,10 +209,12 @@ watch(search, (q) => {
 // one, every airline that flew in it, since none is a member any more.
 const { alliances } = useAlliances()
 const toOption = (a) => ({ value: a.name, label: a.name })
-const disbanded = alliances.filter((a) => a.defunct)
 const allianceOptions = [
   alliances.filter((a) => !a.defunct).map(toOption),
-  [{ type: 'label', label: 'Disbanded' }, ...disbanded.map(toOption)],
+  [
+    { type: 'label', label: 'Disbanded' },
+    ...alliances.filter((a) => a.defunct).map(toOption),
+  ],
   [{ value: '__none__', label: 'No alliance' }],
 ]
 
@@ -221,8 +223,7 @@ function inAlliances(airline, names) {
 
   return (airline.alliance_history ?? []).some(
     (item) =>
-      names.includes(item.alliance) &&
-      disbanded.some((a) => a.name === item.alliance),
+      names.includes(item.alliance) && allianceByName(item.alliance)?.defunct,
   )
 }
 

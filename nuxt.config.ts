@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import app from './package.json'
@@ -138,10 +138,8 @@ export default defineNuxtConfig({
         fallthrough: true,
       },
       // Alliance marks, under the prefix of the alliance pages like the
-      // airlines'; the folder exists once an alliance has SVGs
-      ...(existsSync(allianceAssetsDir)
-        ? [{ baseURL: '/alliances', dir: allianceAssetsDir, fallthrough: true }]
-        : []),
+      // airlines'
+      { baseURL: '/alliances', dir: allianceAssetsDir, fallthrough: true },
       { baseURL: '/flags', dir: flagsDir, maxAge: 60 * 60 * 24 * 365 },
     ],
     // The image API reads the SVGs to tint and render them, and a Worker
@@ -149,9 +147,7 @@ export default defineNuxtConfig({
     // alliances' as server assets
     serverAssets: [
       { baseName: 'airlines', dir: assetsDir },
-      ...(existsSync(allianceAssetsDir)
-        ? [{ baseName: 'alliances', dir: allianceAssetsDir }]
-        : []),
+      { baseName: 'alliances', dir: allianceAssetsDir },
     ],
     // Lets the image API import resvg's WebAssembly module
     experimental: {

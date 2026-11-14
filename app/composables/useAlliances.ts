@@ -58,15 +58,6 @@ export function allianceCdnUrl(alliance: Alliance, variant: string) {
   return `https://cdn.jsdelivr.net/npm/soaring-symbols/dist/alliances/${allianceAssetPath(alliance, variant)}`
 }
 
-// "1997", or "2016–2023" for an alliance that was disbanded; undefined
-// when neither year is known
-export function allianceYears(alliance: Alliance) {
-  const { founded, ceased } = alliance
-  if (ceased) return `${founded ?? '?'}–${ceased}`
-
-  return founded ? String(founded) : undefined
-}
-
 // "Disbanded 2023", "Disbanded" when the year is unknown, and undefined for
 // an alliance still active
 export function disbandedLabel(alliance: Alliance) {

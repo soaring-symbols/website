@@ -24,8 +24,8 @@
             </span>
             <span class="text-sm text-muted">{{ item.summary }}</span>
             <UBadge
-              v-if="disbandedLabel(item.alliance)"
-              :label="disbandedLabel(item.alliance)"
+              v-if="item.disbanded"
+              :label="item.disbanded"
               color="neutral"
               variant="subtle"
               size="sm"
@@ -61,15 +61,15 @@ defineOgImage('Site', { title: meta.title, description: meta.description })
 // under each name says when it was founded and how many airlines it has in
 // the collection
 const items = alliances.map((alliance) => {
-  const members =
-    membersOf(alliance, airlines).length +
-    membersOf(alliance, airlines, { defunct: true }).length
+  // Those flying in it and those that ceased while in it
+  const members = airlines.filter((a) => a.alliance === alliance.name).length
   const former = formerMembersOf(alliance, airlines).length
 
   return {
     alliance,
+    disbanded: disbandedLabel(alliance),
     summary: [
-      allianceYears(alliance),
+      operatingYears(alliance),
       members && `${members} member${members > 1 ? 's' : ''}`,
       former && `${former} former`,
     ]

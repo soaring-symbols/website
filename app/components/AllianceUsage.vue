@@ -92,7 +92,7 @@ const tabs = computed(() => {
 
 // What getAlliance() returns, cut to the fields worth showing
 function lookupResult(alliance) {
-  const q = (value) => `'${String(value).replace(/'/g, "\\'")}'`
+  const q = usageQuote
   const marks = ALLIANCE_MARK_TYPES.filter((t) => alliance.assets[t.variant])
   const fields = [
     ['name', q(alliance.name)],
