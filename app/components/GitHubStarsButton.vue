@@ -133,12 +133,14 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
 <style scoped>
 .digits {
   display: inline-flex;
-  line-height: 1;
+  /* Taller than the glyphs, so the digits above and below in the strip stay
+     clear of the window's edge and never bleed in as a faint line */
+  line-height: 1.5;
 }
 
 .digit {
   display: inline-block;
-  height: 1em;
+  height: 1.5em;
   overflow: hidden;
 }
 
@@ -149,7 +151,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
 }
 
 .digit-strip > span {
-  height: 1em;
+  height: 1.5em;
   text-align: center;
 }
 
