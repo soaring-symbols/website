@@ -18,6 +18,27 @@
       <MarkFileRows :entry="airline" />
     </UPageSection>
 
+    <!-- The same marks and data in code: package, CDN and API -->
+    <UPageSection
+      title="In your project"
+      :description="`Use ${airline.name}’s marks and data in your own code, three ways. None needs a key or an account.`"
+      orientation="horizontal"
+      :features="usageFeatures"
+      :links="[
+        {
+          to: '/ecosystem',
+          label: 'See the ecosystem',
+          trailingIcon: 'solar:arrow-right-linear',
+          variant: 'outline',
+          size: 'md',
+          ui: { label: 'block' },
+        },
+      ]"
+      :ui="{ ...sectionUi, features: 'gap-5', footer: 'mt-6' }"
+    >
+      <AirlineUsage :airline="airline" />
+    </UPageSection>
+
     <!-- What the airline was before: its names and codes, the alliances
          it left and its older marks, one part each when it has them. The
          hero's History button leads here. -->
@@ -86,27 +107,6 @@
           </div>
         </section>
       </div>
-    </UPageSection>
-
-    <!-- The same marks and data in code: package, CDN and API -->
-    <UPageSection
-      title="In your project"
-      :description="`Use ${airline.name}’s marks and data in your own code, three ways. None needs a key or an account.`"
-      orientation="horizontal"
-      :features="usageFeatures"
-      :links="[
-        {
-          to: '/ecosystem',
-          label: 'See the ecosystem',
-          trailingIcon: 'solar:arrow-right-linear',
-          variant: 'outline',
-          size: 'md',
-          ui: { label: 'block' },
-        },
-      ]"
-      :ui="{ ...sectionUi, features: 'gap-5', footer: 'mt-6' }"
-    >
-      <AirlineUsage :airline="airline" />
     </UPageSection>
   </div>
 </template>

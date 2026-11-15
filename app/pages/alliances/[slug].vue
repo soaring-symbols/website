@@ -91,6 +91,27 @@
       <MarkFileRows :entry="alliance" source="alliances" />
     </UPageSection>
 
+    <!-- The same marks and data in code: package, CDN and API -->
+    <UPageSection
+      title="In your project"
+      :description="`Use ${alliance.name}’s ${mark ? 'marks and data' : 'data'} in your own code. None of it needs a key or an account.`"
+      orientation="horizontal"
+      :features="usageFeatures"
+      :links="[
+        {
+          to: '/ecosystem',
+          label: 'See the ecosystem',
+          trailingIcon: 'solar:arrow-right-linear',
+          variant: 'outline',
+          size: 'md',
+          ui: { label: 'block' },
+        },
+      ]"
+      :ui="{ ...sectionUi, features: 'gap-5', footer: 'mt-6' }"
+    >
+      <AllianceUsage :alliance="alliance" />
+    </UPageSection>
+
     <!-- The airlines in it, the ones that ceased while members, and the
          ones that left, one part each when it has them -->
     <UPageSection
@@ -172,27 +193,6 @@
           </UTable>
         </section>
       </div>
-    </UPageSection>
-
-    <!-- The same marks and data in code: package, CDN and API -->
-    <UPageSection
-      title="In your project"
-      :description="`Use ${alliance.name}’s ${mark ? 'marks and data' : 'data'} in your own code. None of it needs a key or an account.`"
-      orientation="horizontal"
-      :features="usageFeatures"
-      :links="[
-        {
-          to: '/ecosystem',
-          label: 'See the ecosystem',
-          trailingIcon: 'solar:arrow-right-linear',
-          variant: 'outline',
-          size: 'md',
-          ui: { label: 'block' },
-        },
-      ]"
-      :ui="{ ...sectionUi, features: 'gap-5', footer: 'mt-6' }"
-    >
-      <AllianceUsage :alliance="alliance" />
     </UPageSection>
   </div>
 </template>
