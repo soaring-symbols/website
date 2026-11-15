@@ -30,13 +30,13 @@
     "fflate": "^0.8.3",
     "nuxt": "^4.6.4",
     "slugify": "^1.6.6",
-    "soaring-symbols": "^0.4.0"
+    "soaring-symbols": "^0.4.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@iconify-json/simple-icons": "^1.2.102",
-    "@iconify-json/solar": "^1.2.15",
+    "@iconify-json/solar": "^1.2.16",
     "@nuxt/eslint-config": "^1.17.0",
     "@nuxt/fonts": "^1.2.0",
     "@nuxt/image": "^2.2.1",

@@ -159,6 +159,8 @@
 </template>
 
 <script setup>
+import flagIcons from 'flag-icons/country.json'
+
 const meta = {
   title: 'Browse airlines',
   description:
@@ -227,11 +229,17 @@ function inAlliances(airline, names) {
   )
 }
 
-// Every country, whether or not the collection has an airline from it yet
-const countryOptions = COUNTRY_CODES.map((code) => ({
-  value: code,
-  label: countryName(code),
-}))
+// Every country flag-icons has a flag for, whether or not the collection
+// has an airline from it yet, by English name
+const collator = new Intl.Collator('en')
+const countryOptions = flagIcons
+  .filter((country) => country.iso)
+  .map((country) => {
+    const value = country.code.toUpperCase()
+
+    return { value, label: countryName(value) }
+  })
+  .sort((a, b) => collator.compare(a.label, b.label))
 
 const hasFilters = computed(
   () =>
