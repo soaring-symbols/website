@@ -34,11 +34,7 @@
             <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
             <FlapText class="col-icao" :text="airline.icao ?? ''" :length="3" />
             <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
-            <FlapText
-              class="col-country"
-              :text="airline.country.split(',')[0]"
-              :length="2"
-            />
+            <FlapText class="col-country" :text="airline.country" :length="2" />
           </button>
         </li>
       </ul>

@@ -142,7 +142,7 @@
                   {{ airline.name }}
                 </span>
                 <span class="flex items-center gap-1.5 text-sm text-muted">
-                  <CountryFlags :iso="airline.country" />
+                  <CountryFlag :iso="airline.country" />
                   <span class="truncate">{{
                     countryName(airline.country)
                   }}</span>

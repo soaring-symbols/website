@@ -42,8 +42,24 @@
 
           <ul class="flex flex-wrap items-center gap-2 text-sm">
             <li :class="chipClass">
-              <CountryFlags :iso="airline.country" />
+              <CountryFlag :iso="airline.country" />
               <span class="cap-center">{{ countryName(airline.country) }}</span>
+            </li>
+            <!-- A flag carrier says so; a joint one (Scandinavian Airlines)
+               names the countries it flies the flag of, with their flags -->
+            <li v-if="flagCarrierOf.length > 1" :class="chipClass">
+              <CountryFlag
+                v-for="code in flagCarrierOf"
+                :key="code"
+                :iso="code"
+              />
+              <span class="cap-center"
+                >Flag carrier of {{ countryList(flagCarrierOf) }}</span
+              >
+            </li>
+            <li v-else-if="flagCarrierOf.length" :class="chipClass">
+              <UIcon name="solar:flag-bold-duotone" class="size-4 text-muted" />
+              <span class="cap-center">Flag carrier</span>
             </li>
             <!-- Its alliance, with the alliance's icon, leads to the
                alliance's page -->
@@ -239,6 +255,9 @@ const RELATION_ICONS = {
   'Succeeded by': 'solar:arrow-right-bold-duotone',
   'Preceded by': 'solar:arrow-left-bold-duotone',
 }
+
+// The countries whose flag it flies, for the flag carrier chip
+const flagCarrierOf = computed(() => flagCarrierCountries(props.airline))
 
 // Every cell of the grid: both codes always, a dash for one it lacks, then
 // whatever else the airline has: callsign, hubs and relations. What it

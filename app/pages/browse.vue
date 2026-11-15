@@ -39,7 +39,7 @@
           :ui="{ base: 'bg-surface' }"
         >
           <template #item-leading="{ item }">
-            <CountryFlags :iso="item.value" />
+            <CountryFlag :iso="item.value" />
           </template>
         </USelectMenu>
 
@@ -227,12 +227,11 @@ function inAlliances(airline, names) {
   )
 }
 
-const countryOptions = [...new Set(airlines.map((a) => a.country))]
-  .sort((a, b) => countryName(a).localeCompare(countryName(b)))
-  .map((code) => ({
-    value: code,
-    label: countryName(code),
-  }))
+// Every country, whether or not the collection has an airline from it yet
+const countryOptions = COUNTRY_CODES.map((code) => ({
+  value: code,
+  label: countryName(code),
+}))
 
 const hasFilters = computed(
   () =>
@@ -274,7 +273,10 @@ const filtered = computed(() => {
   }
 
   if (selectedCountries.value.length) {
-    list = list.filter((a) => selectedCountries.value.includes(a.country))
+    // A subdivision such as GB-SCT counts as its country
+    list = list.filter((a) =>
+      selectedCountries.value.includes(a.country.slice(0, 2)),
+    )
   }
 
   return list

@@ -42,7 +42,7 @@
         </h2>
         <span class="flex flex-wrap gap-1.5 text-xs">
           <span :class="chipClass">
-            <CountryFlags :iso="airline.country" />
+            <CountryFlag :iso="airline.country" />
             <span class="cap-center truncate">{{
               countryName(airline.country)
             }}</span>
