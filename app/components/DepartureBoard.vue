@@ -9,8 +9,11 @@
     <div class="board-body">
       <div class="board-head" aria-hidden="true">
         <span class="col-iata">IATA</span>
+        <span class="col-sep" />
         <span class="col-name">Airline</span>
+        <span class="col-sep" />
         <span class="col-icao">ICAO</span>
+        <span class="col-sep" />
         <span class="col-country">Country</span>
       </div>
 
@@ -23,9 +26,14 @@
             :aria-label="`${airline.name}, ${countryName(airline.country)}`"
             @click="pick(airline)"
           >
+            <!-- A blank flap between columns, as on a real board, so the
+                 row is one unbroken strip -->
             <FlapText class="col-iata" :text="airline.iata ?? ''" :length="2" />
-            <FlapText class="col-name" :text="airline.name" :length="18" />
+            <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
+            <FlapText class="col-name" :text="airline.name" :length="22" />
+            <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
             <FlapText class="col-icao" :text="airline.icao ?? ''" :length="3" />
+            <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
             <FlapText
               class="col-country"
               :text="airline.country.split(',')[0]"
@@ -134,12 +142,13 @@ onMounted(() => {
     0 24px 48px -24px rgb(0 0 0 / 0.6);
 }
 
-/* 25 flaps, 21 flap gaps, 3 column gaps and the row padding across the width */
+/* 32 flaps (3 of them blank between the columns), 31 flap gaps and the
+   row padding across the width */
 .board-body {
   --flap-gap: 2px;
   --flap: clamp(
     0.8rem,
-    calc((100cqi - 0.75rem - 2.25rem - 21 * var(--flap-gap)) / 25),
+    calc((100cqi - 0.75rem - 31 * var(--flap-gap)) / 32),
     2.25rem
   );
 }
@@ -147,19 +156,23 @@ onMounted(() => {
 .board-head,
 .board-row {
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: repeat(7, auto);
   justify-content: start;
-  column-gap: 0.75rem;
+  column-gap: var(--flap-gap);
 }
 
 .board-head {
   padding: 0 0.375rem 0.5rem;
   font-size: 0.75rem;
-  color: rgb(236 235 228 / 0.55);
+  color: var(--color-signal-500);
+}
+
+.board-head .col-sep {
+  width: var(--flap);
 }
 
 .board-head .col-name {
-  width: calc(18 * var(--flap) + 17 * var(--flap-gap));
+  width: calc(22 * var(--flap) + 21 * var(--flap-gap));
 }
 
 .board-head .col-iata {
@@ -231,19 +244,21 @@ onMounted(() => {
 /* Narrow boards drop the ICAO and country columns and shorten the name */
 @container (width < 34rem) {
   .board-body {
-    --flap: calc((100cqi - 1.5rem - 14 * var(--flap-gap)) / 16);
+    --flap: calc((100cqi - 0.75rem - 16 * var(--flap-gap)) / 17);
   }
 
-  /* Two tracks, so the hidden columns leave no empty gaps behind */
+  /* Three tracks, so the hidden columns leave no empty gaps behind */
   .board-head,
   .board-row {
-    grid-template-columns: auto auto;
+    grid-template-columns: repeat(3, auto);
   }
 
   .board-head .col-icao,
   .board-head .col-country,
   .board-row .col-icao,
-  .board-row .col-country {
+  .board-row .col-country,
+  .board-head .col-name ~ .col-sep,
+  .board-row .col-name ~ .col-sep {
     display: none;
   }
 
