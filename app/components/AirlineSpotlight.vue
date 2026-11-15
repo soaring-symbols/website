@@ -76,7 +76,7 @@
             <dd
               class="flex items-center gap-1.5 font-semibold text-highlighted"
             >
-              <CountryFlags :iso="airline.country" />
+              <CountryFlag :iso="airline.country" />
               <span class="min-w-0">
                 {{ countryName(airline.country) }}
               </span>

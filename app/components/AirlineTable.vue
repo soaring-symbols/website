@@ -37,7 +37,7 @@
 
     <template #country-cell="{ row }">
       <span class="inline-flex items-center gap-2">
-        <CountryFlags :iso="row.original.country" />
+        <CountryFlag :iso="row.original.country" />
         {{ countryName(row.original.country) }}
       </span>
     </template>

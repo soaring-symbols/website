@@ -26,7 +26,7 @@ for (const airline of airlines) {
 
 const stats = {
   total: airlines.length,
-  countries: new Set(airlines.flatMap((a) => a.country.split(','))).size,
+  countries: new Set(airlines.map((a) => a.country)).size,
   alliances: new Set(airlines.filter((a) => a.alliance).map((a) => a.alliance))
     .size,
 }
