@@ -9,8 +9,12 @@
       title="Files"
       :description="filesDescription"
       class="mt-16"
-      :ui="sectionUi"
+      :ui="filesUi"
     >
+      <template #links>
+        <DownloadAllButton :entry="airline" />
+      </template>
+
       <MarkFileRows :entry="airline" />
     </UPageSection>
 
@@ -139,6 +143,17 @@ const sectionUi = {
   container: 'py-12 sm:py-12 lg:py-12 gap-8 sm:gap-8',
   title: 'text-2xl sm:text-2xl lg:text-2xl',
   description: 'mt-2',
+}
+
+// The Files section keeps its Download all button on its title's line, at
+// the right as a page header does its links, with the description across
+// the whole width below; on a phone the button follows the description
+const filesUi = {
+  ...sectionUi,
+  wrapper: 'relative',
+  title: `${sectionUi.title} sm:pe-56`,
+  footer: 'mt-5 sm:absolute sm:end-0 sm:top-0 sm:mt-0',
+  links: 'justify-start',
 }
 
 // What each tab of the usage block is for, beside it
