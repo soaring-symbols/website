@@ -4,6 +4,7 @@
   "description": "A curated collection of airline branding assets — logos, icons, and tails in SVG.",
   "type": "module",
   "private": true,
+  "license": "MIT",
   "author": {
     "name": "Anh Thang Bui",
     "email": "buianhthang89@gmail.com",

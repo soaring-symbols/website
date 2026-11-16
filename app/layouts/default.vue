@@ -45,7 +45,14 @@
       >
         <p class="text-pretty">
           Logos and icons are shown for reference. The trademarks belong to
-          their airlines; Soaring Symbols claims no ownership of them.
+          their airlines; Soaring Symbols claims no ownership of them. Read the
+          <ULink
+            to="https://github.com/soaring-symbols/soaring-symbols/blob/main/DISCLAIMER.md"
+            target="_blank"
+            class="underline underline-offset-2 hover:text-highlighted"
+            >disclaimer</ULink
+          >
+          before using them.
         </p>
         <p class="shrink-0">© {{ year }} Soaring Symbols</p>
       </UContainer>

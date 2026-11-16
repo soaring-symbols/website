@@ -51,3 +51,7 @@ npx wrangler --cwd .output dev
 ### Ecosystem
 
 Plans for the API on this site and for other integrations are tracked in the [main repository's roadmap](https://github.com/soaring-symbols/soaring-symbols#roadmap), so they don't need updating in two places. The integrations shown on the ecosystem page and the homepage, shipped or in development, are listed in `app/data/ecosystem.ts`.
+
+## License
+
+The site's code is [MIT](LICENSE). The airline and alliance marks it shows are trademarks of their owners and are not covered by it (see the package's [Disclaimer](https://github.com/soaring-symbols/soaring-symbols/blob/main/DISCLAIMER.md)), and neither is the Soaring Symbols name and mark.
