@@ -242,6 +242,12 @@ export function previousNames(airline: Airline) {
   return formerIdentities(airline).flatMap(({ name }) => (name ? [name] : []))
 }
 
+// The other names an airline goes by beside its full one, e.g. ['SWISS']
+// for Swiss International Air Lines
+export function aliasNames(airline: Airline) {
+  return (airline.aliases ?? []).map(({ name }) => name)
+}
+
 // Whether a search matches one of the codes or callsigns an airline used
 // before, the way it matches the current ones
 export function matchesFormerCode(airline: Airline, q: string) {

@@ -19,15 +19,19 @@ const allianceAssetsDir = resolve(soaringSymbolsDir, 'dist/alliances')
 const alliances: { slug: string }[] = JSON.parse(
   readFileSync(alliancesFile, 'utf8'),
 )
-const airlines: { slug: string; former?: { slug?: string }[] }[] = JSON.parse(
-  readFileSync(airlinesFile, 'utf8'),
-)
+const airlines: {
+  slug: string
+  aliases?: { slug?: string }[]
+  former?: { slug?: string }[]
+}[] = JSON.parse(readFileSync(airlinesFile, 'utf8'))
 // A renamed airline's page moves to its new slug; old links get a permanent
-// redirect (the slugs in `former`, from soaring-symbols 0.3.2).
-// Its SVGs stay at the old path too, since the package ships them there.
+// redirect (the slugs in `former`, from soaring-symbols 0.3.2), and so do
+// the slugs of its other names (`aliases`: /airlines/swiss for Swiss
+// International Air Lines). Its SVGs stay at the old path too, since the
+// package ships them there.
 const formerSlugRedirects = Object.fromEntries(
   airlines.flatMap((airline) =>
-    (airline.former ?? [])
+    [...(airline.aliases ?? []), ...(airline.former ?? [])]
       .flatMap(({ slug }) => (slug ? [slug] : []))
       .map((slug) => [
         `/airlines/${slug}`,

@@ -32,6 +32,13 @@
             >
               {{ airline.name }}
             </h1>
+            <!-- The other names it goes by, such as SWISS -->
+            <p v-if="aliases.length" class="mt-1 text-muted text-pretty">
+              Also known as
+              <span class="font-semibold text-highlighted">{{
+                aliases.join(', ')
+              }}</span>
+            </p>
             <p
               v-if="airline.branding?.tagline"
               class="mt-1.5 text-lg text-muted text-pretty"
@@ -219,6 +226,8 @@ import { HUBS } from '~/data/hubs'
 const props = defineProps({
   airline: { type: Object, required: true },
 })
+
+const aliases = computed(() => aliasNames(props.airline))
 
 // Its alliance's entry, for the chip's icon and link
 const alliance = computed(() => allianceByName(props.airline.alliance))
