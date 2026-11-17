@@ -17,7 +17,7 @@
         <!-- In dark mode, the logo for dark backgrounds on a dark tile when
              the package has one, else the color logo on the light tile -->
         <div
-          class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-tile p-6"
+          class="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-tile p-6"
           :class="darkTile(airline, 'logo')"
           :style="{ backgroundImage: logoTint }"
         >
