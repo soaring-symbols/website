@@ -20,12 +20,14 @@
 
         <div
           class="pass-logo relative overflow-hidden rounded-lg bg-tile"
+          :class="darkTile(airline, 'logo')"
           :style="{ backgroundImage: tint }"
         >
-          <img
-            :src="assetUrl(airline, 'logo')"
+          <MarkImg
+            :entry="airline"
+            variant="logo"
             :alt="`${airline.name} logo`"
-            class="absolute inset-0 size-full object-contain p-5"
+            img-class="absolute inset-0 size-full object-contain p-5"
           />
           <!-- Whether it still flies, which the board doesn't say -->
           <CeasedBadge :airline="airline" class="absolute top-2.5 left-2.5" />

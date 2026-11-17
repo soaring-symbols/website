@@ -18,20 +18,13 @@
              the package has one, else the color logo on the light tile -->
         <div
           class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-tile p-6"
-          :class="hasDarkLogo && 'dark:bg-tile-dark'"
+          :class="darkTile(airline, 'logo')"
           :style="{ backgroundImage: logoWash }"
         >
-          <img
-            :src="assetUrl(airline, 'logo')"
+          <MarkImg
+            :entry="airline"
+            variant="logo"
             :alt="`${airline.name} logo`"
-            class="size-full object-contain"
-            :class="hasDarkLogo && 'dark:hidden'"
-          />
-          <img
-            v-if="hasDarkLogo"
-            :src="assetUrl(airline, 'logo-dark')"
-            :alt="`${airline.name} logo`"
-            class="hidden size-full object-contain dark:block"
           />
         </div>
 
@@ -249,7 +242,6 @@ const mappedHubs = computed(() =>
 
 // The logo's white tile, washed with the airline's color
 const logoWash = computed(() => brandWash(props.airline))
-const hasDarkLogo = computed(() => hasAsset(props.airline, 'logo-dark'))
 
 const {
   historySummary,

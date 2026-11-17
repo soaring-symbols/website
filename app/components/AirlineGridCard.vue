@@ -11,22 +11,14 @@
            the package has one, else the color logo on the light tile -->
       <span
         class="flex aspect-[2/1] w-full items-center justify-center overflow-hidden rounded-lg bg-tile p-6 sm:aspect-[4/3]"
-        :class="hasDark && 'dark:bg-tile-dark'"
+        :class="darkTile(airline, 'logo')"
         :style="{ backgroundImage: brandTint(airline) }"
       >
-        <img
-          :src="assetUrl(airline, 'logo')"
+        <MarkImg
+          :entry="airline"
+          variant="logo"
           :alt="`${airline.name} logo`"
           loading="lazy"
-          class="size-full object-contain"
-          :class="hasDark && 'dark:hidden'"
-        />
-        <img
-          v-if="hasDark"
-          :src="assetUrl(airline, 'logo-dark')"
-          :alt="`${airline.name} logo`"
-          loading="lazy"
-          class="hidden size-full object-contain dark:block"
         />
       </span>
     </span>
@@ -72,11 +64,9 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   airline: { type: Object, required: true },
 })
-
-const hasDark = computed(() => hasAsset(props.airline, 'logo-dark'))
 
 defineEmits(['open'])
 

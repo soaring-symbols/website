@@ -8,6 +8,7 @@
     >
       <div
         class="flex aspect-square w-40 items-center justify-center overflow-hidden rounded-xl bg-tile p-6 sm:w-auto sm:p-8"
+        :class="darkTile(alliance, allianceMark(alliance))"
         :style="{ backgroundImage: wash }"
       >
         <AllianceMark :alliance="alliance" class="size-full" />
@@ -128,13 +129,13 @@
             <ULink :to="`/airlines/${airline.slug}`" :class="memberClass">
               <span
                 class="flex h-12 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-tile p-1.5"
+                :class="darkTile(airline, firstVariant(airline) ?? 'logo')"
                 :style="{ backgroundImage: brandTint(airline) }"
               >
-                <img
-                  :src="assetUrl(airline, firstVariant(airline) ?? 'logo')"
-                  alt=""
+                <MarkImg
+                  :entry="airline"
+                  :variant="firstVariant(airline) ?? 'logo'"
                   loading="lazy"
-                  class="size-full object-contain"
                 />
               </span>
               <span class="min-w-0">

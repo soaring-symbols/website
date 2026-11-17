@@ -80,6 +80,16 @@ export function hasAsset(
   return Boolean(suffix ? asset?.[suffix] : asset?.color)
 }
 
+// The tile class a mark needs behind <MarkImg>: dark in dark mode when the
+// package ships its -dark.svg, the light tile otherwise
+export function darkTile(
+  entry: MarkEntry,
+  variant: string,
+  mark?: HistoricalMarks,
+) {
+  return hasAsset(entry, `${variant}-dark`, mark) ? 'dark:bg-tile-dark' : ''
+}
+
 // The first color mark a set ships in the source's order, e.g. 'logo' for
 // an airline or 'icon' for an alliance; undefined when none
 export function firstVariant(
