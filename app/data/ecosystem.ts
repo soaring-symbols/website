@@ -1,3 +1,10 @@
+import { version } from 'soaring-symbols/package.json'
+
+// The release line of the package the site is built with, e.g. '0.5' for
+// 0.5.2: each minor release is a new line, so the copy follows the
+// dependency instead of being edited on every minor release
+const RELEASE_LINE = version.split('.').slice(0, 2).join('.')
+
 // Places outside the npm package where the marks can be used, from raw
 // files and data to apps built on them. A shipped entry offers either a link
 // or a snippet to copy; one that hasn't shipped yet carries a status (still
@@ -51,7 +58,7 @@ export const ecosystem: EcosystemEntry[] = [
     details: [
       'Swap logo for icon, tail or logo-stacked (the vertical lockup, for airlines that have one), and add -mono before .svg for the monochrome mark, or -dark for the one to show on dark backgrounds.',
       'Older logos are under <slug>/history/<year>/, by the year each came in.',
-      'Pin a release line such as soaring-symbols@0.4 for fixes without breaking changes, or an exact release to keep files as they are.',
+      `Pin a release line such as soaring-symbols@${RELEASE_LINE} for fixes without breaking changes, or an exact release to keep files as they are.`,
       'A renamed airline’s old slug keeps working and shows its current marks.',
     ],
     snippet: {
@@ -67,7 +74,7 @@ export const ecosystem: EcosystemEntry[] = [
     description:
       'The same files from the npm package on another CDN, at the same paths, so either one can stand in for the other.',
     details: [
-      'A release line such as soaring-symbols@0.4 redirects to the newest release in it within minutes of publishing.',
+      `A release line such as soaring-symbols@${RELEASE_LINE} redirects to the newest release in it within minutes of publishing.`,
       'Pages without a bundler can import the library as an ES module from dist/index.js.',
       'Add ?module to import the SVG fixer, which then loads its resvg dependency from unpkg too.',
     ],
