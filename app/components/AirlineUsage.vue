@@ -128,7 +128,9 @@ function lookupResult(airline) {
     [
       'assets',
       `{ ${MARK_TYPES.filter((t) => airline.assets[t.variant])
-        .map((t) => `${t.variant}: {…}`)
+        .map((t) =>
+          /-/.test(t.variant) ? `'${t.variant}': {…}` : `${t.variant}: {…}`,
+        )
         .join(', ')} }`,
     ],
   ].filter(Boolean)

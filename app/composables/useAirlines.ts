@@ -34,6 +34,9 @@ const stats = {
 // The mark types, in the order every page lists them
 export const MARK_TYPES = [
   { variant: 'logo', label: 'Logo' },
+  // The vertical lockup, the name under the mark, beside the horizontal
+  // one: only some airlines have it, so its row shows only when it is there
+  { variant: 'logo-stacked', label: 'Stacked logo' },
   { variant: 'icon', label: 'Icon' },
   { variant: 'tail', label: 'Tail' },
 ] as const
@@ -64,8 +67,8 @@ export type MarkSource = keyof typeof MARK_SOURCES
 // An airline or an alliance: what the mark helpers below read
 type MarkEntry = Pick<Airline | Alliance, 'slug' | 'assets'>
 
-// Whether the package ships a variant, e.g. 'logo', 'logo-mono' or
-// 'logo-dark'. Every single-color mark has a mono file; multi-color ones only
+// Whether the package ships a variant, e.g. 'logo', 'logo-mono',
+// 'logo-dark' or 'logo-stacked-dark'. Every single-color mark has a mono file; multi-color ones only
 // when hand-drawn. Most marks have a dark file, for dark backgrounds.
 // Without `mark` it looks at the current marks; with an entry of
 // markHistory(), at that older set.
@@ -74,7 +77,11 @@ export function hasAsset(
   variant: string,
   mark?: HistoricalMarks,
 ) {
-  const [type, suffix] = variant.split('-') as [AssetType, 'mono' | 'dark'?]
+  // The type may hold a hyphen itself (logo-stacked), so only a trailing
+  // -mono or -dark is the suffix
+  const [, type, suffix] = /^(.+?)(?:-(mono|dark))?$/.exec(
+    variant,
+  ) as unknown as [string, AssetType, ('mono' | 'dark')?]
   const asset = (mark?.assets ?? (entry.assets as Airline['assets']))[type]
 
   return Boolean(suffix ? asset?.[suffix] : asset?.color)
