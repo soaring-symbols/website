@@ -13,21 +13,24 @@ export interface ImageRequest {
   format: 'svg' | 'png'
 }
 
-// The marks each kind of entry ships: alliances have no tail
+// The marks each kind of entry ships: alliances have no tail, and no
+// stacked logo
 export const MARK_TYPES = {
-  airlines: ['icon', 'logo', 'tail'],
+  airlines: ['icon', 'logo', 'logo-stacked', 'tail'],
   alliances: ['icon', 'logo'],
 } as const satisfies Record<string, readonly AssetType[]>
 
 export type MarkSource = keyof typeof MARK_TYPES
 
-// 'logo.svg', 'icon-mono.png', 'logo-dark.svg': the package's file names, as SVG or PNG,
+// 'logo.svg', 'icon-mono.png', 'logo-stacked-dark.svg': the package's file names, as SVG or PNG,
 // for a type the source ships
 export function parseImageFile(
   file: string,
   source: MarkSource,
 ): ImageRequest | undefined {
-  const match = /^(\w+)(-mono|-dark)?\.(svg|png)$/.exec(file.toLowerCase())
+  const match = /^([a-z]+(?:-stacked)?)(-mono|-dark)?\.(svg|png)$/.exec(
+    file.toLowerCase(),
+  )
   if (!match) return undefined
   if (!(MARK_TYPES[source] as readonly string[]).includes(match[1]!)) {
     return undefined

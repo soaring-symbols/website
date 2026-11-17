@@ -68,11 +68,17 @@ export function airlineSlug(name: string): string {
   return slugify(name, { lower: true, strict: true })
 }
 
-// What an upload is in the repo: a logo, icon or tail. A tail is checked as
-// an icon, so only its file name tells it apart.
+// What an upload is in the repo: a logo, stacked logo, icon or tail. A tail
+// is checked as an icon and a stacked logo as a logo, so only the file name
+// tells them apart.
 export function assetKind(
   type: AssetType,
   uploadedName: string,
-): AssetType | 'tail' {
-  return /(^|[^a-z])tail/i.test(uploadedName) ? 'tail' : type
+): AssetType | 'tail' | 'logo-stacked' {
+  if (/(^|[^a-z])tail/i.test(uploadedName)) return 'tail'
+  if (type === 'logo' && /logo-stacked/i.test(uploadedName)) {
+    return 'logo-stacked'
+  }
+
+  return type
 }

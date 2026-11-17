@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 404,
       statusMessage: 'Unknown file',
-      message: `"${file}" is not a mark. Try logo.svg, icon-mono.svg or tail.png.`,
+      message: `"${file}" is not a mark. Try logo.svg, icon-mono.svg, logo-stacked.svg or tail.png.`,
     })
   }
 

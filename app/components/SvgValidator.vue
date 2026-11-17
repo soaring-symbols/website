@@ -79,7 +79,7 @@
         accept=".svg,image/svg+xml"
         icon="solar:upload-linear"
         label="Drop an SVG here"
-        description="A logo, icon or tail, color or -mono. It never leaves your browser."
+        description="A logo, stacked logo, icon or tail, color or -mono. It never leaves your browser."
         class="min-h-72"
       />
     </template>
@@ -199,7 +199,7 @@ watch(
 const knownAirline = computed(() => airlineByName(airline.value))
 const isCatalogName = computed(() => !!knownAirline.value)
 
-// logo, icon or tail, and the name the repo expects for this file
+// logo, logo-stacked, icon or tail, and the name the repo expects for this file
 // (icon-mono.svg and so on), whatever the upload was called
 const kind = computed(() =>
   assetKind(type.value, candidate.file.value?.name ?? ''),
@@ -264,7 +264,9 @@ watch([suggestedColor, needsColor], offerColor)
 // What the fix is run with, and what keeps it from running: a missing
 // <title> needs the airline's name
 const fixOptions = computed(() => ({
-  type: kind.value,
+  // The fixer knows logos (64×64), icons and tails (24×24): a stacked logo
+  // is a logo
+  type: kind.value === 'logo-stacked' ? 'logo' : kind.value,
   mono: variant.value === 'mono',
   airlineName: airline.value ?? undefined,
   isCatalogName: isCatalogName.value,

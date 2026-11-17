@@ -32,14 +32,16 @@
             class="flex flex-col gap-4 rounded-xl bg-surface p-4"
           >
             <!-- The dark file on a dark ground in either theme, the others
-                 on the light ground they are drawn for. A logo is a wide
-                 name in a square viewBox, so its tile is taller than an
-                 icon's to let the name read -->
+                 on the light ground they are drawn for. A logo, wide or
+                 stacked, is a name in a square viewBox, so its tile is
+                 taller than an icon's to let the name read -->
             <div
               class="flex items-center justify-center overflow-hidden rounded-lg p-6"
               :class="[
                 file.kind === 'dark' ? 'bg-tile-dark' : 'bg-tile',
-                row.variant === 'logo' ? 'aspect-[4/3]' : 'aspect-[5/2]',
+                row.variant.startsWith('logo')
+                  ? 'aspect-[4/3]'
+                  : 'aspect-[5/2]',
               ]"
               :style="{ backgroundImage: tint }"
             >

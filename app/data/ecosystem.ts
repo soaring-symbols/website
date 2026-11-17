@@ -49,7 +49,7 @@ export const ecosystem: EcosystemEntry[] = [
     description:
       'Link any mark straight from the npm package, with nothing to install. The slug is the airline’s name in lowercase with hyphens, like vietnam-airlines.',
     details: [
-      'Swap logo for icon or tail, and add -mono before .svg for the monochrome mark, or -dark for the one to show on dark backgrounds.',
+      'Swap logo for icon, tail or logo-stacked (the vertical lockup, for airlines that have one), and add -mono before .svg for the monochrome mark, or -dark for the one to show on dark backgrounds.',
       'Older logos are under <slug>/history/<year>/, by the year each came in.',
       'Pin a release line such as soaring-symbols@0.4 for fixes without breaking changes, or an exact release to keep files as they are.',
       'A renamed airline’s old slug keeps working and shows its current marks.',
@@ -103,7 +103,7 @@ export const ecosystem: EcosystemEntry[] = [
     description:
       'Load any airline’s mark by IATA or ICAO code, or an alliance’s by name, as SVG or as PNG for apps that can’t render SVG, with monochrome marks in the color you pick.',
     details: [
-      'The file is logo, icon or tail, with -mono for the monochrome mark or -dark for dark backgrounds, ending in .svg or .png.',
+      'The file is logo, logo-stacked, icon or tail, with -mono for the monochrome mark or -dark for dark backgrounds, ending in .svg or .png.',
       'color takes a hex color such as fff, and dark the one a monochrome SVG switches to in dark mode.',
       'size sets the PNG width in pixels, from 16 to 1024 (256 by default).',
       'Alliance marks work the same way at /api/alliances/<slug>/, with icon and logo files.',
