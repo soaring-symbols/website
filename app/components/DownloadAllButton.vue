@@ -32,7 +32,7 @@ const files = computed(() => {
 
   return sets.flatMap((mark) =>
     types
-      .flatMap(({ variant }) => [variant, `${variant}-mono`])
+      .flatMap(({ variant }) => [variant, `${variant}-mono`, `${variant}-dark`])
       .filter((variant) => hasAsset(props.entry, variant, mark))
       .map((variant) => ({
         older: Boolean(mark),
