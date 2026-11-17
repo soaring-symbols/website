@@ -87,13 +87,18 @@
           <UTooltip :text="airline.name" :delay-duration="0">
             <NuxtLink
               :to="`/airlines/${airline.slug}`"
-              class="grid aspect-square place-items-center rounded-lg bg-tile p-3 hover:bg-slate-100 dark:hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-primary"
+              class="grid aspect-square place-items-center rounded-lg bg-tile p-3 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-primary"
+              :class="
+                darkTile(airline, 'icon')
+                  ? 'dark:bg-tile-dark dark:hover:bg-neutral-800'
+                  : 'dark:hover:bg-slate-200'
+              "
             >
-              <img
-                :src="assetUrl(airline, 'icon')"
+              <MarkImg
+                :entry="airline"
+                variant="icon"
                 :alt="airline.name"
                 loading="lazy"
-                class="size-full object-contain"
               />
             </NuxtLink>
           </UTooltip>

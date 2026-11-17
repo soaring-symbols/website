@@ -64,8 +64,9 @@ export type MarkSource = keyof typeof MARK_SOURCES
 // An airline or an alliance: what the mark helpers below read
 type MarkEntry = Pick<Airline | Alliance, 'slug' | 'assets'>
 
-// Whether the package ships a variant, e.g. 'logo' or 'logo-mono'. Every
-// single-color mark has a mono file; multi-color ones only when hand-drawn.
+// Whether the package ships a variant, e.g. 'logo', 'logo-mono' or
+// 'logo-dark'. Every single-color mark has a mono file; multi-color ones only
+// when hand-drawn. Most marks have a dark file, for dark backgrounds.
 // Without `mark` it looks at the current marks; with an entry of
 // markHistory(), at that older set.
 export function hasAsset(
@@ -73,10 +74,20 @@ export function hasAsset(
   variant: string,
   mark?: HistoricalMarks,
 ) {
-  const [type, mono] = variant.split('-') as [AssetType, string?]
+  const [type, suffix] = variant.split('-') as [AssetType, 'mono' | 'dark'?]
   const asset = (mark?.assets ?? (entry.assets as Airline['assets']))[type]
 
-  return Boolean(mono ? asset?.mono : asset?.color)
+  return Boolean(suffix ? asset?.[suffix] : asset?.color)
+}
+
+// The tile class a mark needs behind <MarkImg>: dark in dark mode when the
+// package ships its -dark.svg, the light tile otherwise
+export function darkTile(
+  entry: MarkEntry,
+  variant: string,
+  mark?: HistoricalMarks,
+) {
+  return hasAsset(entry, `${variant}-dark`, mark) ? 'dark:bg-tile-dark' : ''
 }
 
 // The first color mark a set ships in the source's order, e.g. 'logo' for
@@ -178,15 +189,6 @@ export function brandColor(airline: Pick<Airline, 'branding'>) {
 export function brandTint(airline: Pick<Airline, 'branding'>) {
   const tint = `${brandColor(airline)}14`
   return `linear-gradient(${tint}, ${tint})`
-}
-
-// A logo tile's wash in the brand's color: a faint tint all over, strongest
-// in the top left corner, so the tile reads without a border. For an airline
-// or an alliance.
-export function brandWash(entry: Pick<Airline, 'branding'>) {
-  const color = brandColor(entry)
-
-  return `radial-gradient(circle at 0% 0%, ${color}33, transparent 70%), linear-gradient(${color}0f, ${color}0f)`
 }
 
 // "Ceased 2017" for an airline that no longer flies, "Defunct" when the

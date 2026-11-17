@@ -13,6 +13,14 @@ bun install
 bun run dev
 ```
 
+To see changes to the package before they are released, with its repository checked out next to this one (or at `SOARING_SYMBOLS_PATH`):
+
+```bash
+bun run dev:local
+```
+
+It builds the package, copies its `dist/` into `node_modules` and starts the dev server (`node scripts/use-local-package.mjs --no-build` only copies). Restart it after each change to the package, since `nuxt.config.ts` reads the data when the server starts. `bun install --force` goes back to the release from npm.
+
 ## Deployment
 
 The site runs on Cloudflare Workers through Workers Builds. Nitro merges `wrangler.jsonc` into the config it generates in `.output/server`, so keep Worker settings in that file rather than in the dashboard.

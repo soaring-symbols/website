@@ -14,14 +14,17 @@
       <header
         class="grid items-center gap-6 sm:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-10"
       >
+        <!-- In dark mode, the logo for dark backgrounds on a dark tile when
+             the package has one, else the color logo on the light tile -->
         <div
-          class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-tile p-6"
-          :style="{ backgroundImage: logoWash }"
+          class="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-tile p-3"
+          :class="darkTile(airline, 'logo')"
+          :style="{ backgroundImage: logoTint }"
         >
-          <img
-            :src="assetUrl(airline, 'logo')"
+          <MarkImg
+            :entry="airline"
+            variant="logo"
             :alt="`${airline.name} logo`"
-            class="size-full object-contain"
           />
         </div>
 
@@ -237,8 +240,9 @@ const mappedHubs = computed(() =>
   (props.airline.hubs ?? []).filter((code) => HUBS[code]),
 )
 
-// The logo's white tile, washed with the airline's color
-const logoWash = computed(() => brandWash(props.airline))
+// The logo's tile, in one faint tint of the airline's color: no gradient,
+// which many brand guidelines don't allow behind their marks
+const logoTint = computed(() => brandTint(props.airline))
 
 const {
   historySummary,

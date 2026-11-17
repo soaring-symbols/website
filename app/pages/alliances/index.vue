@@ -12,6 +12,7 @@
           <span class="flex gap-4 p-4">
             <span
               class="grid size-20 shrink-0 place-items-center overflow-hidden rounded-lg bg-tile p-3"
+              :class="darkTile(item.alliance, allianceMark(item.alliance))"
               :style="{ backgroundImage: brandTint(item.alliance) }"
             >
               <AllianceMark
@@ -65,13 +66,13 @@
                 v-for="airline in item.avatars"
                 :key="airline.slug"
                 class="grid size-8 place-items-center overflow-hidden rounded-full bg-tile p-1 ring-2 ring-surface transition-colors group-hover:ring-(--ui-bg-elevated) inset-ring inset-ring-black/10 dark:inset-ring-white/15"
+                :class="darkTile(airline, airline.avatar)"
                 :style="{ backgroundImage: brandTint(airline) }"
               >
-                <img
-                  :src="assetUrl(airline, airline.avatar)"
-                  alt=""
+                <MarkImg
+                  :entry="airline"
+                  :variant="airline.avatar"
                   loading="lazy"
-                  class="size-full object-contain"
                 />
               </span>
               <span

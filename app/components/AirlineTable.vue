@@ -9,12 +9,13 @@
     <template #name-cell="{ row }">
       <div class="flex items-center gap-3">
         <div class="grid size-9 shrink-0 place-items-center">
-          <img
+          <!-- On the page itself: the dark file reads on a dark page -->
+          <MarkImg
             v-if="hasAsset(row.original, 'icon')"
-            :src="assetUrl(row.original, 'icon')"
-            alt=""
+            :entry="row.original"
+            variant="icon"
             loading="lazy"
-            class="size-8 object-contain"
+            img-class="size-8 object-contain"
           />
         </div>
         <div class="min-w-0">

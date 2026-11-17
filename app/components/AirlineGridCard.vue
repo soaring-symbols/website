@@ -7,15 +7,18 @@
     @click="$emit('open', airline)"
   >
     <span class="block p-3 pb-0">
+      <!-- In dark mode, the logo for dark backgrounds on a dark tile when
+           the package has one, else the color logo on the light tile -->
       <span
         class="flex aspect-[2/1] w-full items-center justify-center overflow-hidden rounded-lg bg-tile p-6 sm:aspect-[4/3]"
+        :class="darkTile(airline, 'logo')"
         :style="{ backgroundImage: brandTint(airline) }"
       >
-        <img
-          :src="assetUrl(airline, 'logo')"
+        <MarkImg
+          :entry="airline"
+          variant="logo"
           :alt="`${airline.name} logo`"
           loading="lazy"
-          class="size-full object-contain"
         />
       </span>
     </span>

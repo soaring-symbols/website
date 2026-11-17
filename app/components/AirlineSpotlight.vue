@@ -7,12 +7,13 @@
     >
       <div
         class="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-tile p-6"
+        :class="darkTile(airline, 'logo')"
         :style="{ backgroundImage: tint }"
       >
-        <img
-          :src="assetUrl(airline, 'logo')"
+        <MarkImg
+          :entry="airline"
+          variant="logo"
           :alt="`${airline.name} logo`"
-          class="size-full object-contain"
         />
       </div>
 
@@ -41,12 +42,13 @@
           <div
             v-if="hasAsset(airline, 'icon')"
             class="grid size-16 shrink-0 place-items-center rounded-lg bg-tile p-3"
+            :class="darkTile(airline, 'icon')"
             :style="{ backgroundImage: tint }"
           >
-            <img
-              :src="assetUrl(airline, 'icon')"
+            <MarkImg
+              :entry="airline"
+              variant="icon"
               :alt="`${airline.name} icon`"
-              class="size-full object-contain"
             />
           </div>
         </div>

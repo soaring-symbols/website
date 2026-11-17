@@ -9,6 +9,7 @@ export const PNG_SIZE = { default: 256, min: 16, max: 1024 }
 export interface ImageRequest {
   type: AssetType
   mono: boolean
+  dark: boolean
   format: 'svg' | 'png'
 }
 
@@ -20,13 +21,13 @@ export const MARK_TYPES = {
 
 export type MarkSource = keyof typeof MARK_TYPES
 
-// 'logo.svg', 'icon-mono.png': the package's file names, as SVG or PNG,
+// 'logo.svg', 'icon-mono.png', 'logo-dark.svg': the package's file names, as SVG or PNG,
 // for a type the source ships
 export function parseImageFile(
   file: string,
   source: MarkSource,
 ): ImageRequest | undefined {
-  const match = /^(\w+)(-mono)?\.(svg|png)$/.exec(file.toLowerCase())
+  const match = /^(\w+)(-mono|-dark)?\.(svg|png)$/.exec(file.toLowerCase())
   if (!match) return undefined
   if (!(MARK_TYPES[source] as readonly string[]).includes(match[1]!)) {
     return undefined
@@ -34,7 +35,8 @@ export function parseImageFile(
 
   return {
     type: match[1] as AssetType,
-    mono: Boolean(match[2]),
+    mono: match[2] === '-mono',
+    dark: match[2] === '-dark',
     format: match[3] as 'svg' | 'png',
   }
 }
@@ -56,11 +58,13 @@ export function parseHexColor(value: unknown): string | undefined {
 export async function readMarkSvg(
   source: MarkSource,
   entry: Airline | Alliance,
-  { type, mono }: ImageRequest,
+  { type, mono, dark }: ImageRequest,
 ) {
   const asset = (entry.assets as Airline['assets'])[type]
-  if (!(mono ? asset?.mono : asset?.color)) return undefined
-  const name = `${entry.slug}:${type}${mono ? '-mono' : ''}.svg`
+  const variant = mono ? 'mono' : dark ? 'dark' : 'color'
+  if (!asset?.[variant]) return undefined
+  const suffix = variant === 'color' ? '' : `-${variant}`
+  const name = `${entry.slug}:${type}${suffix}.svg`
 
   // Bundled files come back as bytes on Workers, and as text elsewhere
   const raw = await useStorage(`assets:${source}`).getItemRaw(name)

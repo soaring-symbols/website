@@ -21,6 +21,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "dev:local": "node scripts/use-local-package.mjs && nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -49,7 +50,7 @@
     "eslint-plugin-vue": "^10.12.1",
     "flag-icons": "^7.6.0",
     "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
+    "lint-staged": "^17.6.1",
     "nuxt-og-image": "^7.0.7",
     "nuxtseo-devtools-host": "^1.0.1",
     "prettier": "^3.10.1",
