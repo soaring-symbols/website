@@ -1,25 +1,27 @@
 <template>
-  <!-- One row per mark of an airline or an alliance, its color file beside
-       its monochrome one, so every row is full whichever marks it has -->
+  <!-- One row per mark of an airline or an alliance: its color file, its
+       monochrome one and the one for dark backgrounds, side by side, so every
+       row is full whichever marks it has -->
   <div class="flex flex-col gap-3">
     <div
-      class="hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)]"
+      class="hidden gap-6 text-sm font-semibold text-muted lg:grid lg:grid-cols-[8rem_repeat(3,minmax(0,1fr))]"
       aria-hidden="true"
     >
       <span />
       <span>Color</span>
       <span>Monochrome</span>
+      <span>Dark background</span>
     </div>
 
     <div class="flex flex-col gap-10 lg:gap-6">
       <section
         v-for="row in rows"
         :key="row.variant"
-        class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-6"
+        class="grid gap-4 sm:grid-cols-3 lg:grid-cols-[8rem_repeat(3,minmax(0,1fr))] lg:gap-6"
       >
         <component
           :is="mark ? 'h4' : 'h3'"
-          class="font-bold text-highlighted sm:col-span-2 lg:col-span-1 lg:pt-2"
+          class="font-bold text-highlighted sm:col-span-3 lg:col-span-1 lg:pt-2"
         >
           {{ row.label }}
         </component>
@@ -29,8 +31,16 @@
             v-if="file.variant"
             class="flex flex-col gap-4 rounded-xl bg-surface p-4"
           >
+            <!-- The dark file on a dark ground in either theme, the others
+                 on the light ground they are drawn for. A logo is a wide
+                 name in a square viewBox, so its tile is taller than an
+                 icon's to let the name read -->
             <div
-              class="flex aspect-[5/2] items-center justify-center overflow-hidden rounded-lg bg-tile p-6"
+              class="flex items-center justify-center overflow-hidden rounded-lg p-6"
+              :class="[
+                file.kind === 'dark' ? 'bg-tile-dark' : 'bg-tile',
+                row.variant === 'logo' ? 'aspect-[4/3]' : 'aspect-[5/2]',
+              ]"
               :style="{ backgroundImage: tint }"
             >
               <img
@@ -44,7 +54,7 @@
             <div class="flex items-center justify-between gap-3">
               <div class="min-w-0">
                 <p class="font-semibold text-highlighted lg:sr-only">
-                  {{ file.kind === 'mono' ? 'Monochrome' : 'Color' }}
+                  {{ KIND_LABELS[file.kind] }}
                 </p>
                 <p class="truncate font-mono text-xs text-muted">
                   {{ fileName(file.variant) }}
@@ -73,7 +83,7 @@
           <div
             v-else
             class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-accented p-6 text-center text-sm text-muted"
-            :class="file.kind === 'none' && 'min-h-40 sm:col-span-2'"
+            :class="file.kind === 'none' && 'min-h-40 sm:col-span-3'"
           >
             <p>{{ file.missing }}</p>
             <ULink
@@ -101,6 +111,12 @@ const props = defineProps({
 })
 
 const tint = brandTint(props.entry)
+
+const KIND_LABELS = {
+  color: 'Color',
+  mono: 'Monochrome',
+  dark: 'Dark background',
+}
 const { types, asked } = MARK_SOURCES[props.source]
 
 // The mark types the source asks for always get a row, so each page lists
@@ -112,6 +128,7 @@ const rows = types.flatMap(({ variant, label }) => {
   const has = (v) => hasAsset(props.entry, v, props.mark)
   const color = has(variant) ? variant : null
   const mono = has(`${variant}-mono`) ? `${variant}-mono` : null
+  const dark = has(`${variant}-dark`) ? `${variant}-dark` : null
 
   if (!color && !mono) {
     // With neither file, one placeholder spans the row
@@ -135,6 +152,12 @@ const rows = types.flatMap(({ variant, label }) => {
       files: [
         { kind: 'color', variant: color, missing: `No color ${name} yet.` },
         { kind: 'mono', variant: mono, missing: `No monochrome ${name} yet.` },
+        {
+          kind: 'dark',
+          variant: dark,
+          // The package makes one from a monochrome file
+          missing: `No ${name} for dark backgrounds yet: it needs a monochrome ${name}.`,
+        },
       ],
     },
   ]

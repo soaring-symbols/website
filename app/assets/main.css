@@ -44,6 +44,7 @@
 @theme inline {
   --color-surface: var(--surface);
   --color-tile: var(--tile);
+  --color-tile-dark: var(--tile-dark);
 }
 
 :root {
@@ -56,6 +57,9 @@
   /* The light ground a hero shows a mark on, since marks are drawn for
      light backgrounds */
   --tile: #ffffff;
+  /* The dark ground for a mark's -dark.svg, in either theme: the gray the
+     package checks dark marks against */
+  --tile-dark: #1e1e1e;
 }
 
 .dark {

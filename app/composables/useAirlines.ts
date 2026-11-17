@@ -64,8 +64,9 @@ export type MarkSource = keyof typeof MARK_SOURCES
 // An airline or an alliance: what the mark helpers below read
 type MarkEntry = Pick<Airline | Alliance, 'slug' | 'assets'>
 
-// Whether the package ships a variant, e.g. 'logo' or 'logo-mono'. Every
-// single-color mark has a mono file; multi-color ones only when hand-drawn.
+// Whether the package ships a variant, e.g. 'logo', 'logo-mono' or
+// 'logo-dark'. Every single-color mark has a mono file; multi-color ones only
+// when hand-drawn. Most marks have a dark file, for dark backgrounds.
 // Without `mark` it looks at the current marks; with an entry of
 // markHistory(), at that older set.
 export function hasAsset(
@@ -73,10 +74,10 @@ export function hasAsset(
   variant: string,
   mark?: HistoricalMarks,
 ) {
-  const [type, mono] = variant.split('-') as [AssetType, string?]
+  const [type, suffix] = variant.split('-') as [AssetType, 'mono' | 'dark'?]
   const asset = (mark?.assets ?? (entry.assets as Airline['assets']))[type]
 
-  return Boolean(mono ? asset?.mono : asset?.color)
+  return Boolean(suffix ? asset?.[suffix] : asset?.color)
 }
 
 // The first color mark a set ships in the source's order, e.g. 'logo' for

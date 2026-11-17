@@ -6,7 +6,7 @@ import { MARK_TYPES, type MarkSource } from './images'
 export const packageVersion = version
 
 // The package entry as is, plus absolute links to its page and to every SVG
-// it ships, keyed like the file names ('logo', 'logo-mono'): an airline's
+// it ships, keyed like the file names ('logo', 'logo-mono', 'logo-dark'): an airline's
 // under /airlines, an alliance's under /alliances
 function withLinks<T extends Airline | Alliance>(
   entry: T,
@@ -21,6 +21,7 @@ function withLinks<T extends Airline | Alliance>(
     for (const variant of [
       asset?.color && type,
       asset?.mono && `${type}-mono`,
+      asset?.dark && `${type}-dark`,
     ]) {
       if (variant) {
         links[variant] = new URL(
