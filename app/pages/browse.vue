@@ -262,8 +262,9 @@ const filtered = computed(() => {
       name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().includes(q)
     list = list.filter(
       (a) =>
-        // A renamed airline is found by its old names too
-        [a.name, ...previousNames(a)].some(matches) ||
+        // An airline is found by its other names (SWISS) and, once renamed,
+        // by its old ones too
+        [a.name, ...aliasNames(a), ...previousNames(a)].some(matches) ||
         a.iata?.toLowerCase().startsWith(q) ||
         a.icao?.toLowerCase().startsWith(q) ||
         a.callsign?.toLowerCase().includes(q) ||

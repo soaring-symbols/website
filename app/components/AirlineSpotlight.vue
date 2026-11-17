@@ -25,6 +25,12 @@
             >
               {{ airline.name }}
             </component>
+            <p v-if="aliases.length" class="mt-0.5 text-sm text-muted">
+              Also known as
+              <span class="font-semibold text-highlighted">{{
+                aliases.join(', ')
+              }}</span>
+            </p>
             <div class="mt-1 flex items-center gap-2 empty:hidden">
               <CeasedBadge :airline="airline" />
               <p v-if="airline.branding?.tagline" class="min-w-0 text-muted">
@@ -186,6 +192,9 @@ const props = defineProps({
 
 // A faint wash of the airline's own color behind its marks
 const tint = computed(() => brandTint(props.airline))
+
+// The other names it goes by, such as SWISS
+const aliases = computed(() => aliasNames(props.airline))
 
 const {
   historySummary,
