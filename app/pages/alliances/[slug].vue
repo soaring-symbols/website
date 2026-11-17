@@ -9,7 +9,7 @@
       <div
         class="flex aspect-square w-40 items-center justify-center overflow-hidden rounded-xl bg-tile p-6 sm:w-auto sm:p-8"
         :class="darkTile(alliance, allianceMark(alliance))"
-        :style="{ backgroundImage: wash }"
+        :style="{ backgroundImage: tint }"
       >
         <AllianceMark :alliance="alliance" class="size-full" />
       </div>
@@ -248,9 +248,9 @@ const membersDescription = alliance.defunct
 
 const color = alliance.branding?.primary_color
 
-// The mark's white tile, washed with the alliance's color as an airline's
-// logo is
-const wash = brandWash(alliance)
+// The mark's tile, in one faint tint of the alliance's color as an
+// airline's logo is
+const tint = brandTint(alliance)
 
 const sectionUi = {
   container: 'py-12 sm:py-12 lg:py-12 gap-8 sm:gap-8',

@@ -191,15 +191,6 @@ export function brandTint(airline: Pick<Airline, 'branding'>) {
   return `linear-gradient(${tint}, ${tint})`
 }
 
-// A logo tile's wash in the brand's color: a faint tint all over, strongest
-// in the top left corner, so the tile reads without a border. For an airline
-// or an alliance.
-export function brandWash(entry: Pick<Airline, 'branding'>) {
-  const color = brandColor(entry)
-
-  return `radial-gradient(circle at 0% 0%, ${color}33, transparent 70%), linear-gradient(${color}0f, ${color}0f)`
-}
-
 // "Ceased 2017" for an airline that no longer flies, "Defunct" when the
 // year is unknown, and undefined for one still flying
 export function ceasedLabel(airline: Airline) {

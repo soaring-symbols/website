@@ -19,7 +19,7 @@
         <div
           class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-tile p-6"
           :class="darkTile(airline, 'logo')"
-          :style="{ backgroundImage: logoWash }"
+          :style="{ backgroundImage: logoTint }"
         >
           <MarkImg
             :entry="airline"
@@ -240,8 +240,9 @@ const mappedHubs = computed(() =>
   (props.airline.hubs ?? []).filter((code) => HUBS[code]),
 )
 
-// The logo's white tile, washed with the airline's color
-const logoWash = computed(() => brandWash(props.airline))
+// The logo's tile, in one faint tint of the airline's color: no gradient,
+// which many brand guidelines don't allow behind their marks
+const logoTint = computed(() => brandTint(props.airline))
 
 const {
   historySummary,
