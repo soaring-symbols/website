@@ -35,8 +35,9 @@
       />
     </span>
 
-    <!-- The stub: its code and name, and where it flies from (and that it
-         no longer does) in the chips the airline and alliance pages use -->
+    <!-- The stub: its code and name, and where it flies from (that it flies
+         cargo, and that it no longer does) in the chips the airline and
+         alliance pages use -->
     <span class="flex items-center gap-3 px-3 pb-3">
       <FlapText :text="airline.iata ?? ''" :length="2" class="code" />
       <span class="flex min-w-0 flex-col gap-2">
@@ -49,6 +50,10 @@
             <span class="cap-center truncate">{{
               countryName(airline.country)
             }}</span>
+          </span>
+          <span v-if="airline.cargo" :class="chipClass">
+            <UIcon name="solar:box-bold-duotone" class="size-3.5 text-muted" />
+            <span class="cap-center">Cargo</span>
           </span>
           <span v-if="airline.defunct" :class="chipClass">
             <UIcon

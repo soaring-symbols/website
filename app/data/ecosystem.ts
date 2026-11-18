@@ -93,6 +93,7 @@ export const ecosystem: EcosystemEntry[] = [
     details: [
       '/api/airlines lists every airline, with the package version and a count.',
       '/api/airlines?code=<code> lists every airline holding an IATA or ICAO code, such as SL for Thai Lion Air and SAS Connect; add &former=true for those that held it before.',
+      '/api/airlines?cargo=true lists only the cargo airlines and the cargo brands of passenger airlines, such as Cargolux; cargo=false leaves them out. It works with ?code= too.',
       '/api/airlines/<code> takes an IATA or ICAO code, a slug or a name, current or former, or another name it goes by (SWISS), and returns a 404 with a hint when nothing matches.',
       'A renamed airline lists its former names, and each older logo comes with the years it was used.',
       '/api/alliances lists the alliances, and /api/alliances/<name> takes a name or slug, such as skyteam, with its slogan, years, color and links to its marks.',
