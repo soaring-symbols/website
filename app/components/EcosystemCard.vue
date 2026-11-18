@@ -21,12 +21,6 @@
     </template>
     <template #description>
       <p>{{ entry.description }}</p>
-      <ul
-        v-if="entry.details?.length"
-        class="mt-3 list-disc space-y-1 ps-5 marker:text-dimmed"
-      >
-        <li v-for="detail in entry.details" :key="detail">{{ detail }}</li>
-      </ul>
       <code
         v-if="entry.snippet"
         class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md border border-accented bg-elevated px-3 py-2 font-mono text-xs whitespace-nowrap text-highlighted"

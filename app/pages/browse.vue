@@ -43,6 +43,14 @@
           </template>
         </USelectMenu>
 
+        <USelect
+          v-model="selectedType"
+          aria-label="Type"
+          :items="typeOptions"
+          class="w-full sm:w-36"
+          :ui="{ base: 'bg-surface' }"
+        />
+
         <USwitch v-model="flagCarrierOnly" label="Flag carriers only" />
 
         <ViewToggle
@@ -164,7 +172,7 @@ import flagIcons from 'flag-icons/country.json'
 const meta = {
   title: 'Browse airlines',
   description:
-    'Search the collection by name or code, filter by alliance or country, and open any airline for its logo, icon and colors.',
+    'Search the collection by name or code, filter by alliance, country or type, and open any airline for its logo, icon and colors.',
 }
 
 useSeoMeta({
@@ -187,6 +195,7 @@ const router = useRouter()
 const search = ref('')
 const selectedAlliances = ref([])
 const selectedCountries = ref([])
+const selectedType = ref('all')
 const flagCarrierOnly = ref(false)
 const viewMode = ref('grid')
 const page = ref(1)
@@ -241,11 +250,20 @@ const countryOptions = flagIcons
   })
   .sort((a, b) => collator.compare(a.label, b.label))
 
+// Passenger airlines, or those that fly only freight and the cargo brands
+// of passenger airlines (`cargo`)
+const typeOptions = [
+  { value: 'all', label: 'Any type' },
+  { value: 'passenger', label: 'Passenger' },
+  { value: 'cargo', label: 'Cargo' },
+]
+
 const hasFilters = computed(
   () =>
     !!search.value.trim() ||
     selectedAlliances.value.length > 0 ||
     selectedCountries.value.length > 0 ||
+    selectedType.value !== 'all' ||
     flagCarrierOnly.value,
 )
 
@@ -271,6 +289,11 @@ const filtered = computed(() => {
         // and by the codes it used before (JAT finds Air Serbia)
         matchesFormerCode(a, q),
     )
+  }
+
+  if (selectedType.value !== 'all') {
+    const cargo = selectedType.value === 'cargo'
+    list = list.filter((a) => !!a.cargo === cargo)
   }
 
   if (flagCarrierOnly.value) {
@@ -312,6 +335,7 @@ function resetFilters() {
   search.value = ''
   selectedAlliances.value = []
   selectedCountries.value = []
+  selectedType.value = 'all'
   flagCarrierOnly.value = false
 }
 </script>

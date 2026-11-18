@@ -25,7 +25,17 @@
         features: 'lg:grid-cols-2',
       }"
     >
-      <template #features>
+      <!-- Files and APIs: a list, each source beside its reference -->
+      <template v-if="group.id === 'data'" #default>
+        <ul class="divide-y divide-default">
+          <EcosystemSourceRow
+            v-for="entry in group.entries"
+            :key="entry.id"
+            :entry="entry"
+          />
+        </ul>
+      </template>
+      <template v-else #features>
         <EcosystemCard
           v-for="entry in group.entries"
           :key="entry.id"

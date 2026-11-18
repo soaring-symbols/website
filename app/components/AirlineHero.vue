@@ -72,6 +72,12 @@
               <UIcon name="solar:flag-bold-duotone" class="size-4 text-muted" />
               <span class="cap-center">Flag carrier</span>
             </li>
+            <!-- An airline that flies only freight, or a passenger
+               airline's cargo brand -->
+            <li v-if="airline.cargo" :class="chipClass">
+              <UIcon name="solar:box-bold-duotone" class="size-4 text-muted" />
+              <span class="cap-center">Cargo</span>
+            </li>
             <!-- Its alliance, with the alliance's icon, leads to the
                alliance's page -->
             <li v-if="alliance">
