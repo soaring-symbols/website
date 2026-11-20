@@ -224,6 +224,7 @@
     <HeroGlobe
       v-if="mappedHubs.length"
       :hubs="mappedHubs"
+      :country="airline.country"
       class="hidden aspect-square w-full self-center xl:block"
     />
   </article>

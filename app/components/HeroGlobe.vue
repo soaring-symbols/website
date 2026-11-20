@@ -2,7 +2,8 @@
   <!-- Decoration only: a dotted globe that turns slowly, with planes flying
        between its airports. Given an airline's hubs it stands still over
        them instead and marks each with a pulse, and no planes: the catalog
-       knows an airline's hubs, not its routes. Hidden from screen readers;
+       knows an airline's hubs, not its routes. Its country's land is drawn
+       darker than the rest. Hidden from screen readers;
        anyone who asks for less motion gets the globe standing still, without
        planes or pulses. The page gives it its size -->
   <div ref="sky" class="hero-globe" aria-hidden="true">
@@ -12,6 +13,7 @@
 
 <script setup>
 import { AIRPORTS } from '~/data/airports'
+import { COUNTRY_DOTS } from '~/data/country-dots'
 import { HUBS } from '~/data/hubs'
 import { LAND_DOTS, LAND_STEP } from '~/data/land-dots'
 
@@ -42,6 +44,9 @@ const SHADES = 6
 const props = defineProps({
   // IATA codes of an airline's hubs; without them the globe tours the world
   hubs: { type: Array, default: () => [] },
+  // ISO 3166-1 alpha-2 code of the airline's country, drawn darker than
+  // the rest of the land, leaving the route color to its hubs
+  country: { type: String, default: '' },
 })
 
 const sky = ref()
@@ -51,6 +56,8 @@ const colorMode = useColorMode()
 let ctx
 let plane
 let dots
+// For each dot, 1 when it is in the airline's country
+let owned
 // Degrees between the dots drawn: the home page's spinning globe draws every
 // other row of the land's grid, which keeps each frame light
 const HOME_STEP = 1.2
@@ -110,9 +117,41 @@ function gridRows(step) {
   })
 }
 
+// The dots of LAND_DOTS' grid in a country, by index, from its runs in
+// COUNTRY_DOTS: dots skipped since the last run, then dots in the run
+function countryDots(code) {
+  const dots = new Set()
+  const runs = COUNTRY_DOTS[code]
+  if (!runs) return dots
+  const bytes = Uint8Array.from(atob(runs), (ch) => ch.charCodeAt(0))
+  let pos = 0
+  const read = () => {
+    let n = 0
+    let shift = 0
+    let byte
+    do {
+      byte = bytes[pos++]
+      n |= (byte & 127) << shift
+      shift += 7
+    } while (byte & 128)
+
+    return n
+  }
+  let end = 0
+  while (pos < bytes.length) {
+    const start = end + read()
+    end = start + read()
+    for (let i = start; i < end; i++) dots.add(i)
+  }
+
+  return dots
+}
+
 // The land dots as unit vectors, for a grid of `step` degrees (LAND_STEP or a
-// multiple of it), each on land when the dot of LAND_DOTS it falls in is
-function readDots(step) {
+// multiple of it), each on land when the dot of LAND_DOTS it falls in is,
+// and which of them are in the `country` (a set of LAND_DOTS' dots, which
+// may hold one off the land for a country too small to cover one)
+function readDots(step, country = new Set()) {
   const bytes = Uint8Array.from(atob(LAND_DOTS), (ch) => ch.charCodeAt(0))
   const land = gridRows(LAND_STEP)
   // Where each row's bits start
@@ -122,22 +161,28 @@ function readDots(step) {
     starts.push(start)
     start += row.cols
   }
-  const onLand = (lat, lon) => {
+  // The dot of LAND_DOTS a point falls in
+  const cell = (lat, lon) => {
     const r = Math.min(land.length - 1, Math.floor((90 - lat) / LAND_STEP))
     const c = Math.floor(((lon + 180) / 360) * land[r].cols)
-    const i = starts[r] + c
 
-    return bytes[i >> 3] & (128 >> (i & 7))
+    return starts[r] + c
   }
+  const onLand = (i) => bytes[i >> 3] & (128 >> (i & 7))
   const out = []
+  const inCountry = []
   for (const { lat, cols } of gridRows(step)) {
     for (let c = 0; c < cols; c++) {
       const lon = -180 + ((c + 0.5) * 360) / cols
-      if (onLand(lat, lon)) out.push(...toVector(lat, lon))
+      const i = cell(lat, lon)
+      const own = country.has(i)
+      if (!own && !onLand(i)) continue
+      out.push(...toVector(lat, lon))
+      inCountry.push(own ? 1 : 0)
     }
   }
 
-  return Float32Array.from(out)
+  return { dots: Float32Array.from(out), owned: Uint8Array.from(inCountry) }
 }
 
 // The axes of the screen for a globe turned to `lon`: c points at us,
@@ -302,11 +347,15 @@ function readColors() {
     rim: read('--globe-rim'),
     airport: read('--globe-airport'),
     route: read('--globe-route'),
+    country: read('--globe-country'),
     plane: read('--globe-plane'),
     halo: read('--globe-halo'),
     label: read('--globe-label'),
     shadow: dark ? 'rgb(0 0 0 / 0.5)' : 'rgb(15 23 42 / 0.18)',
     landAlpha: dark ? 0.55 : 0.5,
+    // How opaque the country's dots are at the limb, and how much more in
+    // the middle: on a light page dark dots weigh more, so fainter there
+    countryAlpha: dark ? [0.25, 0.35] : [0.2, 0.25],
     dark,
     font: `600 11px ${getComputedStyle(document.documentElement).getPropertyValue('--font-mono') || 'ui-monospace, monospace'}`,
   }
@@ -361,6 +410,8 @@ function drawLand() {
     canvas.value.height,
     colors.land,
     colors.landAlpha,
+    colors.country,
+    colors.countryAlpha,
   ].join()
   if (landCache?.key === key) {
     ctx.drawImage(landCache.canvas, 0, 0, width, height)
@@ -373,6 +424,8 @@ function drawLand() {
   const base = clamp(r * landStep * RAD * (near ? 0.34 : 0.42), 1.2, 3)
   const alpha = colors.landAlpha * (near ? 0.7 : 1)
   const shades = Array.from({ length: SHADES }, () => new Path2D())
+  // The airline's country, in shades of its own
+  const ownShades = Array.from({ length: SHADES }, () => new Path2D())
   const { c, e, n } = view
   const h = horizon()
   for (let i = 0; i < dots.length; i += 3) {
@@ -384,7 +437,8 @@ function drawLand() {
       x + (dots[i] * e[0] + dots[i + 1] * e[1] + dots[i + 2] * e[2]) * k * r
     const sy =
       y - (dots[i] * n[0] + dots[i + 1] * n[1] + dots[i + 2] * n[2]) * k * r
-    shades[Math.min(SHADES - 1, Math.floor(((z - h) / (1 - h)) * SHADES))].rect(
+    const shade = Math.min(SHADES - 1, Math.floor(((z - h) / (1 - h)) * SHADES))
+    ;(owned[i / 3] ? ownShades : shades)[shade].rect(
       sx - size / 2,
       sy - size / 2,
       size,
@@ -394,6 +448,12 @@ function drawLand() {
   target.fillStyle = colors.land
   shades.forEach((shade, i) => {
     target.globalAlpha = alpha * (0.2 + (0.8 * (i + 1)) / SHADES)
+    target.fill(shade)
+  })
+  const [limb, middle] = colors.countryAlpha
+  target.fillStyle = colors.country
+  ownShades.forEach((shade, i) => {
+    target.globalAlpha = limb + (middle * (i + 1)) / SHADES
     target.fill(shade)
   })
   target.globalAlpha = 1
@@ -478,6 +538,10 @@ function drawEndpoint(airport, fade, pulse) {
   ctx.fillStyle = colors.route
   ctx.beginPath()
   ctx.arc(p.x, p.y, 3, 0, Math.PI * 2)
+  // Ringed in the sea's color, to stand out on its country's land
+  ctx.strokeStyle = colors.sea
+  ctx.lineWidth = 2
+  ctx.stroke()
   ctx.fill()
   // A ring that spreads out once the plane is in
   if (pulse > 0) {
@@ -664,7 +728,10 @@ onMounted(() => {
     near = 1.5
   }
   landStep = hubs.length ? LAND_STEP : HOME_STEP
-  dots = readDots(landStep)
+  ;({ dots, owned } = readDots(
+    landStep,
+    hubs.length ? countryDots(props.country) : undefined,
+  ))
   turn(lon)
   readColors()
   resize()
@@ -704,6 +771,7 @@ canvas {
   --globe-rim: var(--ui-border);
   --globe-airport: var(--ui-text-dimmed);
   --globe-route: var(--color-signal-600);
+  --globe-country: var(--ui-text-highlighted);
   --globe-plane: var(--color-signal-500);
   --globe-halo: var(--color-signal-700);
   --globe-label: var(--ui-text-highlighted);
