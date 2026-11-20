@@ -28,6 +28,9 @@ const FLIGHT_SHARE = 0.7
 const GLIDE = 280
 // How close to a dot the plane is parked on it, in pixels
 const PARKED = 2
+// How far below the header the plane keeps when it would scroll out of
+// sight, in pixels
+const VISIBLE_MARGIN = 48
 
 const track = ref(null)
 const y = ref(0)
@@ -69,8 +72,17 @@ function measure() {
     const to = dots[i + 1].y
     const flight = (to - from) * FLIGHT_SHARE
     const t = Math.min(Math.max((reading - (to - flight)) / flight, 0), 1)
-    target = from + (to - from) * ease(t)
+    // A release taller than the screen would leave the plane parked, then
+    // creeping, above the top of it: it flies on just under the header
+    // instead, until its flight catches up
+    target = Math.max(from + (to - from) * ease(t), visibleTop(trackTop))
   }
+}
+
+// The highest point the plane is still seen at, under the sticky header
+function visibleTop(trackTop) {
+  const header = document.querySelector('header')?.getBoundingClientRect()
+  return (header?.bottom ?? 0) + VISIBLE_MARGIN - trackTop
 }
 
 // The plane takes the place of the dot it is parked on
