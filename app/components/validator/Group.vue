@@ -34,45 +34,62 @@
           :key="check.label"
           class="list-none px-4 py-2.5 text-sm"
         >
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-2 min-w-0">
+          <!-- One line: the label and what can fix it never wrap, so the
+               detail gives way and is cut short (in full on hover). The
+               icon's color says whether it failed or only warns. -->
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex shrink-0 items-center gap-2">
               <UIcon
                 :name="statusIcon(checkStatus(check))"
-                class="size-4 mt-0.5 shrink-0"
+                class="size-4 shrink-0"
                 :class="statusColor(checkStatus(check))"
               />
-              <!-- The label stays on one line; the badges wrap below it -->
-              <div class="flex flex-wrap items-center gap-1.5">
-                <span class="text-default whitespace-nowrap">{{
-                  check.label
-                }}</span>
-                <UBadge
-                  v-if="checkStatus(check) === 'warning'"
-                  label="Warning"
-                  color="warning"
-                  variant="subtle"
-                  size="sm"
-                />
-                <!-- What the Fix SVG button can do about it -->
-                <UBadge
-                  v-if="!check.pass"
-                  v-bind="FIX_BADGES[String(check.fixable)]"
-                  variant="outline"
-                  size="sm"
-                />
-              </div>
+              <span class="cap-center text-default whitespace-nowrap">{{
+                check.label
+              }}</span>
+              <!-- What the Fix SVG button can do about it -->
+              <UBadge
+                v-if="!check.pass"
+                v-bind="fixBadge(check)"
+                variant="outline"
+                size="sm"
+              />
             </div>
             <span
-              class="text-muted font-mono text-xs text-right shrink-0 max-w-[50%] truncate"
+              class="min-w-12 flex-1 truncate text-right font-mono text-xs text-muted"
               :title="check.detail"
             >
               {{ check.detail }}
             </span>
           </div>
           <!-- What to try, for a check the website flags on its own -->
-          <p v-if="check.hint" class="mt-1 pl-6 text-xs text-muted">
-            {{ check.hint }}
-          </p>
+          <div v-if="check.hint" class="mt-1 pl-6 text-xs text-muted">
+            <p>{{ check.hint }}</p>
+            <div
+              v-for="command in check.commands"
+              :key="command.label"
+              class="mt-1.5 flex items-center gap-2 rounded-md bg-elevated py-1 pr-1 pl-2.5"
+            >
+              <span class="shrink-0 text-dimmed">{{ command.label }}</span>
+              <code class="min-w-0 flex-1 break-all font-mono text-default">{{
+                command.code
+              }}</code>
+              <UButton
+                :icon="
+                  copied === command.code
+                    ? 'solar:check-linear'
+                    : 'solar:copy-linear'
+                "
+                :aria-label="
+                  copied === command.code ? 'Copied' : 'Copy the command'
+                "
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                @click="copy(command.code)"
+              />
+            </div>
+          </div>
         </li>
       </UPageList>
     </template>
@@ -85,6 +102,16 @@ const props = defineProps({
 })
 
 // A failed warning is advice, not an error, as in `lint-svg.js --check`
+// The command last copied, which shows a check for a moment
+const copied = ref(null)
+async function copy(text) {
+  await navigator.clipboard.writeText(text)
+  copied.value = text
+  setTimeout(() => {
+    if (copied.value === text) copied.value = null
+  }, 1500)
+}
+
 const checkStatus = (check) => {
   if (check.pass) return 'pass'
   return isWarning(check) ? 'warning' : 'error'
@@ -128,6 +155,19 @@ const FIX_BADGES = {
     title: "Fix SVG can't fix this: change it in your editor",
   },
 }
+
+// A check the website flags with commands to run (a near miss at too few
+// decimals) is fixed by optimizing the original again, not in an editor.
+// Its `fixable` stays false, so the page offers no Fix SVG for it.
+const REOPTIMIZE_BADGE = {
+  label: 'Re-optimize',
+  icon: 'solar:refresh-linear',
+  color: 'neutral',
+  title:
+    "Fix SVG can't fix this: optimize the original again with a command below",
+}
+const fixBadge = (check) =>
+  check.commands?.length ? REOPTIMIZE_BADGE : FIX_BADGES[String(check.fixable)]
 
 const statusIcon = (status) => STATUS_ICONS[status]
 const statusColor = (status) => STATUS_COLORS[status]

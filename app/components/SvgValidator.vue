@@ -234,6 +234,7 @@ const allChecks = computed(() => {
     type.value,
     candidate.bbox.value,
     candidate.content.value ?? '',
+    repoPath.value ?? fileName.value,
   )
 })
 

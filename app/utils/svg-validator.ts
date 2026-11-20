@@ -39,12 +39,30 @@ export const precisionOf = (source: string) =>
   PRECISIONS[0]
 
 // What to try at the file's precision: one decimal more, up to the five the
-// guidelines allow, past which only the artwork itself can move
-export function precisionHint(source: string) {
+// guidelines allow, past which only the artwork itself can move. The
+// commands run on the original file, put where it goes in the repository:
+// the package's `lint-svg.js --fix` with `--precision`, or SVGO with the
+// repository's config, which writes it in place
+export function precisionHint(source: string, target: string) {
   const precision = precisionOf(source)
   if (precision >= 5)
-    return 'Written at 5 decimals, the most the guidelines allow: move the artwork in an editor so it sits exactly.'
-  return `Written at ${precision} decimals, which often leaves this: optimize the original file again at ${precision + 1} (SVGO’s precision ${precision + 1}) and check it here.`
+    return {
+      hint: 'Written at 5 decimals, the most the guidelines allow: move the artwork in an editor so it sits exactly.',
+    }
+  const next = precision + 1
+  return {
+    hint: `Written at ${precision} decimals, which often leaves this. In the soaring-symbols repository, put the original file (before any fix) at ${target}, fix it at ${next} decimals and check the result here:`,
+    commands: [
+      {
+        label: 'Lint',
+        code: `npm run lint:svg -- --fix --precision=${next} ${target}`,
+      },
+      {
+        label: 'Or SVGO',
+        code: `npx svgo --config svgo.config.mjs --precision ${next} ${target}`,
+      },
+    ],
+  }
 }
 
 export function flagNearMisses(
@@ -52,7 +70,12 @@ export function flagNearMisses(
   type: 'logo' | 'icon',
   bbox: DOMRect | null,
   source = '',
-): (SvgValidation & { hint?: string })[] {
+  // Where the file goes in the repository, for the command
+  target = 'icon.svg',
+): (SvgValidation & {
+  hint?: string
+  commands?: { label: string; code: string }[]
+})[] {
   if (!bbox) return checks
 
   const size = type === 'logo' ? 64 : 24
@@ -94,7 +117,7 @@ export function flagNearMisses(
       pass: false,
       level: 'warning',
       detail: near[1],
-      hint: precisionHint(source),
+      ...precisionHint(source, target),
     }
   })
 }
