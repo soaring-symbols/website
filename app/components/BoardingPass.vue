@@ -175,8 +175,12 @@ const tint = computed(() => brandTint(props.airline))
 
 /* The logo across the stub: as tall as the board leaves it beside the
    board, a 2:1 tile of at most 10rem under it. The image is laid over
-   the tile, so its own size never makes the ticket taller */
+   the tile, so its own size never makes the ticket taller. Its width is
+   set rather than stretched: Safari carries the max-height through the
+   ratio to a max-width of 20rem, which left the tile short of the stub's
+   width on a phone wider than that */
 .pass-logo {
+  width: 100%;
   aspect-ratio: 2 / 1;
   max-height: 10rem;
 }
