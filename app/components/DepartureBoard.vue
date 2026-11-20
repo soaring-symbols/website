@@ -12,9 +12,9 @@
         <span class="col-sep" />
         <span class="col-name">Airline</span>
         <span class="col-sep" />
-        <span class="col-icao">ICAO</span>
-        <span class="col-sep" />
         <span class="col-country">Country</span>
+        <span class="col-sep" />
+        <span class="col-status">Status</span>
       </div>
 
       <ul class="board-rows">
@@ -23,7 +23,8 @@
             type="button"
             class="board-row"
             :aria-pressed="airline.slug === selected"
-            :aria-label="`${airline.name}, ${countryName(airline.country)}`"
+            :class="{ cancelled: airline.defunct }"
+            :aria-label="`${airline.name}, ${countryName(airline.country)}, ${statuses[i]}`"
             @click="pick(airline)"
           >
             <!-- A blank flap between columns, as on a real board, so the
@@ -32,9 +33,9 @@
             <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
             <FlapText class="col-name" :text="airline.name" :length="22" />
             <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
-            <FlapText class="col-icao" :text="airline.icao ?? ''" :length="3" />
-            <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
             <FlapText class="col-country" :text="airline.country" :length="2" />
+            <FlapText class="col-sep" text="" :length="1" aria-hidden="true" />
+            <FlapText class="col-status" :text="statuses[i]" :length="8" />
           </button>
         </li>
       </ul>
@@ -64,6 +65,14 @@ const props = defineProps({
   airlines: { type: Array, required: true },
 })
 
+// An airline that no longer flies stays on the board, cancelled, as its
+// marks are still in the collection. One still flying is on time or, now
+// and then, boarding, drawn when it comes onto the board and kept there
+function statusOf(airline) {
+  if (airline.defunct) return 'Canceled'
+  return Math.random() < 0.3 ? 'Boarding' : 'On time'
+}
+
 // Slug of the airline shown next to the board
 const selected = defineModel('selected', { type: String })
 
@@ -83,6 +92,13 @@ const OPENING = [
 const rows = ref(
   OPENING.map((slug) => props.airlines.find((a) => a.slug === slug)).filter(
     Boolean,
+  ),
+)
+
+// Fixed for the opening rows too, so the server and client agree
+const statuses = ref(
+  rows.value.map((a, i) =>
+    a.defunct ? 'Canceled' : i % 3 === 1 ? 'Boarding' : 'On time',
   ),
 )
 
@@ -109,6 +125,7 @@ function rotate() {
     .filter((i) => rows.value[i].slug !== selected.value || !pinned.value)
   const slot = slots[Math.floor(Math.random() * slots.length)]
   rows.value[slot] = next
+  statuses.value[slot] = statusOf(next)
   if (!pinned.value) selected.value = next.slug
 }
 
@@ -138,13 +155,13 @@ onMounted(() => {
     0 24px 48px -24px rgb(0 0 0 / 0.6);
 }
 
-/* 32 flaps (3 of them blank between the columns), 31 flap gaps and the
+/* 37 flaps (3 of them blank between the columns), 36 flap gaps and the
    row padding across the width */
 .board-body {
   --flap-gap: 2px;
   --flap: clamp(
     0.8rem,
-    calc((100cqi - 0.75rem - 31 * var(--flap-gap)) / 32),
+    calc((100cqi - 0.75rem - 36 * var(--flap-gap)) / 37),
     2.25rem
   );
 }
@@ -175,8 +192,18 @@ onMounted(() => {
   width: calc(2 * var(--flap) + var(--flap-gap));
 }
 
-.board-head .col-icao {
-  width: calc(3 * var(--flap) + 2 * var(--flap-gap));
+.board-head .col-country {
+  width: calc(2 * var(--flap) + var(--flap-gap));
+}
+
+/* Statuses in the colors departure boards use: green for a flight going
+   ahead, red for one that is not */
+.board-row .col-status {
+  --color-flap-ink: var(--ui-success);
+}
+
+.board-row.cancelled .col-status {
+  --color-flap-ink: var(--ui-error);
 }
 
 .board-rows {
@@ -237,7 +264,8 @@ onMounted(() => {
   outline: 2px solid var(--color-signal-500);
 }
 
-/* Narrow boards drop the ICAO and country columns and shorten the name */
+/* Narrow boards drop the country and status columns and shorten the
+   name, which turns red for a cancelled airline instead */
 @container (width < 34rem) {
   .board-body {
     --flap: calc((100cqi - 0.75rem - 16 * var(--flap-gap)) / 17);
@@ -249,10 +277,10 @@ onMounted(() => {
     grid-template-columns: repeat(3, auto);
   }
 
-  .board-head .col-icao,
   .board-head .col-country,
-  .board-row .col-icao,
   .board-row .col-country,
+  .board-head .col-status,
+  .board-row .col-status,
   .board-head .col-name ~ .col-sep,
   .board-row .col-name ~ .col-sep {
     display: none;
@@ -264,6 +292,10 @@ onMounted(() => {
 
   .board-row .col-name :deep(.flap:nth-child(n + 15)) {
     display: none;
+  }
+
+  .board-row.cancelled .col-name {
+    --color-flap-ink: var(--ui-error);
   }
 }
 </style>

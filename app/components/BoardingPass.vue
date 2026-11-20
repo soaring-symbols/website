@@ -29,8 +29,6 @@
             :alt="`${airline.name} logo`"
             img-class="absolute inset-0 size-full object-contain p-5"
           />
-          <!-- Whether it still flies, which the board doesn't say -->
-          <CeasedBadge :airline="airline" class="absolute top-2.5 left-2.5" />
         </div>
 
         <UButton
@@ -153,10 +151,25 @@ const tint = computed(() => brandTint(props.airline))
     border-left: 2px dashed rgb(236 235 228 / 0.22);
   }
 
-  /* Padded as the board is: the label on the line of its column
-     headings, the button centred on the line of its footer */
+  /* Lined up with the board: the label on the line of its column
+     headings, the logo as tall as its six rows and the button centred on
+     the line of its footer */
   .pass-body {
+    gap: 0;
     padding: 0.75rem 1.5rem 0.75rem calc(var(--tear) + 1.5rem);
+  }
+
+  /* As tall as the headings with their space below (scoped to the body
+     to win over the label's own rule further down) */
+  .pass-body .pass-label {
+    margin-bottom: 0;
+    padding-bottom: 0.5rem;
+  }
+
+  /* The footer's space above, less half of how much taller the button is
+     than the board's pause button (32px to 28px) */
+  .pass-body > :last-child {
+    margin-top: calc(0.75rem - 2px);
   }
 }
 
