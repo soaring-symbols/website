@@ -201,18 +201,68 @@ const viewMode = ref('grid')
 const page = ref(1)
 const itemsPerPage = 24
 
-onMounted(() => {
-  if (typeof route.query.q === 'string') search.value = route.query.q
+// The filters in the URL: ?q=, ?alliance= (alliance slugs, `none` for no
+// alliance), ?country= (ISO codes), ?cargo=true|false as in the API, ?flag=true
+// and ?page=, lists comma-separated. A value it doesn't know is dropped.
+const NO_ALLIANCE = '__none__'
+const queryList = (value) =>
+  typeof value === 'string' ? value.split(',').filter(Boolean) : []
+
+onMounted(async () => {
+  const query = route.query
+  if (typeof query.q === 'string') search.value = query.q
+
+  selectedAlliances.value = queryList(query.alliance)
+    .map((slug) =>
+      slug === 'none'
+        ? NO_ALLIANCE
+        : alliances.find((a) => a.slug === slug)?.name,
+    )
+    .filter(Boolean)
+  selectedCountries.value = queryList(query.country)
+    .map((code) => code.toUpperCase())
+    .filter((code) => countryOptions.some((c) => c.value === code))
+  if (query.cargo === 'true') selectedType.value = 'cargo'
+  if (query.cargo === 'false') selectedType.value = 'passenger'
+  flagCarrierOnly.value = query.flag === 'true'
+
+  // ?page after the filters have narrowed the list, so the watcher sending a
+  // new list back to its first page has already run. Coming back from an
+  // airline's page then lands on the page it was opened from.
+  await nextTick()
+  const wanted = Number(query.page)
+  const last = Math.max(1, Math.ceil(filtered.value.length / itemsPerPage))
+  if (Number.isInteger(wanted) && wanted > 1)
+    page.value = Math.min(wanted, last)
 })
 
-// Keep the search in the URL so a result list can be shared. force, since
-// hydrating a prerendered page leaves the route holding ?q while the address
-// bar has dropped it, and the router would skip the replace as a duplicate.
-watch(search, (q) => {
-  router.replace({
-    query: { ...route.query, q: q.trim() || undefined },
-    force: true,
-  })
+// Keep the filters and page in the URL so a result list can be shared and
+// the back button returns to it. The whole query is built from the filters
+// at once: a filter change also sends the list back to page 1, and two
+// replaces in a row would each start from the route before the other.
+// force, since hydrating a prerendered page leaves the route holding the
+// query while the address bar has dropped it, and the router would skip the
+// replace as a duplicate.
+const joined = (list) => (list.length ? list.join(',') : undefined)
+
+const urlQuery = computed(() => ({
+  q: search.value.trim() || undefined,
+  alliance: joined(
+    selectedAlliances.value.map((name) =>
+      name === NO_ALLIANCE ? 'none' : allianceByName(name)?.slug,
+    ),
+  ),
+  country: joined(selectedCountries.value),
+  cargo:
+    selectedType.value === 'all'
+      ? undefined
+      : String(selectedType.value === 'cargo'),
+  flag: flagCarrierOnly.value ? 'true' : undefined,
+  page: page.value > 1 ? String(page.value) : undefined,
+}))
+
+watch(urlQuery, (query) => {
+  router.replace({ query: { ...route.query, ...query }, force: true })
 })
 
 // Every alliance in the catalog, active ones first. An active alliance
@@ -226,11 +276,11 @@ const allianceOptions = [
     { type: 'label', label: 'Disbanded' },
     ...alliances.filter((a) => a.defunct).map(toOption),
   ],
-  [{ value: '__none__', label: 'No alliance' }],
+  [{ value: NO_ALLIANCE, label: 'No alliance' }],
 ]
 
 function inAlliances(airline, names) {
-  if (names.includes(airline.alliance ?? '__none__')) return true
+  if (names.includes(airline.alliance ?? NO_ALLIANCE)) return true
 
   return (airline.alliance_history ?? []).some(
     (item) =>
