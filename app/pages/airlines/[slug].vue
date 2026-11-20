@@ -125,14 +125,9 @@ if (!airline) {
   })
 }
 
-// An airline drawn with another's marks says whose they are; the files are
-// still published under its own slug
-const markOwner = airlineBySlug(airline.marks)
 const marksSince = currentMarksSince(airline)
 const filesDescription = [
   marksSince && `${airline.name} has used these marks since ${marksSince}.`,
-  markOwner &&
-    `${airline.name} flies the same marks as ${markOwner.name}, published under its own name too.`,
   'Download a file, or link it straight from the npm package through jsDelivr. Monochrome files use currentColor, so they take the color of the text around them.',
 ]
   .filter(Boolean)
