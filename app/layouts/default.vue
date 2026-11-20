@@ -15,6 +15,18 @@
       <UNavigationMenu :items="nav" variant="link" />
 
       <template #right>
+        <!-- GitHub's own pink heart, which reads on both themes. Phones have
+             no room beside the title, so their menu lists it instead -->
+        <UButton
+          class="hidden sm:inline-flex"
+          to="https://github.com/sponsors/soaring-symbols"
+          target="_blank"
+          label="Sponsor"
+          icon="solar:heart-linear"
+          variant="outline"
+          aria-label="Sponsor Soaring Symbols on GitHub"
+          :ui="{ leadingIcon: 'text-pink-500' }"
+        />
         <GitHubStarsButton username="soaring-symbols" repo="soaring-symbols" />
         <UColorModeButton />
       </template>
@@ -122,12 +134,19 @@ const nav = computed(() => [
 
 // The phone menu has room for every page, so Browse's two halves are listed
 // in its place rather than folded behind another tap; Ecosystem's groups are
-// one page, so it stays a single link
-const mobileNav = computed(() =>
-  nav.value.flatMap(({ children, flatten, ...item }) =>
+// one page, so it stays a single link. The header's Sponsor button has no
+// room on phones, so the menu ends with it
+const mobileNav = computed(() => [
+  ...nav.value.flatMap(({ children, flatten, ...item }) =>
     flatten ? children.map(({ description, ...child }) => child) : [item],
   ),
-)
+  {
+    label: 'Sponsor',
+    to: 'https://github.com/sponsors/soaring-symbols',
+    target: '_blank',
+    icon: 'solar:heart-linear',
+  },
+])
 </script>
 
 <style scoped>
