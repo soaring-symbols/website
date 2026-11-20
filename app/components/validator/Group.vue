@@ -32,41 +32,47 @@
         <li
           v-for="check in item.checks"
           :key="check.label"
-          class="flex items-start justify-between gap-4 px-4 py-2.5 text-sm"
+          class="list-none px-4 py-2.5 text-sm"
         >
-          <div class="flex items-start gap-2 min-w-0">
-            <UIcon
-              :name="statusIcon(checkStatus(check))"
-              class="size-4 mt-0.5 shrink-0"
-              :class="statusColor(checkStatus(check))"
-            />
-            <!-- The label stays on one line; the badges wrap below it -->
-            <div class="flex flex-wrap items-center gap-1.5">
-              <span class="text-default whitespace-nowrap">{{
-                check.label
-              }}</span>
-              <UBadge
-                v-if="checkStatus(check) === 'warning'"
-                label="Warning"
-                color="warning"
-                variant="subtle"
-                size="sm"
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-2 min-w-0">
+              <UIcon
+                :name="statusIcon(checkStatus(check))"
+                class="size-4 mt-0.5 shrink-0"
+                :class="statusColor(checkStatus(check))"
               />
-              <!-- What the Fix SVG button can do about it -->
-              <UBadge
-                v-if="!check.pass"
-                v-bind="FIX_BADGES[String(check.fixable)]"
-                variant="outline"
-                size="sm"
-              />
+              <!-- The label stays on one line; the badges wrap below it -->
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-default whitespace-nowrap">{{
+                  check.label
+                }}</span>
+                <UBadge
+                  v-if="checkStatus(check) === 'warning'"
+                  label="Warning"
+                  color="warning"
+                  variant="subtle"
+                  size="sm"
+                />
+                <!-- What the Fix SVG button can do about it -->
+                <UBadge
+                  v-if="!check.pass"
+                  v-bind="FIX_BADGES[String(check.fixable)]"
+                  variant="outline"
+                  size="sm"
+                />
+              </div>
             </div>
+            <span
+              class="text-muted font-mono text-xs text-right shrink-0 max-w-[50%] truncate"
+              :title="check.detail"
+            >
+              {{ check.detail }}
+            </span>
           </div>
-          <span
-            class="text-muted font-mono text-xs text-right shrink-0 max-w-[50%] truncate"
-            :title="check.detail"
-          >
-            {{ check.detail }}
-          </span>
+          <!-- What to try, for a check the website flags on its own -->
+          <p v-if="check.hint" class="mt-1 pl-6 text-xs text-muted">
+            {{ check.hint }}
+          </p>
         </li>
       </UPageList>
     </template>

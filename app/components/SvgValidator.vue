@@ -223,11 +223,17 @@ const derivedMono = computed(() => {
 
 const allChecks = computed(() => {
   if (!candidate.parsed.value) return []
-  return runSvgValidations(
+  const checks = runSvgValidations(
     candidate.parsed.value,
     type.value,
     candidate.bbox.value,
     { mono: variant.value === 'mono', source: candidate.content.value },
+  )
+  return flagNearMisses(
+    checks,
+    type.value,
+    candidate.bbox.value,
+    candidate.content.value ?? '',
   )
 })
 
