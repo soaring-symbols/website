@@ -19,48 +19,28 @@
       </div>
     </template>
 
-    <!-- Preview area with checkerboard -->
+    <!-- Preview area with checkerboard; zooms and pans (useZoomPan) -->
     <div
-      class="relative flex items-center justify-center overflow-hidden"
+      ref="viewport"
+      class="relative flex items-center justify-center overflow-clip touch-none select-none"
+      :class="cursor"
       style="min-height: 280px"
       :style="checkerboardStyle"
+      title="Ctrl/⌘ + scroll or double-click to zoom, drag to move"
+      v-on="handlers"
     >
       <!-- Zoom controls, in a corner so they never cover the artwork -->
-      <div class="absolute right-3 top-3 flex items-center gap-1 z-10">
-        <UButton
-          icon="solar:minus-linear"
-          size="xs"
-          variant="subtle"
-          aria-label="Zoom out"
-          title="Zoom out"
-          :disabled="zoomLevel <= MIN_ZOOM"
-          @click="zoomOut"
-        />
-        <UButton
-          :label="`${Math.round(zoomLevel * 100)}%`"
-          size="xs"
-          variant="subtle"
-          class="font-mono justify-center min-w-14"
-          :ui="{ label: 'block' }"
-          title="Reset zoom"
-          @click="zoomLevel = 1"
-        />
-        <UButton
-          icon="solar:add-linear"
-          size="xs"
-          variant="subtle"
-          aria-label="Zoom in"
-          title="Zoom in"
-          :disabled="zoomLevel >= MAX_ZOOM"
-          @click="zoomIn"
-        />
-      </div>
+      <ZoomControls
+        class="absolute right-3 top-3 z-10"
+        :zoom="zoom"
+        :min="MIN_ZOOM"
+        :max="MAX_ZOOM"
+        @zoom="zoomBy"
+        @reset="reset"
+      />
 
       <!-- SVG in its viewBox: the dashed frame is the viewBox's edge -->
-      <div
-        class="relative transition-transform duration-200"
-        :style="frameStyle"
-      >
+      <div ref="frame" class="relative size-48 shrink-0" :style="{ transform }">
         <div
           class="absolute inset-0 border border-dashed border-primary/60 pointer-events-none"
         />
@@ -105,8 +85,16 @@ defineEmits(['remove'])
 const colorMode = useColorMode()
 
 const MIN_ZOOM = 0.25
-const MAX_ZOOM = 4
-const zoomLevel = ref(1)
+const MAX_ZOOM = 16
+const viewport = ref(null)
+const frame = ref(null)
+const { zoom, transform, cursor, zoomBy, reset, handlers } = useZoomPan(
+  viewport,
+  frame,
+  { min: MIN_ZOOM, max: MAX_ZOOM },
+)
+// A new file starts at 100%
+watch(() => props.previewUrl, reset)
 
 const checkerboardStyle = computed(() => {
   const dark = colorMode.value === 'dark'
@@ -119,13 +107,6 @@ const checkerboardStyle = computed(() => {
     backgroundColor: bg,
   }
 })
-
-const frameStyle = computed(() => ({
-  width: '192px',
-  height: '192px',
-  transform: `scale(${zoomLevel.value})`,
-  transformOrigin: 'center center',
-}))
 
 const maskStyle = computed(() => {
   const mask = {
@@ -141,12 +122,4 @@ const maskStyle = computed(() => {
     ]),
   )
 })
-
-function zoomIn() {
-  zoomLevel.value = Math.min(MAX_ZOOM, zoomLevel.value + 0.25)
-}
-
-function zoomOut() {
-  zoomLevel.value = Math.max(MIN_ZOOM, zoomLevel.value - 0.25)
-}
 </script>
