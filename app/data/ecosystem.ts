@@ -211,4 +211,24 @@ export const ecosystem: EcosystemEntry[] = [
       to: 'https://github.com/soaring-symbols/figma',
     },
   },
+  {
+    id: 'drawio',
+    name: 'draw.io libraries',
+    icon: 'simple-icons:diagramsdotnet',
+    group: 'apps',
+    description:
+      'Open every airline’s icons, logos and tails, and the alliance marks, as libraries in draw.io (diagrams.net), find an airline by name or code in its shape search, and recolor the monochrome marks for light and dark diagrams.',
+    link: { label: 'Open in draw.io', to: drawioUrl() },
+  },
 ]
+
+// app.diagrams.net with the four color libraries open, from the release line
+// of @soaring-symbols/drawio, which shares the package's version
+function drawioUrl() {
+  const libraries = ['icons', 'logos', 'tails', 'alliances'].map(
+    (name) =>
+      `Uhttps://cdn.jsdelivr.net/npm/@soaring-symbols/drawio@${RELEASE_LINE}/dist/${name}.xml`,
+  )
+
+  return `https://app.diagrams.net/?clibs=${libraries.join(';')}`
+}
