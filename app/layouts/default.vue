@@ -72,14 +72,14 @@
       </UContainer>
     </main>
 
+    <!-- Whose the marks are and the pages the header has no room for, then
+         the copyright and the project's GitHub and npm on one row -->
     <UFooter
       :ui="{
         root: 'border-t border-default',
-        top: 'border-b border-default',
-        // The copyright at the left and the links at the right, on one row
-        // at every width
+        top: 'pt-8 pb-0 lg:pt-8 lg:pb-0',
         container:
-          'flex items-center justify-between gap-x-3 py-6 text-sm text-muted lg:py-4',
+          'flex items-center justify-between gap-x-3 py-6 text-sm text-muted lg:py-6',
         left: 'order-1 mt-0 flex-1 justify-start lg:mt-0',
         center: 'hidden',
         right: 'order-2 flex-none justify-end',
@@ -87,39 +87,29 @@
     >
       <template #top>
         <UContainer>
-          <!-- Two columns of links on a phone, so the list stays short -->
-          <UFooterColumns
-            :columns="footerColumns"
-            :ui="{
-              center:
-                'grid grid-flow-row grid-cols-2 gap-8 lg:grid-cols-3 xl:col-span-2',
-            }"
-          >
-            <!-- The name as the header sets it, then what the marks are and
-                 whose they are -->
-            <template #left>
-              <ULink to="/" class="inline-flex items-center gap-2.5">
-                <FlapText text="SS" :length="2" class="brand-mark" />
-                <span
-                  class="cap-center text-lg font-extrabold tracking-tight text-highlighted"
-                >
-                  Soaring Symbols
-                </span>
-              </ULink>
-              <p class="mt-4 max-w-sm text-sm text-pretty text-muted">
-                Logos and icons are shown for reference. The trademarks belong
-                to their airlines; Soaring Symbols claims no ownership of them.
-                Read the
-                <ULink
-                  :to="DISCLAIMER_URL"
-                  target="_blank"
-                  class="underline underline-offset-2 hover:text-highlighted"
-                  >disclaimer</ULink
-                >
-                before using them.
-              </p>
-            </template>
-          </UFooterColumns>
+          <p class="max-w-3xl text-sm text-pretty text-muted">
+            Logos and icons are shown for reference. The trademarks belong to
+            their airlines; Soaring Symbols claims no ownership of them. Read
+            the
+            <ULink
+              :to="DISCLAIMER_URL"
+              target="_blank"
+              class="underline underline-offset-2 hover:text-highlighted"
+              >disclaimer</ULink
+            >
+            before using them.
+          </p>
+          <nav class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted">
+            <ULink
+              v-for="link in footerLinks"
+              :key="link.label"
+              :to="link.to"
+              :target="link.target"
+              class="hover:text-highlighted"
+            >
+              {{ link.label }}
+            </ULink>
+          </nav>
         </UContainer>
       </template>
 
@@ -218,46 +208,14 @@ const mobileNav = computed(() =>
 
 // Links off the site, set apart below the pages. The header's Sponsor and
 // Disclaimer buttons have no room on phones, so they are listed here
-// The footer lists every page by what it is for, and the places the project
-// lives off the site
-const footerColumns = [
+// Pages the header has no room for; the rest are a click away up there
+const footerLinks = [
+  { label: 'Brand', to: '/brand' },
+  { label: 'Contributing', to: CONTRIBUTING_URL, target: '_blank' },
   {
-    label: 'Collection',
-    children: [
-      { label: 'Airlines', to: '/airlines' },
-      { label: 'Alliances', to: '/alliances' },
-      { label: 'Validate', to: '/validate' },
-      { label: 'Changelog', to: '/changelog' },
-    ],
-  },
-  {
-    label: 'Use the marks',
-    children: [
-      { label: 'Files and APIs', to: '/ecosystem#data' },
-      { label: 'Apps and plugins', to: '/ecosystem#apps' },
-      {
-        label: 'npm package',
-        to: 'https://www.npmjs.com/package/soaring-symbols',
-        target: '_blank',
-      },
-    ],
-  },
-  {
-    label: 'Project',
-    children: [
-      { label: 'Brand', to: '/brand' },
-      { label: 'Disclaimer', to: DISCLAIMER_URL, target: '_blank' },
-      {
-        label: 'Contributing',
-        to: CONTRIBUTING_URL,
-        target: '_blank',
-      },
-      {
-        label: 'Sponsor',
-        to: 'https://github.com/sponsors/soaring-symbols',
-        target: '_blank',
-      },
-    ],
+    label: 'Sponsor',
+    to: 'https://github.com/sponsors/soaring-symbols',
+    target: '_blank',
   },
 ]
 
