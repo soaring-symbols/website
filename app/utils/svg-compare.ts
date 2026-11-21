@@ -9,7 +9,8 @@
 //   When either side is a monochrome SVG (fill="currentColor", which renders
 //   black, or no color of its own, which is black too), only coverage is
 //   compared: a mono variant, or a file given its color by the fix, is meant
-//   to differ from the other in color, not in shape.
+//   to differ from the other in color, not in shape. The same can be asked
+//   for (`shapesOnly`), as for a dark version recolored for a dark background.
 // - "outline": at least one side is a raster reference (PNG, JPEG, WebP) with
 //   its own size, padding and background. Backgrounds are removed, both images
 //   are trimmed to their content and fitted into the same box, and the shapes
@@ -33,11 +34,14 @@ export interface CompareRender {
   share: number
 }
 
+// Why only coverage was compared: one side is monochrome, or it was asked for
+export type ShapeOnlyReason = 'mono' | 'chosen'
+
 export interface PixelResult {
   mode: 'pixel'
   verdict: 'identical' | 'edges' | 'shapes'
-  // Only coverage (alpha) was compared, because one side is monochrome
-  shapeOnly: boolean
+  // Only coverage (alpha) was compared, and why; false when colors were too
+  shapeOnly: ShapeOnlyReason | false
   renders: CompareRender[]
   mask: ImageData
   layers: [ImageData, ImageData]
@@ -160,8 +164,12 @@ export async function compareSvgs(
   before: string,
   after: string,
   colors: CompareColors,
+  { shapesOnly = false } = {},
 ): Promise<PixelResult> {
-  const shapeOnly = isMonochrome(before) || isMonochrome(after)
+  const shapeOnly: PixelResult['shapeOnly'] =
+    isMonochrome(before) || isMonochrome(after)
+      ? 'mono'
+      : shapesOnly && 'chosen'
   const delta = shapeOnly ? alphaDelta : channelDelta
   const renders: CompareRender[] = []
   let mask: ImageData | null = null

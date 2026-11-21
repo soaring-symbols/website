@@ -1,9 +1,22 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex items-center gap-2">
-        <UIcon name="solar:git-diff-linear" class="size-4 text-muted" />
-        <span class="font-medium text-sm">Result</span>
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <UIcon name="solar:git-diff-linear" class="size-4 text-muted" />
+          <span class="font-medium text-sm">Result</span>
+        </div>
+        <!-- Two SVGs are compared pixel by pixel, colors included, unless
+             asked otherwise: a dark version, say, is recolored on purpose.
+             A monochrome side is always compared on its shapes. -->
+        <USwitch
+          v-if="bothSvg"
+          :model-value="shapesOnly || result?.shapeOnly === 'mono'"
+          :disabled="result?.shapeOnly === 'mono'"
+          label="Shapes only"
+          size="sm"
+          @update:model-value="shapesOnly = $event"
+        />
       </div>
     </template>
 
@@ -189,6 +202,11 @@ const showVisuals = computed(
   () => showMap.value || result.value?.verdict !== 'identical',
 )
 const afterOpacity = ref(50)
+// Compare two SVGs on their shapes alone, leaving colors out
+const shapesOnly = ref(false)
+const bothSvg = computed(
+  () => props.reference.isSvg.value && props.candidate.isSvg.value,
+)
 const maskCanvas = ref(null)
 const beforeCanvas = ref(null)
 const afterCanvas = ref(null)
@@ -294,6 +312,11 @@ const SHAPE_ONLY_VERDICTS = {
   },
 }
 
+const SHAPE_ONLY_REASONS = {
+  mono: 'One of them is monochrome (drawn in currentColor or no color of its own)',
+  chosen: 'Shapes only is on',
+}
+
 const verdict = computed(() => {
   const base = VERDICTS[result.value?.verdict] ?? {}
   if (result.value?.shapeOnly) {
@@ -301,7 +324,7 @@ const verdict = computed(() => {
     return {
       ...base,
       ...shapeOnly,
-      description: `${shapeOnly.description} One of them is monochrome (drawn in currentColor or no color of its own), so their colors aren't compared.`,
+      description: `${shapeOnly.description} ${SHAPE_ONLY_REASONS[result.value.shapeOnly]}, so their colors aren't compared.`,
     }
   }
   if (result.value?.mode !== 'outline') return base
@@ -426,18 +449,18 @@ async function run() {
   showMap.value = false
   zoomView.value?.reset()
   try {
-    result.value =
-      props.reference.isSvg.value && props.candidate.isSvg.value
-        ? await compareSvgs(
-            props.reference.content.value,
-            props.candidate.content.value,
-            colors.value,
-          )
-        : await compareOutlines(
-            toSource(props.reference),
-            toSource(props.candidate),
-            colors.value,
-          )
+    result.value = bothSvg.value
+      ? await compareSvgs(
+          props.reference.content.value,
+          props.candidate.content.value,
+          colors.value,
+          { shapesOnly: shapesOnly.value },
+        )
+      : await compareOutlines(
+          toSource(props.reference),
+          toSource(props.candidate),
+          colors.value,
+        )
   } catch (e) {
     result.value = null
     error.value = e instanceof Error ? e.message : String(e)
@@ -463,6 +486,7 @@ watch(
   [
     () => props.reference.previewUrl.value,
     () => props.candidate.previewUrl.value,
+    shapesOnly,
     () => props.reference.ready.value && props.candidate.ready.value,
     colors,
   ],
