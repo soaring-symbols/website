@@ -2,10 +2,7 @@
   <UCard>
     <template #header>
       <div class="flex items-center gap-2">
-        <UIcon
-          name="solar:git-diff-linear"
-          class="size-4 text-muted"
-        />
+        <UIcon name="solar:git-diff-linear" class="size-4 text-muted" />
         <span class="font-medium text-sm">Result</span>
       </div>
     </template>
@@ -58,23 +55,26 @@
             ]"
           />
 
-          <canvas
-            v-show="view === 'diff'"
-            ref="maskCanvas"
-            class="w-full max-w-80 aspect-square border border-default rounded-md"
-          />
-          <div
-            v-show="view === 'overlay'"
-            class="relative w-full max-w-80 aspect-square border border-default rounded-md overflow-hidden"
-            :style="checkerboardStyle"
-          >
-            <canvas ref="beforeCanvas" class="absolute inset-0 size-full" />
+          <!-- Both views share the zoom, so switching keeps the spot -->
+          <CompareZoomView ref="zoomView" class="w-full max-w-80">
             <canvas
-              ref="afterCanvas"
+              v-show="view === 'diff'"
+              ref="maskCanvas"
               class="absolute inset-0 size-full"
-              :style="{ opacity: afterOpacity / 100 }"
             />
-          </div>
+            <div
+              v-show="view === 'overlay'"
+              class="absolute inset-0"
+              :style="checkerboardStyle"
+            >
+              <canvas ref="beforeCanvas" class="absolute inset-0 size-full" />
+              <canvas
+                ref="afterCanvas"
+                class="absolute inset-0 size-full"
+                :style="{ opacity: afterOpacity / 100 }"
+              />
+            </div>
+          </CompareZoomView>
 
           <div
             v-if="view === 'diff'"
@@ -192,6 +192,7 @@ const afterOpacity = ref(50)
 const maskCanvas = ref(null)
 const beforeCanvas = ref(null)
 const afterCanvas = ref(null)
+const zoomView = ref(null)
 
 const colors = computed(() =>
   colorMode.value === 'dark'
@@ -423,6 +424,7 @@ async function run() {
   loading.value = true
   error.value = null
   showMap.value = false
+  zoomView.value?.reset()
   try {
     result.value =
       props.reference.isSvg.value && props.candidate.isSvg.value
