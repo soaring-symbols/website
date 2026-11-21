@@ -16,19 +16,33 @@
 
       <template #right>
         <!-- The header's buttons share the stars button's light border.
-             GitHub's own pink heart, which reads on both themes. Phones have
-             no room beside the title, so their menu lists it instead -->
+             Sponsor is an icon in GitHub's own pink heart, which reads on
+             both themes, leaving the label to the disclaimer, so who owns
+             the marks is in sight on every page. Phones have no room beside
+             the title, so their menu lists both instead. The labelled
+             button leads; Sponsor sits by GitHub, where it is hosted -->
         <UButton
           class="hidden sm:inline-flex"
-          to="https://github.com/sponsors/soaring-symbols"
+          :to="DISCLAIMER_URL"
           target="_blank"
-          label="Sponsor"
-          icon="solar:heart-linear"
+          label="Disclaimer"
+          icon="solar:justice-scale-linear"
           variant="outline"
-          aria-label="Sponsor Soaring Symbols on GitHub"
-          :ui="{ base: 'ring-default', leadingIcon: 'text-pink-500' }"
+          aria-label="Read the disclaimer on who owns the marks"
+          :ui="{ base: 'ring-default' }"
         />
         <GitHubStarsButton username="soaring-symbols" repo="soaring-symbols" />
+        <UTooltip text="Sponsor" :delay-duration="0">
+          <UButton
+            class="hidden sm:inline-flex"
+            to="https://github.com/sponsors/soaring-symbols"
+            target="_blank"
+            icon="solar:heart-linear"
+            variant="outline"
+            aria-label="Sponsor Soaring Symbols on GitHub"
+            :ui="{ base: 'ring-default', leadingIcon: 'text-pink-500' }"
+          />
+        </UTooltip>
         <ColorModeMenu />
       </template>
 
@@ -66,7 +80,7 @@
           Logos and icons are shown for reference. The trademarks belong to
           their airlines; Soaring Symbols claims no ownership of them. Read the
           <ULink
-            to="https://github.com/soaring-symbols/soaring-symbols/blob/main/DISCLAIMER.md"
+            :to="DISCLAIMER_URL"
             target="_blank"
             class="underline underline-offset-2 hover:text-highlighted"
             >disclaimer</ULink
@@ -152,20 +166,26 @@ const mobileNav = computed(() =>
   })),
 )
 
-// Links off the site, set apart below the pages. The header's Sponsor
-// button has no room on phones, so it is listed here
+// Links off the site, set apart below the pages. The header's Sponsor and
+// Disclaimer buttons have no room on phones, so they are listed here
 const mobileLinks = [
   {
-    label: 'Sponsor',
-    to: 'https://github.com/sponsors/soaring-symbols',
+    label: 'Disclaimer',
+    to: DISCLAIMER_URL,
     target: '_blank',
-    icon: 'solar:heart-linear',
+    icon: 'solar:justice-scale-linear',
   },
   {
     label: 'GitHub',
     to: 'https://github.com/soaring-symbols/soaring-symbols',
     target: '_blank',
     icon: 'simple-icons:github',
+  },
+  {
+    label: 'Sponsor',
+    to: 'https://github.com/sponsors/soaring-symbols',
+    target: '_blank',
+    icon: 'solar:heart-linear',
   },
 ]
 </script>
