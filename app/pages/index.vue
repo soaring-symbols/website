@@ -300,11 +300,12 @@ const packageManagers = [
     icon: 'simple-icons:pnpm',
     command: 'pnpm add soaring-symbols',
   },
-  { name: 'bun', command: 'bun add soaring-symbols' },
+  { name: 'bun', icon: 'simple-icons:bun', command: 'bun add soaring-symbols' },
 ]
-const packageManagerTabs = packageManagers.map(({ name }) => ({
+const packageManagerTabs = packageManagers.map(({ name, icon }) => ({
   label: name,
   value: name,
+  icon,
 }))
 const packageManager = ref('npm')
 const installCommand = computed(

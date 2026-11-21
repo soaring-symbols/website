@@ -6,5 +6,6 @@ export const BOARD_TABS_UI = {
   indicator: 'h-0.5 bg-signal-500',
   trigger:
     'cursor-pointer font-semibold data-[state=active]:text-flap-ink data-[state=inactive]:text-flap-ink/55 hover:data-[state=inactive]:not-disabled:text-flap-ink focus-visible:outline-2 focus-visible:outline-signal-500',
+  leadingIcon: 'size-4',
   content: 'rounded-none focus-visible:outline-signal-500',
 }
