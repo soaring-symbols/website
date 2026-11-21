@@ -170,7 +170,7 @@
 import flagIcons from 'flag-icons/country.json'
 
 const meta = {
-  title: 'Browse airlines',
+  title: 'Airlines',
   description:
     'Search the collection by name or code, filter by alliance, country or type, and open any airline for its logo, icon and colors.',
 }

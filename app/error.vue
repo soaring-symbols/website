@@ -3,7 +3,7 @@
     <NuxtLayout>
       <UError
         :error="error"
-        redirect="/browse"
+        redirect="/airlines"
         :clear="{
           label: 'Browse all airlines',
           size: 'lg',

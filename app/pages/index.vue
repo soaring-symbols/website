@@ -68,7 +68,7 @@
           description="Every icon is drawn on the same 24×24 grid and keeps the airline’s official colors, so a row of them lines up wherever you use it."
           :links="[
             {
-              to: '/browse',
+              to: '/airlines',
               label: 'Browse all airlines',
               trailingIcon: 'solar:arrow-right-linear',
               size: 'lg',
@@ -107,7 +107,7 @@
 
       <!-- On phones the wall stops after a few rows (see .icon-wall) -->
       <UButton
-        to="/browse"
+        to="/airlines"
         :label="`See all ${withIcons.length} icons`"
         trailing-icon="solar:arrow-right-linear"
         size="lg"
@@ -281,7 +281,7 @@ const query = ref('')
 
 function search() {
   const q = query.value.trim()
-  navigateTo({ path: '/browse', query: q ? { q } : {} })
+  navigateTo({ path: '/airlines', query: q ? { q } : {} })
 }
 
 const packageManagers = [
@@ -367,7 +367,7 @@ const steps = [
 }
 
 /* On phones the whole wall runs to some twenty rows: show the first
-   thirty icons, fading out, and leave the rest to /browse. Thirty fills
+   thirty icons, fading out, and leave the rest to /airlines. Thirty fills
    every row at five and six columns, what phones 360-430px wide get */
 @media (width < 40rem) {
   .icon-wall {

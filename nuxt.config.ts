@@ -160,14 +160,14 @@ export default defineNuxtConfig({
     // The airline data only changes with a package release, so every page
     // is built ahead of time and served as a static file
     prerender: {
-      // Write /browse.html rather than /browse/index.html: Workers serves a
+      // Write /airlines.html rather than /airlines/index.html: Workers serves a
       // folder index only at its trailing-slash URL and redirects to it,
       // which would put every page one redirect away from its canonical URL
       autoSubfolderIndex: false,
       crawlLinks: true,
       routes: [
         '/',
-        '/browse',
+        '/airlines',
         '/validate',
         '/ecosystem',
         '/changelog',

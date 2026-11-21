@@ -95,14 +95,14 @@ const nav = computed(() => [
   {
     label: 'Browse',
     icon: 'solar:plane-linear',
-    active: under('/browse', '/airlines', '/alliances'),
+    active: under('/airlines', '/alliances'),
     children: [
       {
         label: 'Airlines',
         description: 'Search every airline by name, code or callsign.',
-        to: '/browse',
+        to: '/airlines',
         icon: 'solar:plane-linear',
-        active: under('/browse', '/airlines'),
+        active: under('/airlines'),
       },
       {
         label: 'Alliances',

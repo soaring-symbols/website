@@ -8,7 +8,7 @@ export default defineEventHandler((event) => {
   const { homepage } = useRuntimeConfig(event).public.site
   const paths = [
     '/',
-    '/browse',
+    '/airlines',
     '/validate',
     '/ecosystem',
     '/changelog',

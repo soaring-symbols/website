@@ -174,7 +174,7 @@ const usageFeatures = [
 ]
 
 const breadcrumb = [
-  { label: 'Browse', to: '/browse', icon: 'solar:plane-linear' },
+  { label: 'Airlines', to: '/airlines', icon: 'solar:plane-linear' },
   { label: airline.name },
 ]
 
