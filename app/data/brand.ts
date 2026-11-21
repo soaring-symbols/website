@@ -71,12 +71,12 @@ export const brandColors: BrandColor[] = [
   { name: 'Flap bottom', hex: '#262b32', use: 'Lower half of a tile' },
   {
     name: 'Dark flap top',
-    hex: '#3a424d',
+    hex: '#38404b',
     use: 'Upper half of a tile on dark',
   },
   {
     name: 'Dark flap bottom',
-    hex: '#343b45',
+    hex: '#313842',
     use: 'Lower half of a tile on dark',
   },
   { name: 'Hinge', hex: '#13161a', use: 'The line across a tile' },

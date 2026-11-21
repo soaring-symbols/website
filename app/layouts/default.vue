@@ -301,11 +301,9 @@ const mobileLinks = [
   --flap: 1.1rem;
 }
 
-/* Dark flaps vanish into the dark header, so dark mode lifts them a step
-   and letters them in signal yellow, as the brand's dark marks do */
+/* In dark mode the flaps are lifted and edged like every board on the site
+   (main.css), and lettered in signal yellow, as the brand's dark marks */
 .dark .brand-mark {
-  --color-flap: #3a424d;
   --color-flap-ink: var(--color-signal-500);
-  --flap-edge: transparent;
 }
 </style>
