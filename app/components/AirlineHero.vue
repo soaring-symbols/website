@@ -110,18 +110,18 @@
             </li>
           </ul>
 
-          <a
+          <ULink
             v-if="airline.website"
-            :href="airline.website"
+            :to="airline.website"
             target="_blank"
-            rel="noopener"
+            raw
             class="inline-flex w-fit max-w-full items-center gap-1.5 text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
           >
             <UIcon name="solar:global-bold-duotone" class="size-4 shrink-0" />
             <span class="cap-center truncate">{{
               cleanUrl(airline.website)
             }}</span>
-          </a>
+          </ULink>
 
           <!-- One way down to everything it was before: names and codes,
              alliances and logos, in the History section of the page. A
@@ -183,36 +183,39 @@
           Brand colors
         </h2>
         <ul class="flex flex-wrap gap-2">
-          <li v-for="color in shownColors" :key="color">
-            <button
-              type="button"
-              class="group flex cursor-pointer items-center gap-2 rounded-full bg-surface py-1 ps-1 pe-2.5 transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
+          <li v-for="color in shownColors" :key="color" class="flex">
+            <UButton
+              :label="color.toUpperCase()"
+              trailing-icon="solar:copy-linear"
+              variant="soft"
+              size="sm"
+              class="group gap-2 rounded-full bg-surface hover:bg-elevated py-1 ps-1 pe-2.5 font-mono font-semibold text-highlighted"
+              :ui="{
+                label: 'block',
+                trailingIcon:
+                  'size-3.5 text-dimmed transition-colors group-hover:text-highlighted',
+              }"
               :aria-label="`Copy ${color.toUpperCase()}`"
               @click="copyColor(color)"
             >
-              <span
-                class="size-5 rounded-full ring-1 ring-black/10 ring-inset dark:ring-white/25"
-                :style="{ backgroundColor: color }"
-              />
-              <span class="font-mono text-xs font-semibold text-highlighted">
-                {{ color.toUpperCase() }}
-              </span>
-              <UIcon
-                name="solar:copy-linear"
-                class="size-3.5 text-dimmed transition-colors group-hover:text-highlighted"
-                aria-hidden="true"
-              />
-            </button>
+              <template #leading>
+                <span
+                  class="size-5 rounded-full ring-1 ring-black/10 ring-inset dark:ring-white/25"
+                  :style="{ backgroundColor: color }"
+                />
+              </template>
+            </UButton>
           </li>
           <li v-if="colors.length > COLOR_LIMIT" class="flex items-center">
-            <button
-              type="button"
-              class="cursor-pointer px-2 text-xs font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-primary"
+            <UButton
+              :label="showAllColors ? 'Show less' : `${hiddenCount} more`"
+              variant="link"
+              size="xs"
+              class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:text-highlighted hover:decoration-current"
+              :ui="{ label: 'block' }"
               :aria-expanded="showAllColors"
               @click="showAllColors = !showAllColors"
-            >
-              {{ showAllColors ? 'Show less' : `${hiddenCount} more` }}
-            </button>
+            />
           </li>
         </ul>
       </section>

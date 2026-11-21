@@ -1,14 +1,14 @@
 <template>
-  <a
-    :href="url"
+  <UButton
+    :to="url"
     target="_blank"
-    rel="noopener"
-    class="stars-button inline-flex h-8 items-center gap-2 rounded-md border border-default px-2.5 text-sm font-semibold text-highlighted transition-colors hover:bg-elevated"
+    icon="simple-icons:github"
+    variant="outline"
+    class="stars-button h-8 gap-2 font-semibold text-highlighted"
+    :ui="{ base: 'ring-default', leadingIcon: 'size-4' }"
     :aria-label="label"
     :aria-busy="loading"
   >
-    <UIcon name="simple-icons:github" class="size-4 shrink-0" />
-
     <template v-if="stars !== null">
       <span class="digits cap-center tabular-nums" aria-hidden="true">
         <template v-for="(char, i) in chars" :key="i">
@@ -46,7 +46,7 @@
         </span>
       </span>
     </template>
-  </a>
+  </UButton>
 </template>
 
 <script setup>

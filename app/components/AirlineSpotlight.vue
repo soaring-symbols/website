@@ -134,14 +134,14 @@
           <div v-if="airline.website" class="col-span-2">
             <dt class="text-muted">Website</dt>
             <dd class="truncate font-semibold">
-              <a
-                :href="airline.website"
+              <ULink
+                :to="airline.website"
                 target="_blank"
-                rel="noopener"
+                raw
                 class="text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
               >
                 {{ cleanUrl(airline.website) }}
-              </a>
+              </ULink>
             </dd>
           </div>
         </dl>
@@ -151,33 +151,38 @@
         <div v-if="colors.length" class="flex flex-col gap-2">
           <p class="text-sm text-muted">Brand colors</p>
           <ul class="flex flex-wrap gap-2">
-            <li v-for="color in shownColors" :key="color">
-              <button
-                type="button"
-                class="group flex cursor-pointer items-center gap-2 rounded-full bg-elevated py-1 ps-1 pe-2.5 text-xs font-semibold text-highlighted hover:bg-accented focus-visible:outline-2 focus-visible:outline-primary"
-                :title="`Copy ${color.toUpperCase()}`"
+            <li v-for="color in shownColors" :key="color" class="flex">
+              <UButton
+                :label="color.toUpperCase()"
+                trailing-icon="solar:copy-linear"
+                variant="soft"
+                size="sm"
+                class="group gap-2 rounded-full bg-elevated hover:bg-accented py-1 ps-1 pe-2.5 font-mono font-semibold text-highlighted"
+                :ui="{
+                  label: 'block',
+                  trailingIcon:
+                    'size-3.5 text-dimmed transition-colors group-hover:text-highlighted',
+                }"
+                :aria-label="`Copy ${color.toUpperCase()}`"
                 @click="copy(color)"
               >
-                <span
-                  class="size-5 rounded-full ring-1 ring-black/10 ring-inset dark:ring-white/25"
-                  :style="{ backgroundColor: color }"
-                />
-                {{ color.toUpperCase() }}
-                <UIcon
-                  name="solar:copy-linear"
-                  class="size-3.5 text-dimmed group-hover:text-highlighted"
-                  aria-hidden="true"
-                />
-              </button>
+                <template #leading>
+                  <span
+                    class="size-5 rounded-full ring-1 ring-black/10 ring-inset dark:ring-white/25"
+                    :style="{ backgroundColor: color }"
+                  />
+                </template>
+              </UButton>
             </li>
-            <li v-if="hiddenCount">
-              <button
-                type="button"
-                class="cursor-pointer rounded-full py-1 px-3 text-xs font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-primary"
+            <li v-if="hiddenCount" class="flex items-center">
+              <UButton
+                :label="`${hiddenCount} more`"
+                variant="link"
+                size="xs"
+                class="font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:text-highlighted hover:decoration-current"
+                :ui="{ label: 'block' }"
                 @click="showAllColors = true"
-              >
-                {{ hiddenCount }} more
-              </button>
+              />
             </li>
           </ul>
         </div>

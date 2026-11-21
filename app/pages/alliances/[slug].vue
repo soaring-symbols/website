@@ -63,18 +63,18 @@
           </li>
         </ul>
 
-        <a
+        <ULink
           v-if="alliance.website"
-          :href="alliance.website"
+          :to="alliance.website"
           target="_blank"
-          rel="noopener"
+          raw
           class="inline-flex w-fit max-w-full items-center gap-1.5 text-sm font-semibold text-highlighted underline decoration-accented underline-offset-4 hover:decoration-current"
         >
           <UIcon name="solar:global-bold-duotone" class="size-4 shrink-0" />
           <span class="cap-center truncate">{{
             cleanUrl(alliance.website)
           }}</span>
-        </a>
+        </ULink>
       </div>
     </header>
 

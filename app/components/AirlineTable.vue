@@ -20,13 +20,13 @@
         </div>
         <div class="min-w-0">
           <div class="flex items-center gap-2">
-            <button
-              type="button"
-              class="cursor-pointer font-bold text-highlighted hover:underline focus-visible:outline-2 focus-visible:outline-primary"
+            <UButton
+              :label="row.original.name"
+              variant="link"
+              class="p-0 font-bold text-highlighted hover:text-highlighted hover:underline"
+              :ui="{ label: 'block' }"
               @click.stop="$emit('open', row.original)"
-            >
-              {{ row.original.name }}
-            </button>
+            />
             <CeasedBadge :airline="row.original" />
           </div>
           <p v-if="row.original.website" class="text-xs text-muted">
