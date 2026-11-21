@@ -61,10 +61,24 @@ export interface BrandColor {
 }
 
 export const brandColors: BrandColor[] = [
-  { name: 'Signal', hex: '#ffc20e', use: 'The one accent, behind the mark' },
+  {
+    name: 'Signal',
+    hex: '#ffc20e',
+    use: 'The one accent: the letters on dark',
+  },
   { name: 'Board', hex: '#1f242b', use: 'The name, and dark backgrounds' },
   { name: 'Flap top', hex: '#2b3139', use: 'Upper half of a tile' },
   { name: 'Flap bottom', hex: '#262b32', use: 'Lower half of a tile' },
+  {
+    name: 'Dark flap top',
+    hex: '#3a424d',
+    use: 'Upper half of a tile on dark',
+  },
+  {
+    name: 'Dark flap bottom',
+    hex: '#343b45',
+    use: 'Lower half of a tile on dark',
+  },
   { name: 'Hinge', hex: '#13161a', use: 'The line across a tile' },
   {
     name: 'Paper',

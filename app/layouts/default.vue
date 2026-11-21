@@ -301,15 +301,11 @@ const mobileLinks = [
   --flap: 1.1rem;
 }
 
-/* Dark flaps vanish into the dark header, so dark mode sets them on the
-   signal-yellow tile of the favicon. A ring, not padding, keeps the title
-   from shifting when the theme changes */
+/* Dark flaps vanish into the dark header, so dark mode lifts them a step
+   and letters them in signal yellow, as the brand's dark marks do */
 .dark .brand-mark {
-  /* The yellow already sets the flaps apart: keep the favicon's colors */
-  --color-flap: #2b3139;
+  --color-flap: #3a424d;
+  --color-flap-ink: var(--color-signal-500);
   --flap-edge: transparent;
-  border-radius: 3px;
-  background: var(--color-signal-500);
-  box-shadow: 0 0 0 3px var(--color-signal-500);
 }
 </style>
