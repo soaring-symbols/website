@@ -143,6 +143,11 @@ const route = useRoute()
 const under = (...paths) =>
   paths.some((p) => route.path === p || route.path.startsWith(`${p}/`))
 
+// Whether the current page is the given section of a page, e.g.
+// /ecosystem#data. The router matches links without their hash, so two
+// sections of one page would both be lit otherwise
+const at = (path, hash) => route.path === path && route.hash === hash
+
 // Browse opens the two halves of the collection, airlines and alliances, and
 // Ecosystem its two groups; each stays lit on any page below it
 const nav = computed(() => [
@@ -179,12 +184,14 @@ const nav = computed(() => [
         description: 'CDN links and a JSON and image API.',
         to: '/ecosystem#data',
         icon: 'solar:code-square-linear',
+        active: at('/ecosystem', '#data'),
       },
       {
         label: 'Apps and plugins',
         description: 'Raycast, Figma and more.',
         to: '/ecosystem#apps',
         icon: 'solar:widget-add-linear',
+        active: at('/ecosystem', '#apps'),
       },
     ],
   },
