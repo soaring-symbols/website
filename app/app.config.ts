@@ -97,6 +97,12 @@ export default defineAppConfig({
     navigationMenu: {
       slots: {
         linkLabel: 'cap-center',
+        childLinkLabel: 'cap-center',
+      },
+    },
+    dropdownMenu: {
+      slots: {
+        itemLabel: 'cap-center',
       },
     },
     tabs: {

@@ -15,7 +15,8 @@
       <UNavigationMenu :items="nav" variant="link" />
 
       <template #right>
-        <!-- GitHub's own pink heart, which reads on both themes. Phones have
+        <!-- The header's buttons share the stars button's light border.
+             GitHub's own pink heart, which reads on both themes. Phones have
              no room beside the title, so their menu lists it instead -->
         <UButton
           class="hidden sm:inline-flex"
@@ -25,22 +26,28 @@
           icon="solar:heart-linear"
           variant="outline"
           aria-label="Sponsor Soaring Symbols on GitHub"
-          :ui="{ leadingIcon: 'text-pink-500' }"
+          :ui="{ base: 'ring-default', leadingIcon: 'text-pink-500' }"
         />
         <GitHubStarsButton username="soaring-symbols" repo="soaring-symbols" />
-        <UColorModeButton />
+        <ColorModeMenu />
       </template>
 
       <template #body>
         <UNavigationMenu
           :items="mobileNav"
           orientation="vertical"
-          class="-mx-3"
-          :ui="{
-            list: 'flex flex-col gap-1',
-            link: 'gap-3 px-3 py-3 text-base before:inset-0 before:rounded-lg',
-            linkLeadingIcon: 'size-6',
-          }"
+          highlight
+          class="-mx-2.5"
+          :ui="{ link: 'py-2', childLink: 'py-2' }"
+        />
+
+        <USeparator class="my-4" />
+
+        <UNavigationMenu
+          :items="mobileLinks"
+          orientation="vertical"
+          class="-mx-2.5"
+          :ui="{ link: 'py-2' }"
         />
       </template>
     </UHeader>
@@ -89,8 +96,6 @@ const nav = computed(() => [
     label: 'Browse',
     icon: 'solar:plane-linear',
     active: under('/browse', '/airlines', '/alliances'),
-    // The phone menu lists these in Browse's place
-    flatten: true,
     children: [
       {
         label: 'Airlines',
@@ -132,21 +137,37 @@ const nav = computed(() => [
   { label: 'Changelog', to: '/changelog', icon: 'solar:history-linear' },
 ])
 
-// The phone menu has room for every page, so Browse's two halves are listed
-// in its place rather than folded behind another tap; Ecosystem's groups are
-// one page, so it stays a single link. The header's Sponsor button has no
-// room on phones, so the menu ends with it
-const mobileNav = computed(() => [
-  ...nav.value.flatMap(({ children, flatten, ...item }) =>
-    flatten ? children.map(({ description, ...child }) => child) : [item],
-  ),
+// The phone menu is a tree like a docs sidebar: each section shows its pages
+// beneath it, open, with a line down the side, so every page is one tap away
+// and the current one is marked on that line
+const mobileNav = computed(() =>
+  nav.value.map(({ children, ...item }) => ({
+    ...item,
+    defaultOpen: true,
+    // Its pages drop their descriptions and icons: the line says they belong
+    // to the section above
+    ...(children && {
+      children: children.map(({ description, icon, ...child }) => child),
+    }),
+  })),
+)
+
+// Links off the site, set apart below the pages. The header's Sponsor
+// button has no room on phones, so it is listed here
+const mobileLinks = [
   {
     label: 'Sponsor',
     to: 'https://github.com/sponsors/soaring-symbols',
     target: '_blank',
     icon: 'solar:heart-linear',
   },
-])
+  {
+    label: 'GitHub',
+    to: 'https://github.com/soaring-symbols/soaring-symbols',
+    target: '_blank',
+    icon: 'simple-icons:github',
+  },
+]
 </script>
 
 <style scoped>
