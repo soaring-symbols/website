@@ -41,20 +41,20 @@
       </ul>
 
       <div class="board-foot">
-        <span>Pick a row to see its marks.</span>
-        <button
+        <span class="cap-center">Pick a row to see its marks.</span>
+        <!-- The board is dark in either theme, so the button keeps its
+             lettering and a light hover rather than the page's -->
+        <UButton
           v-if="canRotate"
-          type="button"
-          class="board-toggle"
+          :icon="paused ? 'solar:play-linear' : 'solar:pause-linear'"
+          :label="paused ? 'Resume' : 'Pause'"
           :aria-label="paused ? 'Resume the board' : 'Pause the board'"
+          variant="ghost"
+          size="sm"
+          class="text-flap-ink hover:bg-white/8 hover:text-flap-ink focus-visible:outline-signal-500 active:bg-white/8"
+          :ui="{ label: 'block' }"
           @click="paused = !paused"
-        >
-          <UIcon
-            :name="paused ? 'solar:play-linear' : 'solar:pause-linear'"
-            class="size-3.5"
-          />
-          {{ paused ? 'Resume' : 'Pause' }}
-        </button>
+        />
       </div>
     </div>
   </div>
@@ -244,24 +244,6 @@ onMounted(() => {
   padding: 0.75rem 0.375rem 0;
   font-size: 0.8125rem;
   color: rgb(236 235 228 / 0.6);
-}
-
-.board-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  color: var(--color-flap-ink);
-  cursor: pointer;
-}
-
-.board-toggle:hover {
-  background: rgb(255 255 255 / 0.08);
-}
-
-.board-toggle:focus-visible {
-  outline: 2px solid var(--color-signal-500);
 }
 
 /* Narrow boards drop the country and status columns and shorten the
