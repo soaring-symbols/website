@@ -72,24 +72,64 @@
       </UContainer>
     </main>
 
-    <footer class="border-t border-default">
-      <UContainer
-        class="flex flex-col gap-6 py-10 text-sm text-muted md:flex-row md:justify-between"
-      >
-        <p class="text-pretty">
-          Logos and icons are shown for reference. The trademarks belong to
-          their airlines; Soaring Symbols claims no ownership of them. Read the
-          <ULink
-            :to="DISCLAIMER_URL"
-            target="_blank"
-            class="underline underline-offset-2 hover:text-highlighted"
-            >disclaimer</ULink
-          >
-          before using them.
-        </p>
-        <p class="shrink-0">© {{ year }} Soaring Symbols</p>
-      </UContainer>
-    </footer>
+    <!-- Whose the marks are and the pages the header has no room for, then
+         the copyright and the project's GitHub and npm on one row -->
+    <UFooter
+      :ui="{
+        root: 'border-t border-default',
+        top: 'pt-8 pb-0 lg:pt-8 lg:pb-0',
+        container:
+          'flex items-center justify-between gap-x-3 py-6 text-sm text-muted lg:py-6',
+        left: 'order-1 mt-0 flex-1 justify-start lg:mt-0',
+        center: 'hidden',
+        right: 'order-2 flex-none justify-end',
+      }"
+    >
+      <template #top>
+        <UContainer>
+          <p class="max-w-3xl text-sm text-pretty text-muted">
+            Logos and icons are shown for reference. The trademarks belong to
+            their airlines; Soaring Symbols claims no ownership of them. Read
+            the
+            <ULink
+              :to="DISCLAIMER_URL"
+              target="_blank"
+              class="underline underline-offset-2 hover:text-highlighted"
+              >disclaimer</ULink
+            >
+            before using them.
+          </p>
+          <nav class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted">
+            <ULink
+              v-for="link in footerLinks"
+              :key="link.label"
+              :to="link.to"
+              :target="link.target"
+              class="hover:text-highlighted"
+            >
+              {{ link.label }}
+            </ULink>
+          </nav>
+        </UContainer>
+      </template>
+
+      <template #left>
+        <p>© {{ year }} Soaring Symbols</p>
+      </template>
+
+      <template #right>
+        <UButton
+          v-for="link in footerIcons"
+          :key="link.label"
+          :icon="link.icon"
+          :to="link.to"
+          target="_blank"
+          color="neutral"
+          variant="ghost"
+          :aria-label="link.label"
+        />
+      </template>
+    </UFooter>
   </div>
 </template>
 
@@ -168,6 +208,30 @@ const mobileNav = computed(() =>
 
 // Links off the site, set apart below the pages. The header's Sponsor and
 // Disclaimer buttons have no room on phones, so they are listed here
+// Pages the header has no room for; the rest are a click away up there
+const footerLinks = [
+  { label: 'Brand', to: '/brand' },
+  { label: 'Contributing', to: CONTRIBUTING_URL, target: '_blank' },
+  {
+    label: 'Sponsor',
+    to: 'https://github.com/sponsors/soaring-symbols',
+    target: '_blank',
+  },
+]
+
+const footerIcons = [
+  {
+    label: 'Soaring Symbols on GitHub',
+    icon: 'simple-icons:github',
+    to: 'https://github.com/soaring-symbols/soaring-symbols',
+  },
+  {
+    label: 'soaring-symbols on npm',
+    icon: 'simple-icons:npm',
+    to: 'https://www.npmjs.com/package/soaring-symbols',
+  },
+]
+
 const mobileLinks = [
   {
     label: 'Disclaimer',
@@ -193,17 +257,5 @@ const mobileLinks = [
 <style scoped>
 .brand-mark {
   --flap: 1.1rem;
-}
-
-/* Dark flaps vanish into the dark header, so dark mode sets them on the
-   signal-yellow tile of the favicon. A ring, not padding, keeps the title
-   from shifting when the theme changes */
-.dark .brand-mark {
-  /* The yellow already sets the flaps apart: keep the favicon's colors */
-  --color-flap: #2b3139;
-  --flap-edge: transparent;
-  border-radius: 3px;
-  background: var(--color-signal-500);
-  box-shadow: 0 0 0 3px var(--color-signal-500);
 }
 </style>
