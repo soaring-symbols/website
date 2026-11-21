@@ -64,7 +64,7 @@ export const brandColors: BrandColor[] = [
   {
     name: 'Signal',
     hex: '#ffc20e',
-    use: 'The one accent: the letters on dark',
+    use: "The one accent: the app icons' background",
   },
   { name: 'Board', hex: '#1f242b', use: 'The name, and dark backgrounds' },
   { name: 'Flap top', hex: '#2b3139', use: 'Upper half of a tile' },

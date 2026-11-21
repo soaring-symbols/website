@@ -258,10 +258,4 @@ const mobileLinks = [
 .brand-mark {
   --flap: 1.1rem;
 }
-
-/* In dark mode the flaps are lifted and edged like every board on the site
-   (main.css), and lettered in signal yellow, as the brand's dark marks */
-.dark .brand-mark {
-  --color-flap-ink: var(--color-signal-500);
-}
 </style>
