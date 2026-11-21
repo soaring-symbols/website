@@ -76,7 +76,13 @@
       :ui="{
         root: 'border-t border-default',
         top: 'border-b border-default',
-        container: 'text-sm text-muted',
+        // The copyright at the left and the links at the right, on one row
+        // at every width
+        container:
+          'flex items-center justify-between gap-x-3 py-6 text-sm text-muted lg:py-4',
+        left: 'order-1 mt-0 flex-1 justify-start lg:mt-0',
+        center: 'hidden',
+        right: 'order-2 flex-none justify-end',
       }"
     >
       <template #top>
