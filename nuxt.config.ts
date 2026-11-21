@@ -170,6 +170,7 @@ export default defineNuxtConfig({
         '/airlines',
         '/validate',
         '/ecosystem',
+        '/brand',
         '/changelog',
         '/alliances',
         '/sitemap.xml',

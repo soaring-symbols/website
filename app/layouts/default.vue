@@ -87,7 +87,10 @@
           >
           before using them.
         </p>
-        <p class="shrink-0">© {{ year }} Soaring Symbols</p>
+        <div class="flex shrink-0 gap-4">
+          <ULink to="/brand" class="hover:text-highlighted">Brand</ULink>
+          <p>© {{ year }} Soaring Symbols</p>
+        </div>
       </UContainer>
     </footer>
   </div>
