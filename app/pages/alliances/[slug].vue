@@ -288,13 +288,13 @@ const usageFeatures = [
     title: 'CDN',
     description:
       'Link a file straight from the package on jsDelivr or unpkg, with nothing to install. Pin a release line to keep it stable.',
-    icon: 'solar:global-linear',
+    icon: 'simple-icons:jsdelivr',
   },
   {
     title: 'API',
     description:
       'Fetch the data as JSON, or a mark as SVG or PNG, with monochrome marks in the color you pick.',
-    icon: 'solar:code-square-linear',
+    icon: 'simple-icons:json',
   },
 ].filter(Boolean)
 
