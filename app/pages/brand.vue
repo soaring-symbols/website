@@ -164,9 +164,9 @@
 
     <UPageSection id="usage" title="Using the mark" :ui="sectionUi">
       <template #description>
-        The Soaring Symbols name and mark are © 2026 Anh Thang, all rights
-        reserved. You may show them unchanged to refer or link to the project
-        and its integrations, in an article, a talk or a list of tools.
+        All rights to the Soaring Symbols name and mark are reserved. You may
+        show them unchanged to refer or link to the project and its
+        integrations, in an article, a talk or a list of tools.
       </template>
 
       <div class="grid gap-4 sm:grid-cols-2">
