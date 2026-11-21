@@ -34,12 +34,15 @@ const {
     </div>
 
     <div class="flex flex-1 flex-col justify-between p-16">
-      <!-- Overpass sits its capitals 0.1em high, so the dots rise to meet
-           them: a 0.2em bottom margin lifts a centered dot by 0.1em -->
+      <!-- The mark as the header shows it in dark mode, about 1.4 times the
+           text's size. Overpass sits its capitals 0.1em high, so the mark
+           rises to meet them: a 0.2em bottom margin lifts it by 0.1em -->
       <div class="flex flex-row items-center text-3xl">
-        <div
-          class="mb-[0.2em] h-6 w-6 rounded-full"
-          :style="{ backgroundColor: '#ffc20e' }"
+        <img
+          src="/brand/icon-dark.svg"
+          width="62"
+          height="42"
+          class="mb-[0.2em] h-[42px] w-[62px]"
         />
         <span class="ml-4 font-bold">Soaring Symbols</span>
       </div>
