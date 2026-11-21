@@ -88,6 +88,9 @@ const tint = computed(() => brandTint(props.airline))
   position: relative;
   display: flex;
   flex-direction: column;
+  /* Over the board by a pixel: where the two meet between pixels, phones
+     would show a hairline of the page through the seam */
+  margin-top: -1px;
   background: var(--color-board);
   mask:
     radial-gradient(
@@ -128,6 +131,8 @@ const tint = computed(() => brandTint(props.airline))
   }
 
   .pass {
+    margin-top: 0;
+    margin-left: -1px;
     mask:
       radial-gradient(
         circle var(--notch) at var(--tear) 0,
