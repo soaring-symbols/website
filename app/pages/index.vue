@@ -128,37 +128,30 @@
     >
       <template #body>
         <div class="rounded-lg bg-board text-flap-ink">
-          <div
-            class="flex gap-1 border-b border-white/10 px-2 pt-2"
-            role="group"
+          <UTabs
+            v-model="packageManager"
+            :items="packageManagerTabs"
+            variant="link"
             aria-label="Package manager"
+            :ui="BOARD_TABS_UI"
           >
-            <button
-              v-for="manager in packageManagers"
-              :key="manager.name"
-              type="button"
-              class="-mb-px cursor-pointer border-b-2 px-3 py-1.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-signal-500"
-              :class="
-                manager.name === packageManager
-                  ? 'border-signal-500 text-flap-ink'
-                  : 'border-transparent text-flap-ink/55 hover:text-flap-ink'
-              "
-              :aria-pressed="manager.name === packageManager"
-              @click="packageManager = manager.name"
-            >
-              {{ manager.name }}
-            </button>
-          </div>
-          <div class="flex items-center justify-between gap-3 py-2 ps-4 pe-2">
-            <code class="truncate font-mono text-sm">{{ installCommand }}</code>
-            <UButton
-              :icon="copied ? 'solar:check-linear' : 'solar:copy-linear'"
-              :aria-label="copied ? 'Copied' : 'Copy install command'"
-              variant="ghost"
-              class="text-flap-ink hover:bg-white/10"
-              @click="copyInstall"
-            />
-          </div>
+            <template #content>
+              <div
+                class="flex items-center justify-between gap-3 py-2 ps-4 pe-2"
+              >
+                <code class="truncate font-mono text-sm">
+                  {{ installCommand }}
+                </code>
+                <UButton
+                  :icon="copied ? 'solar:check-linear' : 'solar:copy-linear'"
+                  :aria-label="copied ? 'Copied' : 'Copy install command'"
+                  variant="ghost"
+                  class="text-flap-ink hover:bg-white/10"
+                  @click="copyInstall"
+                />
+              </div>
+            </template>
+          </UTabs>
         </div>
 
         <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
@@ -292,11 +285,27 @@ function search() {
 }
 
 const packageManagers = [
-  { name: 'npm', command: 'npm install soaring-symbols' },
-  { name: 'yarn', command: 'yarn add soaring-symbols' },
-  { name: 'pnpm', command: 'pnpm add soaring-symbols' },
+  {
+    name: 'npm',
+    icon: 'simple-icons:npm',
+    command: 'npm install soaring-symbols',
+  },
+  {
+    name: 'yarn',
+    icon: 'simple-icons:yarn',
+    command: 'yarn add soaring-symbols',
+  },
+  {
+    name: 'pnpm',
+    icon: 'simple-icons:pnpm',
+    command: 'pnpm add soaring-symbols',
+  },
   { name: 'bun', command: 'bun add soaring-symbols' },
 ]
+const packageManagerTabs = packageManagers.map(({ name }) => ({
+  label: name,
+  value: name,
+}))
 const packageManager = ref('npm')
 const installCommand = computed(
   () => packageManagers.find((m) => m.name === packageManager.value).command,
