@@ -52,16 +52,6 @@
         />
 
         <USwitch v-model="flagCarrierOnly" label="Flag carriers only" />
-
-        <ViewToggle
-          v-model="viewMode"
-          label="Layout"
-          :options="[
-            { value: 'grid', icon: 'solar:widget-linear', ariaLabel: 'Grid' },
-            { value: 'list', icon: 'solar:list-linear', ariaLabel: 'List' },
-          ]"
-          class="justify-self-end sm:ms-auto"
-        />
       </div>
     </div>
 
@@ -85,23 +75,14 @@
       />
     </div>
 
-    <template v-if="paginated.length">
-      <AirlineTable
-        v-if="viewMode === 'list'"
-        :airlines="paginated"
-        class="mt-4"
-        @open="open"
-      />
-
-      <ul
-        v-else
-        class="mt-4 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      >
-        <li v-for="airline in paginated" :key="airline.slug">
-          <AirlineGridCard :airline="airline" @open="open" />
-        </li>
-      </ul>
-    </template>
+    <ul
+      v-if="paginated.length"
+      class="mt-4 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    >
+      <li v-for="airline in paginated" :key="airline.slug">
+        <AirlineGridCard :airline="airline" @open="open" />
+      </li>
+    </ul>
 
     <div v-else class="mt-10 max-w-md rounded-xl bg-surface p-8">
       <h2 class="text-lg font-bold text-highlighted">No airlines match</h2>
@@ -197,7 +178,6 @@ const selectedAlliances = ref([])
 const selectedCountries = ref([])
 const selectedType = ref('all')
 const flagCarrierOnly = ref(false)
-const viewMode = ref('grid')
 const page = ref(1)
 const itemsPerPage = 24
 
