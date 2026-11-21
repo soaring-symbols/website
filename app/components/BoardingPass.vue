@@ -13,9 +13,11 @@
 
       <div class="pass-body">
         <!-- Set as the board's column headings, on their line; the name,
-             on the board already, is only read out as the board turns -->
-        <h2 class="pass-label">
-          Now boarding<span class="sr-only">: {{ airline.name }}</span>
+             on the board already, is only read out as the board turns.
+             An airline that no longer flies isn't boarding: the stub says
+             so in the red of its Canceled on the board -->
+        <h2 class="pass-label" :class="{ ceased: airline.defunct }">
+          {{ label }}<span class="sr-only">: {{ airline.name }}</span>
         </h2>
 
         <div
@@ -48,6 +50,13 @@
 <script setup>
 const props = defineProps({
   airline: { type: Object, required: true },
+})
+
+const label = computed(() => {
+  const { defunct, ceased } = props.airline
+  if (!defunct) return 'Now boarding'
+
+  return ceased ? `Ceased flying in ${ceased}` : 'No longer flying'
 })
 
 // A faint wash of the airline's own color behind its marks
@@ -205,5 +214,9 @@ const tint = computed(() => brandTint(props.airline))
   font-size: 0.75rem;
   font-weight: 400;
   color: var(--color-signal-500);
+}
+
+.pass-label.ceased {
+  color: var(--ui-error);
 }
 </style>
