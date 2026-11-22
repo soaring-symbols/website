@@ -20,30 +20,24 @@
             Browse them, download them, or install the whole set from npm.
           </p>
 
-          <form
-            class="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row"
-            role="search"
-            @submit.prevent="search"
-          >
-            <UInput
-              v-model="query"
-              size="xl"
-              icon="solar:magnifier-linear"
-              placeholder="Name, code or callsign"
-              aria-label="Find an airline"
-              class="flex-1"
-              :ui="{ base: 'bg-surface' }"
-            />
-            <UButton
-              type="submit"
-              size="xl"
-              label="Find airline"
-              color="primary"
-              variant="solid"
-              class="justify-center"
-              :ui="{ label: 'block' }"
-            />
-          </form>
+          <!-- Opens the site search. Outside a dashboard the button has
+               nothing to open of its own, so it opens ours -->
+          <UDashboardSearchButton
+            size="xl"
+            label="Name, code or callsign"
+            class="mt-8 w-full max-w-xl"
+            :ui="{
+              base: 'bg-surface ring-default',
+              label: 'block flex-1 text-start text-dimmed',
+              // The keys only where there is a keyboard
+              trailing: 'hidden sm:flex',
+            }"
+            @click="open = true"
+          />
+          <p class="mt-3 text-sm text-muted">
+            Airlines by name, IATA or ICAO code, or callsign, plus alliances
+            and pages, from any page.
+          </p>
         </div>
 
         <!-- Taller than its row: the bottom of the globe tucks under the
@@ -277,12 +271,7 @@ const selected = computed(() =>
   airlines.find((a) => a.slug === selectedSlug.value),
 )
 
-const query = ref('')
-
-function search() {
-  const q = query.value.trim()
-  navigateTo({ path: '/airlines', query: q ? { q } : {} })
-}
+const { open } = useSiteSearch()
 
 const packageManagers = [
   {

@@ -130,6 +130,9 @@
         />
       </template>
     </UFooter>
+
+    <!-- Opened with ⌘K or from the home page's search button -->
+    <SiteSearch />
   </div>
 </template>
 
