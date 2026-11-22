@@ -177,6 +177,10 @@ export const ecosystem: EcosystemEntry[] = [
         text: 'The PNG width in pixels, from 16 to 1024 (256 by default).',
       },
       {
+        term: '?viewbox=auto',
+        text: 'Crops the square canvas to the drawing, so a horizontal logo fills a wide box instead of a square with space above and below.',
+      },
+      {
         term: '/api/alliances/<slug>/',
         text: 'Alliance marks, the same way, with icon and logo files.',
       },
