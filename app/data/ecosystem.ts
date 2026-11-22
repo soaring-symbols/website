@@ -7,22 +7,30 @@ const RELEASE_LINE = version.split('.').slice(0, 2).join('.')
 
 // Places outside the npm package where the marks can be used, from raw
 // files and data to apps built on them. A shipped entry offers a link, a
-// snippet to copy, or both; one that hasn't shipped yet carries a status (still
-// being built, or waiting for a store's review) and links to its source until
-// its store page is public.
+// one-line snippet to copy, or both; one that hasn't shipped yet carries a
+// status (still being built, or waiting for a store's review) and links to
+// its source until its store page is public.
 //
-// The homepage shows each entry as a small tile linking to /ecosystem#<id>;
-// the ecosystem page shows the full card, with its details.
+// The homepage shows each entry as a small tile linking to /ecosystem#<id>.
+// The ecosystem page gives every entry, in either group, the same row: its
+// name and main action on one line, its description under it, then its
+// snippet, details and examples, if any. A new entry only fills in these
+// fields; the page lays it out.
 export interface EcosystemEntry {
   id: string
   name: string
   icon: string
   group: EcosystemGroup
+  // A sentence or two on what it is and what it does
   description: string
-  // Shown on the ecosystem page only, folded away until opened: each path,
-  // parameter or option (term) with what it does, in a sentence
+  // Each path, parameter, option or feature (term) with what it does, in a
+  // sentence
   details?: EcosystemDetail[]
+  // Longer code to copy, such as a config to paste into another app, in
+  // tabs when there's more than one way to set it up
+  examples?: EcosystemExample[]
   link?: { label: string; to: string }
+  // One line, such as a URL
   snippet?: { label: string; code: string }
   status?: 'In development' | 'In review'
 }
@@ -30,6 +38,13 @@ export interface EcosystemEntry {
 export interface EcosystemDetail {
   term: string
   text: string
+}
+
+// One tab of examples: each item a block of code with a label above it
+export interface EcosystemExample {
+  id: string
+  label: string
+  items: { label: string; code: string }[]
 }
 
 export type EcosystemGroup = 'data' | 'apps'
@@ -230,36 +245,95 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:homeassistant',
     group: 'apps',
     description:
-      'Show each airline’s icon beside its flights in the Flightradar24 card, or its logo when it has no icon, loaded from the image API by the flight’s ICAO code: add these templates to the card’s YAML. A flight with no airline, or an airline with neither, shows none.',
+      'Show each flight’s airline beside it in the Flightradar24 card, loaded from the image API by the flight’s ICAO code: paste one of these into the card’s YAML. A flight with no airline, or one whose airline lacks the mark, shows nothing rather than a broken image.',
+    details: [
+      {
+        term: 'templates',
+        text: 'The card’s own option for its HTML.',
+      },
+      {
+        term: 'airline_logo',
+        text: 'A new template holding the mark.',
+      },
+      {
+        term: 'header',
+        text: 'The card’s template for a flight’s first line, redefined to put the mark before the flight’s name.',
+      },
+    ],
+    // The card's templates are JavaScript template literals, so
+    // ${flight.airline_icao} is filled in by the card, not here
+    examples: [
+      {
+        // A missing icon is a 404: onerror swaps in the logo, then drops the
+        // image if that is missing too. viewbox=auto crops each mark to its
+        // drawing, so a logo fills the 24px height; size is the PNG's
+        // width, so 192 keeps a wide mark sharp, and object-fit keeps one
+        // wider than 4:1 in shape
+        id: 'color',
+        label: 'Icon or logo',
+        items: [
+          {
+            label: 'In color, with the logo for an airline without an icon',
+            code: haCard([
+              '<img style="float: left; height: 24px; max-width: 96px; margin-right: 5px; object-fit: contain;"',
+              `src="${haMark('icon.png?size=192&viewbox=auto')}"`,
+              `onerror="this.onerror = () => this.remove(); this.src = '${haMark('logo.png?size=192&viewbox=auto')}'" />`,
+            ]),
+          },
+        ],
+      },
+      {
+        // The monochrome SVG as a CSS mask over the text color: a mask has
+        // no onerror, so an airline without one leaves a blank space
+        id: 'mono',
+        label: 'Monochrome',
+        items: [
+          {
+            label: 'In the card’s text color, following the theme',
+            code: haCard([
+              '<span style="float: left; width: 24px; height: 24px; margin-right: 5px;',
+              'background-color: currentColor;',
+              `-webkit-mask: url(${haMark('icon-mono.svg')}) center / contain no-repeat;`,
+              `mask: url(${haMark('icon-mono.svg')}) center / contain no-repeat;"></span>`,
+            ]),
+          },
+        ],
+      },
+    ],
     link: {
       label: 'View the card on GitHub',
       to: 'https://github.com/Springvar/home-assistant-flightradar24-card',
     },
-    // The card's templates are JavaScript template literals, so
-    // ${flight.airline_icao} is filled in by the card, not here. A missing
-    // icon is a 404: onerror swaps in the logo, then drops the image if
-    // that is missing too. viewbox=auto crops each mark to its drawing, so a
-    // logo fills the 24px height; size is the PNG's width, so 192 keeps a
-    // wide mark sharp, and object-fit keeps one wider than 4:1 in shape.
-    snippet: {
-      label: 'Copy YAML',
-      code: [
-        'type: custom:flightradar24-radar-card',
-        'templates:',
-        '  airline_logo: >-',
-        '    <img style="float: left; height: 24px; max-width: 96px; margin-right: 5px; object-fit: contain;"',
-        `    src="${haMark('icon')}"`,
-        `    onerror="this.onerror = () => this.remove(); this.src = '${haMark('logo')}'" />`,
-        '  header: <div>${tpl.airline_logo}${tpl.flight_info_element}</div>',
-      ].join('\n'),
-    },
   },
 ]
 
-// A mark's PNG for the Home Assistant example, with the card's own
-// ${flight.airline_icao} left in for it to fill
-function haMark(type: 'icon' | 'logo') {
-  return `https://soaringsymbols.org/api/airlines/\${flight.airline_icao}/${type}.png?size=192&viewbox=auto`
+// One group's entries in the order the pages show them: files and APIs as
+// listed above, simplest first; apps by name, so a new one needs no place
+// picked for it and a long list is easy to scan
+export function ecosystemEntries(group: EcosystemGroup) {
+  const entries = ecosystem.filter((entry) => entry.group === group)
+  if (group !== 'apps') return entries
+
+  return entries.sort((a, b) =>
+    a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }),
+  )
+}
+
+// A file from the image API for the Home Assistant examples, with the
+// card's own ${flight.airline_icao} left in for it to fill
+function haMark(file: string) {
+  return `https://soaringsymbols.org/api/airlines/\${flight.airline_icao}/${file}`
+}
+
+// The Flightradar24 card's YAML around an airline_logo template
+function haCard(logo: string[]) {
+  return [
+    'type: custom:flightradar24-radar-card',
+    'templates:',
+    '  airline_logo: >-',
+    ...logo.map((line) => `    ${line}`),
+    '  header: <div>${tpl.airline_logo}${tpl.flight_info_element}</div>',
+  ].join('\n')
 }
 
 // app.diagrams.net with the four color libraries open, from the release line

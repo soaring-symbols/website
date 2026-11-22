@@ -35,8 +35,8 @@
             @click="open = true"
           />
           <p class="mt-3 text-sm text-muted">
-            Airlines by name, IATA or ICAO code, or callsign, plus alliances
-            and pages, from any page.
+            Airlines by name, IATA or ICAO code, or callsign, plus alliances and
+            pages, from any page.
           </p>
         </div>
 
@@ -201,7 +201,7 @@ getAssetPath('VN', 'logo')
       </template>
 
       <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <li v-for="entry in ecosystem" :key="entry.id">
+        <li v-for="entry in ecosystemTiles" :key="entry.id">
           <NuxtLink
             :to="`/ecosystem#${entry.id}`"
             class="flex h-full items-center gap-3 rounded-lg bg-surface p-4 ring ring-default hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
@@ -254,7 +254,12 @@ getAssetPath('VN', 'logo')
 </template>
 
 <script setup>
-import { ecosystem } from '~/data/ecosystem'
+import { ecosystemEntries, ecosystemGroups } from '~/data/ecosystem'
+
+// The ecosystem's tiles, each group in the order the ecosystem page lists it
+const ecosystemTiles = ecosystemGroups.flatMap((group) =>
+  ecosystemEntries(group.id),
+)
 
 const { airlines, stats } = useAirlines()
 

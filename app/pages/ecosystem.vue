@@ -14,40 +14,29 @@
       ]"
     />
 
+    <EcosystemIndex :groups="groups" class="mt-8" />
+
     <UPageSection
       v-for="group in groups"
       :id="group.id"
       :key="group.id"
       :title="group.title"
       :description="group.description"
-      :ui="{
-        container: 'px-0 sm:px-0 lg:px-0 py-12 sm:py-16 lg:py-16',
-        features: 'lg:grid-cols-2',
-      }"
+      :ui="{ container: 'px-0 sm:px-0 lg:px-0 py-12 sm:py-16 lg:py-16' }"
     >
-      <!-- Files and APIs: a list, each source beside its reference -->
-      <template v-if="group.id === 'data'" #default>
-        <ul class="divide-y divide-default">
-          <EcosystemSourceRow
-            v-for="entry in group.entries"
-            :key="entry.id"
-            :entry="entry"
-          />
-        </ul>
-      </template>
-      <template v-else #features>
-        <EcosystemCard
+      <ul class="divide-y divide-default">
+        <EcosystemRow
           v-for="entry in group.entries"
           :key="entry.id"
           :entry="entry"
         />
-      </template>
+      </ul>
     </UPageSection>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ecosystem, ecosystemGroups } from '~/data/ecosystem'
+import { ecosystemEntries, ecosystemGroups } from '~/data/ecosystem'
 
 const meta = {
   title: 'Ecosystem',
@@ -66,6 +55,6 @@ defineOgImage('Site', { title: meta.title, description: meta.description })
 
 const groups = ecosystemGroups.map((group) => ({
   ...group,
-  entries: ecosystem.filter((entry) => entry.group === group.id),
+  entries: ecosystemEntries(group.id),
 }))
 </script>
