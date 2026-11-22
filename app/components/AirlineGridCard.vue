@@ -1,9 +1,10 @@
 <template>
   <!-- A boarding pass: the airline's logo on the pass, and past the tear
-       line the stub with its code, name and where it flies from -->
+       line the stub with its code, name and where it flies from. It fills
+       its grid cell, so a row of passes stays as tall as its tallest stub -->
   <button
     type="button"
-    class="group flex w-full cursor-pointer flex-col rounded-xl bg-surface text-left transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
+    class="group flex h-full w-full cursor-pointer flex-col rounded-xl bg-surface text-left transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
     @click="$emit('open', airline)"
   >
     <span class="block p-3 pb-0">
