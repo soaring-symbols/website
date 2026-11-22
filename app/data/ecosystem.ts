@@ -6,8 +6,8 @@ import { version } from 'soaring-symbols/package.json'
 const RELEASE_LINE = version.split('.').slice(0, 2).join('.')
 
 // Places outside the npm package where the marks can be used, from raw
-// files and data to apps built on them. A shipped entry offers either a link
-// or a snippet to copy; one that hasn't shipped yet carries a status (still
+// files and data to apps built on them. A shipped entry offers a link, a
+// snippet to copy, or both; one that hasn't shipped yet carries a status (still
 // being built, or waiting for a store's review) and links to its source until
 // its store page is public.
 //
@@ -224,7 +224,43 @@ export const ecosystem: EcosystemEntry[] = [
       'Open every airline’s icons, logos and tails, and the alliance marks, as libraries in draw.io (diagrams.net), find an airline by name or code in its shape search, and recolor the monochrome marks for light and dark diagrams.',
     link: { label: 'Open in draw.io', to: drawioUrl() },
   },
+  {
+    id: 'home-assistant',
+    name: 'Home Assistant',
+    icon: 'simple-icons:homeassistant',
+    group: 'apps',
+    description:
+      'Show each airline’s icon beside its flights in the Flightradar24 card, or its logo when it has no icon, loaded from the image API by the flight’s ICAO code: add these templates to the card’s YAML. A flight with no airline, or an airline with neither, shows none.',
+    link: {
+      label: 'View the card on GitHub',
+      to: 'https://github.com/Springvar/home-assistant-flightradar24-card',
+    },
+    // The card's templates are JavaScript template literals, so
+    // ${flight.airline_icao} is filled in by the card, not here. A missing
+    // icon is a 404: onerror swaps in the logo, then drops the image if
+    // that is missing too. viewbox=auto crops each mark to its drawing, so a
+    // logo fills the 24px height; size is the PNG's width, so 192 keeps a
+    // wide mark sharp, and object-fit keeps one wider than 4:1 in shape.
+    snippet: {
+      label: 'Copy YAML',
+      code: [
+        'type: custom:flightradar24-radar-card',
+        'templates:',
+        '  airline_logo: >-',
+        '    <img style="float: left; height: 24px; max-width: 96px; margin-right: 5px; object-fit: contain;"',
+        `    src="${haMark('icon')}"`,
+        `    onerror="this.onerror = () => this.remove(); this.src = '${haMark('logo')}'" />`,
+        '  header: <div>${tpl.airline_logo}${tpl.flight_info_element}</div>',
+      ].join('\n'),
+    },
+  },
 ]
+
+// A mark's PNG for the Home Assistant example, with the card's own
+// ${flight.airline_icao} left in for it to fill
+function haMark(type: 'icon' | 'logo') {
+  return `https://soaringsymbols.org/api/airlines/\${flight.airline_icao}/${type}.png?size=192&viewbox=auto`
+}
 
 // app.diagrams.net with the four color libraries open, from the release line
 // of @soaring-symbols/drawio, which shares the package's version

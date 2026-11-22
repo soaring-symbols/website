@@ -23,28 +23,28 @@
       <p>{{ entry.description }}</p>
       <code
         v-if="entry.snippet"
-        class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md border border-accented bg-elevated px-3 py-2 font-mono text-xs whitespace-nowrap text-highlighted"
+        class="mt-3 block w-fit max-w-full overflow-x-auto rounded-md border border-accented bg-elevated px-3 py-2 font-mono text-xs whitespace-pre text-highlighted"
         >{{ entry.snippet.code }}</code
       >
-      <UButton
-        v-if="entry.link"
-        :to="entry.link.to"
-        target="_blank"
-        :label="entry.link.label"
-        trailing-icon="solar:arrow-right-up-linear"
-        variant="outline"
-        class="mt-4"
-        :ui="{ label: 'block' }"
-      />
-      <UButton
-        v-else-if="entry.snippet"
-        :label="entry.snippet.label"
-        icon="solar:copy-linear"
-        variant="outline"
-        class="mt-4"
-        :ui="{ label: 'block' }"
-        @click="copySnippet(entry.snippet)"
-      />
+      <div v-if="entry.snippet || entry.link" class="mt-4 flex flex-wrap gap-2">
+        <UButton
+          v-if="entry.snippet"
+          :label="entry.snippet.label"
+          icon="solar:copy-linear"
+          variant="outline"
+          :ui="{ label: 'block' }"
+          @click="copySnippet(entry.snippet)"
+        />
+        <UButton
+          v-if="entry.link"
+          :to="entry.link.to"
+          target="_blank"
+          :label="entry.link.label"
+          trailing-icon="solar:arrow-right-up-linear"
+          variant="outline"
+          :ui="{ label: 'block' }"
+        />
+      </div>
     </template>
   </UPageFeature>
 </template>
