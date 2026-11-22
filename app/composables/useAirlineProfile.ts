@@ -83,8 +83,10 @@ export function useAirlineProfile(source: MaybeRefOrGetter<Airline>) {
     () => colors.value.length - shownColors.value.length,
   )
 
+  const { copy } = useCopy()
+
   async function copyColor(color: string) {
-    await navigator.clipboard.writeText(color)
+    if (!(await copy(color))) return
     toast.add({ title: `Copied ${color.toUpperCase()}`, duration: 1500 })
   }
 

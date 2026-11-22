@@ -98,11 +98,64 @@ export function tintMonoSvg(
 
 let ready: Promise<void> | undefined
 
-export async function renderPng(svg: string, width: number) {
+function loadResvg() {
   ready ??= initWasm(resvgWasm)
-  await ready
+
+  return ready
+}
+
+// ?viewbox=auto: the mark on its square canvas shrunk to the drawing, so a
+// horizontal logo fills a wide box instead of sitting in the middle of an
+// empty square. resvg measures the drawing in the
+// canvas's own units, which map onto the root viewBox.
+export async function cropToDrawing(svg: string) {
+  const viewBox = /\bviewBox="([^"]*)"/.exec(svg)
+  if (!viewBox) return svg
+  const [vx = 0, vy = 0, vw = 0, vh = 0] = viewBox[1]!
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number)
+
+  await loadResvg()
+  const resvg = new Resvg(svg)
+  try {
+    const bbox = resvg.getBBox()
+    if (!bbox || !bbox.width || !bbox.height) return svg
+    const sx = vw / resvg.width
+    const sy = vh / resvg.height
+    const cropped = [
+      vx + bbox.x * sx,
+      vy + bbox.y * sy,
+      bbox.width * sx,
+      bbox.height * sy,
+    ]
+      .map(round3)
+      .join(' ')
+    bbox.free()
+
+    return svg.replace(viewBox[0], `viewBox="${cropped}"`)
+  } finally {
+    resvg.free()
+  }
+}
+
+// To three decimals: resvg measures in 32-bit floats, a few ten-thousandths
+// off (63.99967 for 64), and a thousandth of a unit is far below a pixel.
+// + 0 turns -0 into 0
+function round3(value: number) {
+  return Math.round(value * 1000) / 1000 + 0
+}
+
+// A PNG the given width; crop does what cropToDrawing does to an SVG, on
+// the one parse, and the width applies to the cropped drawing
+export async function renderPng(svg: string, width: number, crop = false) {
+  await loadResvg()
   const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: width } })
   try {
+    const bbox = crop ? resvg.getBBox() : undefined
+    if (bbox?.width && bbox.height) resvg.cropByBBox(bbox)
+    bbox?.free()
+
     return resvg.render().asPng()
   } finally {
     resvg.free()
@@ -115,7 +168,12 @@ export async function renderPng(svg: string, width: number) {
 // - color: hex for a monochrome mark (default: black, or currentColor in SVG)
 // - dark: hex for a monochrome SVG when the viewer is in dark mode
 // - size: PNG width in pixels, 16 to 1024 (default 256)
-export function sendMark(event: H3Event, svg: string, image: ImageRequest) {
+// - viewbox: auto to crop the canvas to the drawing (see cropToDrawing)
+export async function sendMark(
+  event: H3Event,
+  svg: string,
+  image: ImageRequest,
+) {
   const query = getQuery(event)
   const color = readColor(query.color, 'color')
   const dark = readColor(query.dark, 'dark')
@@ -134,17 +192,29 @@ export function sendMark(event: H3Event, svg: string, image: ImageRequest) {
     })
   }
   const size = image.format === 'png' ? readSize(query.size) : undefined
+  const autoViewBox = readViewBox(query.viewbox)
   const tinted = image.mono ? tintMonoSvg(svg, { color, dark }) : svg
 
   if (!size) {
     setResponseHeader(event, 'content-type', 'image/svg+xml; charset=utf-8')
 
-    return tinted
+    return autoViewBox ? cropToDrawing(tinted) : tinted
   }
 
   setResponseHeader(event, 'content-type', 'image/png')
 
-  return renderPng(tinted, size)
+  return renderPng(tinted, size, autoViewBox)
+}
+
+// Only auto: the canvas as shipped is the default
+function readViewBox(value: unknown) {
+  if (value === undefined || value === '') return false
+  if (value === 'auto') return true
+  throw createError({
+    statusCode: 400,
+    statusMessage: 'Invalid viewbox',
+    message: 'viewbox only takes auto, to crop the mark to its drawing.',
+  })
 }
 
 function readColor(value: unknown, name: string) {

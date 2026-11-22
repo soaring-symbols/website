@@ -174,10 +174,12 @@ function fileName(variant) {
 
 const toast = useToast()
 
+const { copy } = useCopy()
+
 async function copyCdnUrl(variant) {
-  await navigator.clipboard.writeText(
-    cdnUrl(props.entry, variant, props.mark, props.source),
-  )
+  if (!(await copy(cdnUrl(props.entry, variant, props.mark, props.source)))) {
+    return
+  }
   toast.add({ title: 'Copied the CDN link', duration: 1500 })
 }
 </script>

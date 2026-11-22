@@ -35,8 +35,8 @@
             @click="open = true"
           />
           <p class="mt-3 text-sm text-muted">
-            Airlines by name, IATA or ICAO code, or callsign, plus alliances
-            and pages, from any page.
+            Airlines by name, IATA or ICAO code, or callsign, plus alliances and
+            pages, from any page.
           </p>
         </div>
 
@@ -141,7 +141,7 @@
                   :aria-label="copied ? 'Copied' : 'Copy install command'"
                   variant="ghost"
                   class="text-flap-ink hover:bg-white/10"
-                  @click="copyInstall"
+                  @click="copy(installCommand)"
                 />
               </div>
             </template>
@@ -201,7 +201,7 @@ getAssetPath('VN', 'logo')
       </template>
 
       <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <li v-for="entry in ecosystem" :key="entry.id">
+        <li v-for="entry in ecosystemTiles" :key="entry.id">
           <NuxtLink
             :to="`/ecosystem#${entry.id}`"
             class="flex h-full items-center gap-3 rounded-lg bg-surface p-4 ring ring-default hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
@@ -211,8 +211,11 @@ getAssetPath('VN', 'logo')
               <span class="font-semibold text-highlighted">{{
                 entry.name
               }}</span>
-              <span v-if="entry.status" class="text-xs text-muted">
-                {{ entry.status }}
+              <span
+                v-if="entry.status || entry.author"
+                class="text-xs text-muted"
+              >
+                {{ entry.status ?? 'Community' }}
               </span>
             </span>
           </NuxtLink>
@@ -254,7 +257,12 @@ getAssetPath('VN', 'logo')
 </template>
 
 <script setup>
-import { ecosystem } from '~/data/ecosystem'
+import { ecosystemEntries, ecosystemGroups } from '~/data/ecosystem'
+
+// The ecosystem's tiles, each group in the order the ecosystem page lists it
+const ecosystemTiles = ecosystemGroups.flatMap((group) =>
+  ecosystemEntries(group.id),
+)
 
 const { airlines, stats } = useAirlines()
 
@@ -300,13 +308,7 @@ const packageManager = ref('npm')
 const installCommand = computed(
   () => packageManagers.find((m) => m.name === packageManager.value).command,
 )
-const copied = ref(false)
-
-async function copyInstall() {
-  await navigator.clipboard.writeText(installCommand.value)
-  copied.value = true
-  setTimeout(() => (copied.value = false), 1500)
-}
+const { copy, copied } = useCopy()
 
 const packageLinks = [
   {

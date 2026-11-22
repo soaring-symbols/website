@@ -19,7 +19,7 @@ Instructions for AI coding agents working on the Soaring Symbols website. `READM
 
 Overpass, the site's font, sits its capitals high in the line box, so text set next to an icon or inside a button, badge or other box looks about a tenth of an em too high. The `cap-center` utility (`app/assets/main.css`) moves it down to line up.
 
-`app.config.ts` already applies it to button, badge, tab and radio labels, the navigation menu's link labels and changelog dates, so don't add it to those; a button label shown on phones only needs `ui: { label: 'block' }`. Page header titles (`pageHeader.title`) have it too. Add it yourself, without being asked, everywhere else text lines up with an icon or box:
+`app.config.ts` already applies it to button, badge and tab labels, radio labels and descriptions, dropdown menu item labels, the navigation menu's link labels, changelog dates and page header titles (`pageHeader.title`), so don't add it to those; check `app.config.ts` for any slot added since. A button label shown on phones only needs `ui: { label: 'block' }`. Add it yourself, without being asked, everywhere else text lines up with an icon or box:
 
 - Text beside an icon in the same row: `<UIcon … /><span class="cap-center">Label</span>`.
 - A component whose label `app.config.ts` doesn't cover: add it to that component's slot there rather than on each use, when every use needs it.

@@ -59,13 +59,6 @@ const items = computed(() =>
   props.tabs.map((tab) => ({ ...tab, value: tab.id })),
 )
 
-const copied = ref(null)
-
-async function copy(code) {
-  await navigator.clipboard.writeText(code)
-  copied.value = code
-  setTimeout(() => {
-    if (copied.value === code) copied.value = null
-  }, 1500)
-}
+// The code last copied shows a check for a moment
+const { copy, copied } = useCopy()
 </script>
