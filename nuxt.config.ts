@@ -57,8 +57,8 @@ export default defineNuxtConfig({
   css: ['~/assets/main.css'],
 
   modules: [
-    // Ahead of @nuxt/ui, which would otherwise install its own 0.x copy:
-    // nuxt-og-image needs 1.x to hand the site fonts to the social cards
+    // Listed even though @nuxt/ui installs it too: without this entry,
+    // nuxt-og-image doesn't hand the site fonts to the social cards
     '@nuxt/fonts',
     '@nuxt/ui',
     '@nuxt/image',
