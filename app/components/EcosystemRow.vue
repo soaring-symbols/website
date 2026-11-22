@@ -15,6 +15,26 @@
           variant="subtle"
           size="sm"
         />
+        <!-- Made outside the project: who made it, with a link to them -->
+        <UBadge
+          v-if="entry.author"
+          label="Community"
+          color="neutral"
+          variant="outline"
+          size="sm"
+        />
+        <span
+          v-if="entry.author"
+          class="cap-center text-sm font-normal text-muted"
+        >
+          by
+          <ULink
+            :to="entry.author.to"
+            target="_blank"
+            class="text-toned underline decoration-accented underline-offset-4 hover:decoration-current"
+            >{{ entry.author.name }}</ULink
+          >
+        </span>
       </h3>
       <UButton
         v-if="entry.link"

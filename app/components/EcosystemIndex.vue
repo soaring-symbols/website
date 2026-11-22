@@ -31,10 +31,10 @@
             <span class="cap-center font-semibold">
               {{ entry.name }}
               <span
-                v-if="entry.status"
+                v-if="entry.status || entry.author"
                 class="ms-1.5 text-xs font-normal text-flap-ink/55"
               >
-                {{ entry.status }}
+                {{ entry.status ?? 'Community' }}
               </span>
             </span>
           </NuxtLink>

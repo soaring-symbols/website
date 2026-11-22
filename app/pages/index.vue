@@ -211,8 +211,11 @@ getAssetPath('VN', 'logo')
               <span class="font-semibold text-highlighted">{{
                 entry.name
               }}</span>
-              <span v-if="entry.status" class="text-xs text-muted">
-                {{ entry.status }}
+              <span
+                v-if="entry.status || entry.author"
+                class="text-xs text-muted"
+              >
+                {{ entry.status ?? 'Community' }}
               </span>
             </span>
           </NuxtLink>

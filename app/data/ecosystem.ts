@@ -19,6 +19,9 @@ const RELEASE_LINE = version.split('.').slice(0, 2).join('.')
 export interface EcosystemEntry {
   id: string
   name: string
+  // Who made it, for an entry made by someone outside the project, which
+  // makes it a community entry; the project's own entries leave it out
+  author?: { name: string; to: string }
   icon: string
   group: EcosystemGroup
   // A sentence or two on what it is and what it does
@@ -246,6 +249,7 @@ export const ecosystem: EcosystemEntry[] = [
   {
     id: 'home-assistant',
     name: 'Home Assistant',
+    author: { name: 'Springvar', to: 'https://github.com/Springvar' },
     icon: 'simple-icons:homeassistant',
     group: 'apps',
     description:
@@ -305,7 +309,7 @@ export const ecosystem: EcosystemEntry[] = [
       },
     ],
     link: {
-      label: 'View the card on GitHub',
+      label: 'View on GitHub',
       to: 'https://github.com/Springvar/home-assistant-flightradar24-card',
     },
   },
