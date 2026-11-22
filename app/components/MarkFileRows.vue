@@ -174,7 +174,7 @@ function fileName(variant) {
 
 const toast = useToast()
 
-const copy = useCopy()
+const { copy } = useCopy()
 
 async function copyCdnUrl(variant) {
   if (!(await copy(cdnUrl(props.entry, variant, props.mark, props.source)))) {

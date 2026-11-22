@@ -1,14 +1,16 @@
 // Copies text to the clipboard. When the browser refuses (a denied
 // permission, an insecure page, or one without focus) it says what to do
-// instead and returns false; on success it returns true and leaves the
-// confirmation (a check, a toast) to the caller
+// instead and returns false. On success it returns true and holds the text
+// in copied for a moment, so a button can show a check: copied is truthy
+// for a single button, and equal to its own text for one of several
 export function useCopy() {
   const toast = useToast()
+  const copied = ref<string | null>(null)
+  let timer: ReturnType<typeof setTimeout> | undefined
 
-  return async function copy(text: string) {
+  async function copy(text: string) {
     try {
       await navigator.clipboard.writeText(text)
-      return true
     } catch {
       toast.add({
         title: 'Couldn’t copy',
@@ -19,5 +21,12 @@ export function useCopy() {
       })
       return false
     }
+
+    copied.value = text
+    clearTimeout(timer)
+    timer = setTimeout(() => (copied.value = null), 1500)
+    return true
   }
+
+  return { copy, copied }
 }

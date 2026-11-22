@@ -313,7 +313,7 @@ const USAGE = [
   },
 ]
 
-const copy = useCopy()
+const { copy } = useCopy()
 
 async function copyHex(color) {
   if (!(await copy(color.hex))) return

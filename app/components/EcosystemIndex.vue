@@ -1,13 +1,17 @@
 <template>
   <!-- Every entry of the page on one small board, each a link down to its
-       row: the groups stacked, their entries in a grid of names, so a long
-       list of apps only adds rows of four (two on tablets, one on phones) -->
-  <nav aria-label="On this page" class="rounded-xl bg-board p-2 text-flap-ink">
+       row: the groups stacked and split by a rule, their entries in a grid
+       of names, so a long list of apps only adds rows of four (two on
+       tablets, one on phones) -->
+  <nav
+    aria-label="On this page"
+    class="divide-y divide-white/10 rounded-xl bg-board p-2 text-flap-ink"
+  >
     <section
       v-for="group in groups"
       :key="group.id"
       :aria-label="group.title"
-      class="index-group"
+      class="py-2 first:pt-0 last:pb-0"
     >
       <p class="px-3 pt-2 pb-1 text-sm font-semibold text-flap-ink/55">
         {{ group.title }}
@@ -46,12 +50,3 @@ defineProps({
   groups: { type: Array, required: true },
 })
 </script>
-
-<style scoped>
-/* The groups on one board, split by a rule */
-.index-group + .index-group {
-  margin-top: 0.5rem;
-  border-top: 1px solid rgb(255 255 255 / 0.1);
-  padding-top: 0.5rem;
-}
-</style>

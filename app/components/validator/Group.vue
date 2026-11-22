@@ -101,17 +101,10 @@ const props = defineProps({
   groups: Array,
 })
 
+// The command last copied shows a check for a moment
+const { copy, copied } = useCopy()
+
 // A failed warning is advice, not an error, as in `lint-svg.js --check`
-// The command last copied, which shows a check for a moment
-const copied = ref(null)
-const copyText = useCopy()
-async function copy(text) {
-  if (!(await copyText(text))) return
-  copied.value = text
-  setTimeout(() => {
-    if (copied.value === text) copied.value = null
-  }, 1500)
-}
 
 const checkStatus = (check) => {
   if (check.pass) return 'pass'

@@ -123,14 +123,15 @@ export async function cropToDrawing(svg: string) {
     if (!bbox || !bbox.width || !bbox.height) return svg
     const sx = vw / resvg.width
     const sy = vh / resvg.height
-    const left = round3(vx + bbox.x * sx)
-    const top = round3(vy + bbox.y * sy)
-    const right = round3(vx + (bbox.x + bbox.width) * sx)
-    const bottom = round3(vy + (bbox.y + bbox.height) * sy)
-    bbox.free()
-    const cropped = [left, top, right - left, bottom - top]
+    const cropped = [
+      vx + bbox.x * sx,
+      vy + bbox.y * sy,
+      bbox.width * sx,
+      bbox.height * sy,
+    ]
       .map(round3)
       .join(' ')
+    bbox.free()
 
     return svg.replace(viewBox[0], `viewBox="${cropped}"`)
   } finally {
@@ -145,10 +146,16 @@ function round3(value: number) {
   return Math.round(value * 1000) / 1000 + 0
 }
 
-export async function renderPng(svg: string, width: number) {
+// A PNG the given width; crop does what cropToDrawing does to an SVG, on
+// the one parse, and the width applies to the cropped drawing
+export async function renderPng(svg: string, width: number, crop = false) {
   await loadResvg()
   const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: width } })
   try {
+    const bbox = crop ? resvg.getBBox() : undefined
+    if (bbox?.width && bbox.height) resvg.cropByBBox(bbox)
+    bbox?.free()
+
     return resvg.render().asPng()
   } finally {
     resvg.free()
@@ -187,17 +194,16 @@ export async function sendMark(
   const size = image.format === 'png' ? readSize(query.size) : undefined
   const autoViewBox = readViewBox(query.viewbox)
   const tinted = image.mono ? tintMonoSvg(svg, { color, dark }) : svg
-  const mark = autoViewBox ? await cropToDrawing(tinted) : tinted
 
   if (!size) {
     setResponseHeader(event, 'content-type', 'image/svg+xml; charset=utf-8')
 
-    return mark
+    return autoViewBox ? cropToDrawing(tinted) : tinted
   }
 
   setResponseHeader(event, 'content-type', 'image/png')
 
-  return renderPng(mark, size)
+  return renderPng(tinted, size, autoViewBox)
 }
 
 // Only auto: the canvas as shipped is the default

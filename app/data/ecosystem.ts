@@ -49,10 +49,13 @@ export interface EcosystemExample {
 
 export type EcosystemGroup = 'data' | 'apps'
 
+// Each group lists its entries in the order written below, or by name,
+// so a long list needs no place picked for each new entry
 export const ecosystemGroups: {
   id: EcosystemGroup
   title: string
   description: string
+  sortByName?: boolean
 }[] = [
   {
     id: 'data',
@@ -65,6 +68,7 @@ export const ecosystemGroups: {
     title: 'Apps and plugins',
     description:
       'Find an airline and grab its marks without leaving the tools you work in.',
+    sortByName: true,
   },
 ]
 
@@ -307,12 +311,12 @@ export const ecosystem: EcosystemEntry[] = [
   },
 ]
 
-// One group's entries in the order the pages show them: files and APIs as
-// listed above, simplest first; apps by name, so a new one needs no place
-// picked for it and a long list is easy to scan
+// One group's entries in the order the pages show them (see
+// ecosystemGroups): files and APIs as listed above, simplest first; apps by
+// name, easy to scan in a long list
 export function ecosystemEntries(group: EcosystemGroup) {
   const entries = ecosystem.filter((entry) => entry.group === group)
-  if (group !== 'apps') return entries
+  if (!ecosystemGroups.find((g) => g.id === group)?.sortByName) return entries
 
   return entries.sort((a, b) =>
     a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }),

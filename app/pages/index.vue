@@ -141,7 +141,7 @@
                   :aria-label="copied ? 'Copied' : 'Copy install command'"
                   variant="ghost"
                   class="text-flap-ink hover:bg-white/10"
-                  @click="copyInstall"
+                  @click="copy(installCommand)"
                 />
               </div>
             </template>
@@ -305,14 +305,7 @@ const packageManager = ref('npm')
 const installCommand = computed(
   () => packageManagers.find((m) => m.name === packageManager.value).command,
 )
-const copied = ref(false)
-const copy = useCopy()
-
-async function copyInstall() {
-  if (!(await copy(installCommand.value))) return
-  copied.value = true
-  setTimeout(() => (copied.value = false), 1500)
-}
+const { copy, copied } = useCopy()
 
 const packageLinks = [
   {

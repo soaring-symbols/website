@@ -83,7 +83,7 @@ export function useAirlineProfile(source: MaybeRefOrGetter<Airline>) {
     () => colors.value.length - shownColors.value.length,
   )
 
-  const copy = useCopy()
+  const { copy } = useCopy()
 
   async function copyColor(color: string) {
     if (!(await copy(color))) return

@@ -85,12 +85,5 @@ defineProps({
 })
 
 // The copy button shows a check for a moment, as in the usage tabs
-const copied = ref(false)
-const copyText = useCopy()
-
-async function copy(code) {
-  if (!(await copyText(code))) return
-  copied.value = true
-  setTimeout(() => (copied.value = false), 1500)
-}
+const { copy, copied } = useCopy()
 </script>
