@@ -4,6 +4,16 @@ The site for [Soaring Symbols](https://github.com/soaring-symbols/soaring-symbol
 
 Live at <https://soaringsymbols.org>.
 
+## Pages
+
+- `/airlines` and `/airlines/[slug]`: every airline, with its marks (color, monochrome and dark side by side, plus earlier ones), codes, hubs, founding year, former names, alliance, and the airlines it succeeded or was succeeded by
+- `/alliances` and `/alliances/[slug]`: each alliance's marks, slogan and members, past ones included
+- `/validate`: checks SVGs against the contribution guidelines and fixes what it can, in the browser
+- `/ecosystem`: every integration (npm, CDN, the API, Raycast, Figma, draw.io and more), with the API's parameters
+- `/changelog`: the package's GitHub releases
+- `/brand`: the Soaring Symbols logos and icons, to download
+- `/api/airlines` and `/api/alliances`: JSON and image API, no key needed (parameters on the ecosystem page)
+
 ## Development
 
 The airline data and SVGs come from the `soaring-symbols` npm package, so a version bump there is all it takes to update the collection.
@@ -38,23 +48,6 @@ npx wrangler --cwd .output dev
 
 ### Website
 
-- [x] Airline detail pages at `/airlines/[slug]`, so each airline has a link to share and a page search engines can index; link to them from the Browse slideover and the homepage icon wall
-- [x] Prerender the pages at build time, since the airline data is static
-- [x] Sitemap, Open Graph images and canonical URLs
-- [x] Favicon and brand mark in the split-flap style (the mark's sources and the icons for the GitHub org, Raycast and Figma now live in [soaring-symbols/brand](https://github.com/soaring-symbols/brand))
-- [x] Serve the site on <https://soaringsymbols.org>
-- [x] List every mark on the airline page, color and monochrome side by side, and ask for the files that are missing
-- [x] Country flags as SVG
-- [x] Ecosystem page at `/ecosystem`, with every integration in full (including the image API's parameters and the launchers that run Raycast extensions) and a row of tiles on the homepage linking to it
-- [x] Callsign, hubs and founding year on the airline page, a badge for airlines that ceased operations, and search by callsign
-- [x] Earlier marks on the airline page, from the package's logo history (`history`, since `soaring-symbols` 0.2.4)
-- [x] Renames and mergers on the airline page: "Succeeded by" and "Preceded by" from `successor` and `predecessors`, and defunct subsidiaries under "Former subsidiaries", plus former names under "Formerly" and in search (`soaring-symbols` 0.3)
-- [x] Former names and codes from `former` (`soaring-symbols` 0.3.2): "Formerly" on the airline page, each former name (or code) linking to an "Earlier names and codes" table, search by former codes and callsigns, redirects from the slugs in `former`, and a lookup key that a brand doesn't share with its parent in the usage examples
-- [x] Fix the hydration mismatches: the homepage spotlight, and error pages that rendered only in the browser (now `app/error.vue`)
-- [x] Changelog page at `/changelog` with the package's GitHub releases, prerendered and refreshed in the browser so notes written after a deploy show up, plus links to the releases and their RSS feed
-- [x] Alliance pages at `/alliances` and `/alliances/[slug]`, with each alliance's marks, slogan and members (past ones included), its icon and a link on airline pages, and `/api/alliances` (`soaring-symbols` 0.4.0)
-- [x] Airline list at `/airlines`, beside `/alliances` (formerly `/browse`)
-- [ ] Drop the `@nuxt/fonts` 1.x entry in `nuxt.config.ts` once `@nuxt/ui` ships with it (the social cards need 1.x for Overpass)
 - [ ] Run ESLint again, once typescript-eslint supports TypeScript 7 (or pin TypeScript 6 for linting)
 
 ### Ecosystem
