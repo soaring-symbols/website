@@ -275,26 +275,7 @@ const hasFilters = computed(
 const filtered = computed(() => {
   let list = airlines
 
-  if (search.value.trim()) {
-    const q = search.value
-      .trim()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .toLowerCase()
-    const matches = (name) =>
-      name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().includes(q)
-    list = list.filter(
-      (a) =>
-        // An airline is found by its other names (SWISS) and, once renamed,
-        // by its old ones too
-        [a.name, ...aliasNames(a), ...previousNames(a)].some(matches) ||
-        a.iata?.toLowerCase().startsWith(q) ||
-        a.icao?.toLowerCase().startsWith(q) ||
-        a.callsign?.toLowerCase().includes(q) ||
-        // and by the codes it used before (JAT finds Air Serbia)
-        matchesFormerCode(a, q),
-    )
-  }
+  if (search.value.trim()) list = searchAirlines(list, search.value)
 
   if (selectedType.value !== 'all') {
     const cargo = selectedType.value === 'cargo'

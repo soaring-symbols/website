@@ -268,6 +268,27 @@ export function matchesFormerCode(airline: Airline, q: string) {
   )
 }
 
+// The airlines a search finds, in the list's order: by name, ignoring
+// accents, and by other names (SWISS) and, once renamed, old ones too; by
+// IATA or ICAO code from its start, by callsign, and by the codes it used
+// before (JAT finds Air Serbia)
+export function searchAirlines(list: Airline[], query: string) {
+  const fold = (text: string) =>
+    text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  const q = fold(query.trim())
+  if (!q) return list
+
+  const matches = (name: string) => fold(name).includes(q)
+  return list.filter(
+    (a) =>
+      [a.name, ...aliasNames(a), ...previousNames(a)].some(matches) ||
+      a.iata?.toLowerCase().startsWith(q) ||
+      a.icao?.toLowerCase().startsWith(q) ||
+      a.callsign?.toLowerCase().includes(q) ||
+      matchesFormerCode(a, q),
+  )
+}
+
 // The airline that carried on a defunct one after a merger, a refounding or a
 // move out of a group's brand, e.g. Pacific Airlines for Jetstar Pacific
 export function successorOf(airline: Airline) {
