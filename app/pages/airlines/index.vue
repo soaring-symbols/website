@@ -76,10 +76,10 @@
     </div>
 
     <ul
-      v-if="paginated.length"
+      v-if="filtered.length"
       class="mt-4 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
     >
-      <li v-for="airline in paginated" :key="airline.slug">
+      <li v-for="airline in filtered" :key="airline.slug">
         <AirlineGridCard :airline="airline" @open="open" />
       </li>
     </ul>
@@ -96,20 +96,6 @@
         class="mt-4"
         :ui="{ label: 'block' }"
         @click="resetFilters"
-      />
-    </div>
-
-    <div
-      v-if="filtered.length > itemsPerPage"
-      class="flex justify-center pt-10"
-    >
-      <UPagination
-        v-model:page="page"
-        :total="filtered.length"
-        :items-per-page="itemsPerPage"
-        show-edges
-        active-color="neutral"
-        active-variant="solid"
       />
     </div>
 
@@ -178,17 +164,15 @@ const selectedAlliances = ref([])
 const selectedCountries = ref([])
 const selectedType = ref('all')
 const flagCarrierOnly = ref(false)
-const page = ref(1)
-const itemsPerPage = 24
 
 // The filters in the URL: ?q=, ?alliance= (alliance slugs, `none` for no
 // alliance), ?country= (ISO codes), ?cargo=true|false as in the API, ?flag=true
-// and ?page=, lists comma-separated. A value it doesn't know is dropped.
+// lists comma-separated. A value it doesn't know is dropped.
 const NO_ALLIANCE = '__none__'
 const queryList = (value) =>
   typeof value === 'string' ? value.split(',').filter(Boolean) : []
 
-onMounted(async () => {
+onMounted(() => {
   const query = route.query
   if (typeof query.q === 'string') search.value = query.q
 
@@ -205,22 +189,12 @@ onMounted(async () => {
   if (query.cargo === 'true') selectedType.value = 'cargo'
   if (query.cargo === 'false') selectedType.value = 'passenger'
   flagCarrierOnly.value = query.flag === 'true'
-
-  // ?page after the filters have narrowed the list, so the watcher sending a
-  // new list back to its first page has already run. Coming back from an
-  // airline's page then lands on the page it was opened from.
-  await nextTick()
-  const wanted = Number(query.page)
-  const last = Math.max(1, Math.ceil(filtered.value.length / itemsPerPage))
-  if (Number.isInteger(wanted) && wanted > 1)
-    page.value = Math.min(wanted, last)
 })
 
-// Keep the filters and page in the URL so a result list can be shared and
-// the back button returns to it. The whole query is built from the filters
-// at once: a filter change also sends the list back to page 1, and two
-// replaces in a row would each start from the route before the other.
-// force, since hydrating a prerendered page leaves the route holding the
+// Keep the filters in the URL so a result list can be shared and the back
+// button returns to it. The whole query is built from the filters at once,
+// since two replaces in a row would each start from the route before the
+// other. force, since hydrating a prerendered page leaves the route holding the
 // query while the address bar has dropped it, and the router would skip the
 // replace as a duplicate.
 const joined = (list) => (list.length ? list.join(',') : undefined)
@@ -238,7 +212,8 @@ const urlQuery = computed(() => ({
       ? undefined
       : String(selectedType.value === 'cargo'),
   flag: flagCarrierOnly.value ? 'true' : undefined,
-  page: page.value > 1 ? String(page.value) : undefined,
+  // The list has no pages any more; drop ?page from links made before
+  page: undefined,
 }))
 
 watch(urlQuery, (query) => {
@@ -342,15 +317,6 @@ const filtered = computed(() => {
   }
 
   return list
-})
-
-const paginated = computed(() => {
-  const start = (page.value - 1) * itemsPerPage
-  return filtered.value.slice(start, start + itemsPerPage)
-})
-
-watch(filtered, () => {
-  page.value = 1
 })
 
 const active = ref(null)
