@@ -104,8 +104,9 @@ const props = defineProps({
 // A failed warning is advice, not an error, as in `lint-svg.js --check`
 // The command last copied, which shows a check for a moment
 const copied = ref(null)
+const copyText = useCopy()
 async function copy(text) {
-  await navigator.clipboard.writeText(text)
+  if (!(await copyText(text))) return
   copied.value = text
   setTimeout(() => {
     if (copied.value === text) copied.value = null

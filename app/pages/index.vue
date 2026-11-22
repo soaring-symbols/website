@@ -301,9 +301,10 @@ const installCommand = computed(
   () => packageManagers.find((m) => m.name === packageManager.value).command,
 )
 const copied = ref(false)
+const copy = useCopy()
 
 async function copyInstall() {
-  await navigator.clipboard.writeText(installCommand.value)
+  if (!(await copy(installCommand.value))) return
   copied.value = true
   setTimeout(() => (copied.value = false), 1500)
 }

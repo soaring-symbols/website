@@ -313,8 +313,10 @@ const USAGE = [
   },
 ]
 
+const copy = useCopy()
+
 async function copyHex(color) {
-  await navigator.clipboard.writeText(color.hex)
+  if (!(await copy(color.hex))) return
   toast.add({ title: `Copied ${color.name}, ${color.hex}`, duration: 1500 })
 }
 </script>

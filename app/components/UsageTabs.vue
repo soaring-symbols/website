@@ -60,9 +60,10 @@ const items = computed(() =>
 )
 
 const copied = ref(null)
+const copyText = useCopy()
 
 async function copy(code) {
-  await navigator.clipboard.writeText(code)
+  if (!(await copyText(code))) return
   copied.value = code
   setTimeout(() => {
     if (copied.value === code) copied.value = null
