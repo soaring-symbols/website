@@ -2,7 +2,9 @@
   <UApp>
     <NuxtRouteAnnouncer />
     <NuxtLayout>
-      <NuxtLoadingIndicator />
+      <!-- In the brand's signal yellow rather than Nuxt's own green
+           gradient. Not --ui-primary: in light mode that is the text's ink -->
+      <NuxtLoadingIndicator color="var(--color-signal-500)" />
       <NuxtPage />
     </NuxtLayout>
   </UApp>
