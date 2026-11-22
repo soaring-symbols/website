@@ -81,6 +81,10 @@ const tabs = computed(() => {
           label: 'A PNG, for apps that can’t render SVG',
           code: `${api}/${variant}.png?size=256`,
         },
+        hasAsset(alliance, 'logo') && {
+          label: 'A logo cropped to its drawing, to fill a wide box',
+          code: `${api}/logo.svg?viewbox=auto`,
+        },
         mono && {
           label: 'A monochrome mark in any color',
           code: `${api}/${mono}.svg?color=${brand}`,
