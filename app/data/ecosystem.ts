@@ -107,7 +107,7 @@ export const ecosystem: EcosystemEntry[] = [
     ],
     snippet: {
       label: 'Copy URL',
-      code: 'https://cdn.jsdelivr.net/npm/soaring-symbols/dist/assets/<slug>/logo.svg',
+      code: 'https://cdn.jsdelivr.net/npm/soaring-symbols/dist/airlines/<slug>/logo.svg',
     },
   },
   {
@@ -133,7 +133,7 @@ export const ecosystem: EcosystemEntry[] = [
     ],
     snippet: {
       label: 'Copy URL',
-      code: 'https://unpkg.com/soaring-symbols/dist/assets/<slug>/logo.svg',
+      code: 'https://unpkg.com/soaring-symbols/dist/airlines/<slug>/logo.svg',
     },
   },
   {

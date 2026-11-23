@@ -48,7 +48,7 @@ export const MARK_TYPES = [
 export const MARK_SOURCES = {
   airlines: {
     site: '/airlines',
-    dir: 'assets',
+    dir: 'airlines',
     types: MARK_TYPES,
     asked: ['logo', 'icon', 'tail'],
   },

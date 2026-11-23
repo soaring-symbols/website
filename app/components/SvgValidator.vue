@@ -209,7 +209,7 @@ const fileName = computed(
 )
 const repoPath = computed(() =>
   airline.value
-    ? `assets/${knownAirline.value?.slug ?? airlineSlug(airline.value)}/${fileName.value}`
+    ? `airlines/${knownAirline.value?.slug ?? airlineSlug(airline.value)}/${fileName.value}`
     : null,
 )
 

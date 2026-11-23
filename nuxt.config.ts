@@ -8,7 +8,7 @@ const soaringSymbolsDir = resolve(
   require.resolve('soaring-symbols/package.json'),
   '..',
 )
-const assetsDir = resolve(soaringSymbolsDir, 'dist/assets')
+const airlinesDir = resolve(soaringSymbolsDir, 'dist/airlines')
 const airlinesFile = resolve(soaringSymbolsDir, 'dist/airlines.json')
 // Where each airline's hubs are, for the globe on its page
 const airportsFile = resolve(soaringSymbolsDir, 'dist/airports.json')
@@ -116,7 +116,7 @@ export default defineNuxtConfig({
         config.storage ||= {}
         config.storage['root:public:airlines'] = {
           driver: 'fs-lite',
-          base: assetsDir,
+          base: airlinesDir,
         }
         config.storage['root:public:alliances'] = {
           driver: 'fs-lite',
@@ -137,7 +137,7 @@ export default defineNuxtConfig({
     publicAssets: [
       {
         baseURL: '/airlines',
-        dir: assetsDir,
+        dir: airlinesDir,
         // Airline pages live under the same prefix as the SVGs
         fallthrough: true,
       },
@@ -150,7 +150,7 @@ export default defineNuxtConfig({
     // cannot read its static files: bundle a copy of the airlines' and the
     // alliances' as server assets
     serverAssets: [
-      { baseName: 'airlines', dir: assetsDir },
+      { baseName: 'airlines', dir: airlinesDir },
       { baseName: 'alliances', dir: allianceAssetsDir },
     ],
     // Lets the image API import resvg's WebAssembly module

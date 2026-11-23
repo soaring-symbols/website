@@ -69,7 +69,7 @@ const tabs = computed(() => {
         { label: 'jsDelivr', code: cdnUrl(airline, variant) },
         {
           label: 'unpkg',
-          code: `https://unpkg.com/soaring-symbols/dist/assets/${assetFile}`,
+          code: `https://unpkg.com/soaring-symbols/dist/airlines/${assetFile}`,
         },
         {
           label: 'HTML',

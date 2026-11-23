@@ -177,7 +177,7 @@ getAirline('VN')
 // }</span>
 
 getAssetPath('VN', 'logo')
-<span class="text-flap-ink/50">// 'soaring-symbols/assets/vietnam-airlines/logo.svg'</span></code></pre>
+<span class="text-flap-ink/50">// 'soaring-symbols/airlines/vietnam-airlines/logo.svg'</span></code></pre>
     </UPageSection>
 
     <!-- Other tools that ship the same marks, in full on /ecosystem -->
