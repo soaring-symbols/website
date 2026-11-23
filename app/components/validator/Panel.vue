@@ -53,7 +53,7 @@
 
 <script setup>
 const props = defineProps({
-  groups: Array,
+  groups: { type: Array, required: true },
   // The file the checks ran on
   fileName: { type: String, default: 'This SVG' },
 })

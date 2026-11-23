@@ -98,7 +98,7 @@
 
 <script setup>
 const props = defineProps({
-  groups: Array,
+  groups: { type: Array, required: true },
 })
 
 // The command last copied shows a check for a moment

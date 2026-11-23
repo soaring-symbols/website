@@ -8,17 +8,17 @@
 
     <!-- The comparison lists both files' numbers, so the cards leave them out -->
     <ValidatorPreviewCard
-      v-if="image.file.value"
+      v-if="file"
       :preview-url="image.previewUrl.value"
-      :file-name="image.file.value.name"
+      :file-name="file.name"
       :metadata="image.metadata.value"
       :mono="image.isMono.value"
       :stats="false"
-      @remove="image.file.value = null"
+      @remove="file = null"
     />
     <UFileUpload
       v-else
-      v-model="image.file.value"
+      v-model="file"
       :accept="accept"
       icon="solar:upload-linear"
       :label="dropLabel"
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   label: { type: String, required: true },
   color: { type: String, default: 'neutral' },
   image: { type: Object, required: true },
@@ -39,4 +39,8 @@ defineProps({
   // The empty dropzone's prompt, e.g. "Drop the original here"
   dropLabel: { type: String, required: true },
 })
+
+// The image's own file ref, which picking or removing a file sets: the
+// parent hands each side one useImageFile() for good, so it is read once
+const file = props.image.file
 </script>

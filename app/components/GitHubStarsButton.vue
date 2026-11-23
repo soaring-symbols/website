@@ -116,7 +116,9 @@ onMounted(async () => {
       count = data.stargazers_count
       try {
         sessionStorage.setItem(key, String(count))
-      } catch {}
+      } catch {
+        // Full or blocked storage only costs a fetch on the next page
+      }
     }
     stars.value = count
     countUp(count)

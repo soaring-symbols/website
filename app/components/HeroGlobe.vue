@@ -77,7 +77,7 @@ let view = { lon: START_LON, c: [], e: [], n: [] }
 // over an airline's hubs
 let tilt = TILT
 let spin = SPIN
-let hubs = []
+let globeHubs = []
 // Seconds the globe has run, for the hubs' pulses
 let clock = 0
 let frame = 0
@@ -477,7 +477,7 @@ function landLayer() {
 
 function drawAirports() {
   const active = new Set(flights.flatMap((f) => [f.from.code, f.to.code]))
-  const own = new Set(hubs)
+  const own = new Set(globeHubs)
   for (const a of airports) {
     if (active.has(a.code)) continue
     const p = project(a.v)
@@ -608,7 +608,7 @@ function drawPlane(f, u) {
 // ICN) share the first one's label rather than pile up.
 function drawHubs() {
   const labelled = []
-  hubs.forEach((hub, i) => {
+  globeHubs.forEach((hub, i) => {
     if (labelled.some((other) => distance(hub.v, other.v) < APART.airports))
       return
     labelled.push(hub)
@@ -620,7 +620,7 @@ function draw() {
   ctx.clearRect(0, 0, width, height)
   drawGlobe()
   drawAirports()
-  if (hubs.length) drawHubs()
+  if (globeHubs.length) drawHubs()
   for (const f of flights) {
     const u = progress(f, f.t)
     const fade = 1 - f.landed / LANDED
@@ -646,7 +646,7 @@ function tick(now) {
   for (let i = flights.length - 1; i >= 0; i--) {
     if (flights[i].landed >= LANDED) flights.splice(i, 1)
   }
-  if (!hubs.length && flights.length < MAX_FLIGHTS && (wait -= dt) <= 0) {
+  if (!globeHubs.length && flights.length < MAX_FLIGHTS && (wait -= dt) <= 0) {
     takeOff()
     wait = rand(...GAP)
   }
@@ -703,15 +703,16 @@ onMounted(() => {
     v: toVector(lat, lon),
   })
   airports = AIRPORTS.map(place)
-  hubs = props.hubs
+  globeHubs = props.hubs
     .filter((code) => HUBS[code])
     .map((code) => place([code, HUBS[code].lat, HUBS[code].lon]))
   let lon = START_LON
-  if (hubs.length) {
+  if (globeHubs.length) {
     // Only its hubs on the globe, which stands over them, at their middle,
     // tilted towards them
-    airports = hubs
-    const mean = (f) => hubs.reduce((sum, h) => sum + f(h), 0) / hubs.length
+    airports = globeHubs
+    const mean = (f) =>
+      globeHubs.reduce((sum, h) => sum + f(h), 0) / globeHubs.length
     lon =
       Math.atan2(
         mean((h) => Math.sin(h.lon * RAD)),
@@ -727,10 +728,10 @@ onMounted(() => {
     // country by, while the rim still shows it is a globe
     near = 1.5
   }
-  landStep = hubs.length ? LAND_STEP : HOME_STEP
+  landStep = globeHubs.length ? LAND_STEP : HOME_STEP
   ;({ dots, owned } = readDots(
     landStep,
-    hubs.length ? countryDots(props.country) : undefined,
+    globeHubs.length ? countryDots(props.country) : undefined,
   ))
   turn(lon)
   readColors()
