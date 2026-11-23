@@ -54,6 +54,6 @@
     "nuxt-og-image": "^7.0.7",
     "nuxtseo-devtools-host": "^1.0.3",
     "prettier": "^3.10.1",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3"
   }
 }
