@@ -238,6 +238,18 @@ export const ecosystem: EcosystemEntry[] = [
     },
   },
   {
+    id: 'framer',
+    name: 'Framer plugin',
+    icon: 'simple-icons:framer',
+    group: 'apps',
+    description:
+      'Search airlines by name or code in Framer, and click or drag their marks onto the canvas as SVG layers, alliance marks and earlier logos included, with monochrome marks in any color or the airline’s own.',
+    link: {
+      label: 'Open in Framer Marketplace',
+      to: 'https://www.framer.com/marketplace/plugins/soaring-symbols/',
+    },
+  },
+  {
     id: 'drawio',
     name: 'draw.io libraries',
     icon: 'simple-icons:diagramsdotnet',

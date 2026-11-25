@@ -9,7 +9,7 @@ Live at <https://soaringsymbols.org>.
 - `/airlines` and `/airlines/[slug]`: every airline, with its marks (color, monochrome and dark side by side, plus earlier ones), codes, hubs, founding year, former names, alliance, and the airlines it succeeded or was succeeded by
 - `/alliances` and `/alliances/[slug]`: each alliance's marks, slogan and members, past ones included
 - `/validate`: checks SVGs against the contribution guidelines and fixes what it can, in the browser
-- `/ecosystem`: every integration (npm, CDN, the API, Raycast, Figma, draw.io and more), with the API's parameters
+- `/ecosystem`: every integration (npm, CDN, the API, Raycast, Figma, Framer, draw.io and more), with the API's parameters
 - `/changelog`: the package's GitHub releases
 - `/brand`: the Soaring Symbols logos and icons, to download
 - `/api/airlines` and `/api/alliances`: JSON and image API, no key needed (parameters on the ecosystem page)

@@ -27,17 +27,17 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/ui": "^4.13.0",
+    "@nuxt/ui": "^4.13.1",
     "@resvg/resvg-wasm": "^2.6.2",
     "fflate": "^0.8.3",
-    "nuxt": "^4.6.4",
+    "nuxt": "^4.7.0",
     "slugify": "^1.6.6",
-    "soaring-symbols": "^0.6.0"
+    "soaring-symbols": "^0.6.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
-    "@iconify-json/simple-icons": "^1.2.103",
+    "@iconify-json/simple-icons": "^1.2.104",
     "@iconify-json/solar": "^1.2.17",
     "@nuxt/eslint-config": "^1.17.0",
     "@nuxt/fonts": "^1.2.0",
@@ -51,7 +51,7 @@
     "flag-icons": "^7.6.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.2",
-    "nuxt-og-image": "^7.0.7",
+    "nuxt-og-image": "^7.2.0",
     "nuxtseo-devtools-host": "^1.0.3",
     "prettier": "^3.10.1",
     "typescript": "^6.0.3"
