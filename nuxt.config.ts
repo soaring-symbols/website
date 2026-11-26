@@ -173,6 +173,8 @@ export default defineNuxtConfig({
         '/brand',
         '/changelog',
         '/alliances',
+        '/privacy',
+        '/terms',
         '/sitemap.xml',
         ...airlines.map((airline) => `/airlines/${airline.slug}`),
         ...alliances.map((alliance) => `/alliances/${alliance.slug}`),

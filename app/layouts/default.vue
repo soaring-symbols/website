@@ -227,6 +227,8 @@ const footerLinks = [
     to: 'https://github.com/sponsors/soaring-symbols',
     target: '_blank',
   },
+  { label: 'Privacy', to: '/privacy' },
+  { label: 'Terms', to: '/terms' },
 ]
 
 const footerIcons = [

@@ -12,6 +12,7 @@ Live at <https://soaringsymbols.org>.
 - `/ecosystem`: every integration (npm, CDN, the API, Raycast, Figma, Framer, draw.io and more), with the API's parameters
 - `/changelog`: the package's GitHub releases
 - `/brand`: the Soaring Symbols logos and icons, to download
+- `/privacy` and `/terms`: the privacy policy and terms of service, for the website, the API, the package and every app (the app stores ask for both)
 - `/api/airlines` and `/api/alliances`: JSON and image API, no key needed (parameters on the ecosystem page)
 
 ## Development

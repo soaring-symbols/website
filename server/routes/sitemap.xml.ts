@@ -14,6 +14,8 @@ export default defineEventHandler((event) => {
     '/brand',
     '/changelog',
     '/alliances',
+    '/privacy',
+    '/terms',
     ...(airlines as { slug: string }[]).map(
       (airline) => `/airlines/${airline.slug}`,
     ),
