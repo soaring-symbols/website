@@ -250,6 +250,19 @@ export const ecosystem: EcosystemEntry[] = [
     },
   },
   {
+    id: 'webflow',
+    name: 'Webflow app',
+    icon: 'simple-icons:webflow',
+    group: 'apps',
+    description:
+      'Search airlines by name or code in the Webflow Designer, and click a mark to insert it into the selected element as an image, added to the site’s assets with alt text, alliance marks and earlier logos included, with monochrome marks in any color.',
+    status: 'In development',
+    link: {
+      label: 'View on GitHub',
+      to: 'https://github.com/soaring-symbols/webflow',
+    },
+  },
+  {
     id: 'drawio',
     name: 'draw.io libraries',
     icon: 'simple-icons:diagramsdotnet',
