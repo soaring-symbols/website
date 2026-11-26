@@ -255,11 +255,24 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:webflow',
     group: 'apps',
     description:
-      'Search airlines by name or code in the Webflow Designer, and click a mark to insert it into the selected element as an image, added to the site’s assets with alt text, alliance marks and earlier logos included, with monochrome marks in any color.',
-    status: 'In development',
+      'Search airlines by name or code in the Webflow Designer, and click a mark to insert it into the selected element as an image, added to the site’s assets with alt text, alliance marks and earlier logos included, with monochrome marks in any color. It isn’t on the Webflow Marketplace: add it to your own workspace as a private app.',
+    details: [
+      {
+        term: 'npm run bundle',
+        text: 'Builds bundle.zip from the repository, with Node 22.18 or newer.',
+      },
+      {
+        term: 'Apps & Integrations → Develop',
+        text: 'In your workspace settings, create an app with the Designer Extension building block, upload bundle.zip as an extension version and install the app on a site.',
+      },
+      {
+        term: 'Apps panel → Launch App',
+        text: 'In the Designer, select an element, then click a mark in the panel to insert it.',
+      },
+    ],
     link: {
-      label: 'View on GitHub',
-      to: 'https://github.com/soaring-symbols/webflow',
+      label: 'Setup on GitHub',
+      to: 'https://github.com/soaring-symbols/webflow#add-it-to-your-workspace',
     },
   },
   {
