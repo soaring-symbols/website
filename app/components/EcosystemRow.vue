@@ -36,15 +36,34 @@
           >
         </span>
       </h3>
-      <UButton
-        v-if="entry.link"
-        :to="entry.link.to"
-        target="_blank"
-        :label="entry.link.label"
-        trailing-icon="solar:arrow-right-up-linear"
-        variant="outline"
-        :ui="{ label: 'block' }"
-      />
+      <!-- The main action, and the source on GitHub beside it for an app
+           the main link takes to a store -->
+      <div class="flex items-center gap-2">
+        <UButton
+          v-if="entry.link"
+          :to="entry.link.to"
+          target="_blank"
+          :label="entry.link.label"
+          trailing-icon="solar:arrow-right-up-linear"
+          variant="outline"
+          :ui="{ label: 'block' }"
+        />
+        <UTooltip
+          v-if="entry.source"
+          text="Source on GitHub"
+          :delay-duration="0"
+        >
+          <UButton
+            :to="entry.source"
+            target="_blank"
+            icon="simple-icons:github"
+            color="neutral"
+            variant="outline"
+            square
+            :aria-label="`${entry.name} source on GitHub`"
+          />
+        </UTooltip>
+      </div>
     </div>
 
     <!-- Under the name, as a short reference: what it is and the line to

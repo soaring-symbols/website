@@ -33,6 +33,10 @@ export interface EcosystemEntry {
   // tabs when there's more than one way to set it up
   examples?: EcosystemExample[]
   link?: { label: string; to: string }
+  // The project's own repository for an app whose main link is a store, so
+  // users can report a problem or fix one; shown as a GitHub button beside
+  // the link
+  source?: string
   // One line, such as a URL
   snippet?: { label: string; code: string }
   status?: 'In development' | 'In review'
@@ -223,6 +227,7 @@ export const ecosystem: EcosystemEntry[] = [
       label: 'Open in Raycast Store',
       to: 'https://www.raycast.com/anhthang/soaring-symbols',
     },
+    source: 'https://github.com/soaring-symbols/raycast',
   },
   {
     id: 'figma',
@@ -248,6 +253,7 @@ export const ecosystem: EcosystemEntry[] = [
       label: 'Open in Framer Marketplace',
       to: 'https://www.framer.com/marketplace/plugins/soaring-symbols/',
     },
+    source: 'https://github.com/soaring-symbols/framer',
   },
   {
     id: 'webflow',
@@ -283,6 +289,7 @@ export const ecosystem: EcosystemEntry[] = [
     description:
       'Open every airline’s icons, logos and tails, and the alliance marks, as libraries in draw.io (diagrams.net), find an airline by name or code in its shape search, and recolor the monochrome marks for light and dark diagrams.',
     link: { label: 'Open in draw.io', to: drawioUrl() },
+    source: 'https://github.com/soaring-symbols/drawio',
   },
   {
     id: 'home-assistant',
