@@ -176,6 +176,8 @@ export default defineNuxtConfig({
         '/privacy',
         '/terms',
         '/sitemap.xml',
+        '/llms.txt',
+        '/llms-full.txt',
         ...airlines.map((airline) => `/airlines/${airline.slug}`),
         ...alliances.map((alliance) => `/alliances/${alliance.slug}`),
       ],

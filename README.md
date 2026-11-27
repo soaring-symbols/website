@@ -15,6 +15,7 @@ Live at <https://soaringsymbols.org>.
 - `/privacy` and `/terms`: the privacy policy and terms of service, for the website, the API, the package and every app (the app stores ask for both)
 - `/api/airlines` and `/api/alliances`: JSON and image API, no key needed (parameters on the ecosystem page)
 - `/mcp`: MCP server over Streamable HTTP, so AI assistants can search airlines and fetch their marks (`server/utils/mcp.ts`; setup on the ecosystem page)
+- `/llms.txt` and `/llms-full.txt`: what the site, the API, the MCP server and the package offer, for AI assistants ([llmstxt.org](https://llmstxt.org)); the full one adds a line per airline and alliance (`server/utils/llms.ts`)
 
 ## Development
 
