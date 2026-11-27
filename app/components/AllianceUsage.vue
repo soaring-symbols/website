@@ -55,6 +55,15 @@ const tabs = computed(() => {
         },
       ],
     },
+    variant &&
+      usageCssTab(
+        `${slug}-${variant}`,
+        allianceCdnUrl(alliance, variant),
+        mono && {
+          className: `${slug}-${mono}`,
+          url: allianceCdnUrl(alliance, mono),
+        },
+      ),
     {
       id: 'api',
       label: 'API',

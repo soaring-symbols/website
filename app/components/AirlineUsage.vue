@@ -77,6 +77,14 @@ const tabs = computed(() => {
         },
       ],
     },
+    usageCssTab(
+      `${airline.slug}-${variant}`,
+      cdnUrl(airline, variant),
+      mono && {
+        className: `${airline.slug}-${mono}`,
+        url: cdnUrl(airline, mono),
+      },
+    ),
     {
       id: 'api',
       label: 'API',
