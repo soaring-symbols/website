@@ -42,10 +42,10 @@
 
       <h2>The apps and plugins</h2>
       <p>
-        The Webflow app, the Figma and Framer plugins, the Raycast extension and
-        the draw.io libraries load the airline lists and the marks from the
-        soaring-symbols package on jsDelivr. They have no server of ours behind
-        them and send us nothing.
+        The Webflow and Miro apps, the Figma and Framer plugins, the Raycast
+        extension and the draw.io libraries load the airline lists and the marks
+        from the soaring-symbols package on jsDelivr. They have no server of
+        ours behind them and send us nothing.
       </p>
       <ul>
         <li>
@@ -59,8 +59,14 @@
           copy.
         </li>
         <li>
-          The host app (Webflow, Figma, Framer, Raycast, draw.io) handles its
-          own data under its own privacy policy.
+          The Miro app adds the marks you pick to the board you have open, as
+          images, through Miro’s Web SDK, and reads only the visible part of the
+          board to place them. Its panel is served from miro.soaringsymbols.org,
+          and nothing from your boards is sent there.
+        </li>
+        <li>
+          The host app (Webflow, Miro, Figma, Framer, Raycast, draw.io) handles
+          its own data under its own privacy policy.
         </li>
       </ul>
 
