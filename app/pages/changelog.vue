@@ -26,8 +26,18 @@
       ]"
     />
 
+    <!-- The package's releases, or what changed around it: the two have
+         their own schedules, so neither is filed under the other -->
+    <UTabs
+      v-model="tab"
+      :items="tabs"
+      :content="false"
+      variant="link"
+      class="mt-8 w-full"
+    />
+
     <UChangelogVersions
-      v-if="releases?.length"
+      v-if="tab === 'ecosystem' || releases?.length"
       class="py-12 sm:py-16"
       :ui="{ indicator: 'overflow-visible z-10' }"
     >
@@ -35,34 +45,86 @@
         <FlightPathIndicator />
       </template>
 
-      <UChangelogVersion
-        v-for="(release, index) in releases"
-        :id="release.tag"
-        :key="release.tag"
-        :title="release.tag"
-        :date="release.date"
-        :description="release.summary || undefined"
-        :authors="authors"
-        :badge="
-          index === 0
-            ? {
-                label: 'Latest',
-                color: 'primary',
-                variant: 'subtle',
-              }
-            : undefined
-        "
-        :ui="{
-          container: 'max-w-2xl',
-          title: 'font-mono',
-        }"
-      >
-        <template #body>
-          <!-- GitHub renders and sanitizes the notes -->
-          <!-- eslint-disable-next-line vue/no-v-html -->
-          <div class="release-notes mt-4" v-html="release.html" />
-        </template>
-      </UChangelogVersion>
+      <!-- One version per day: a day with one change names its app in the
+           title, a day with more lists them, an app to a line -->
+      <template v-if="tab === 'ecosystem'">
+        <UChangelogVersion
+          v-for="day in days"
+          :id="day.date"
+          :key="day.date"
+          :date="day.date"
+          :ui="{ container: 'max-w-2xl' }"
+        >
+          <template #title>
+            <ULink
+              v-if="day.only"
+              :to="day.only.to"
+              class="inline-flex items-center gap-2 text-highlighted hover:text-primary"
+            >
+              <UIcon :name="day.only.icon" class="size-5 shrink-0" />
+              <span class="cap-center">{{ day.only.name }}</span>
+            </ULink>
+            <template v-else>{{ day.title }}</template>
+          </template>
+
+          <template v-if="day.only" #description>
+            <CodeText :text="day.only.text" />
+          </template>
+
+          <template v-else #body>
+            <ul class="mt-4 flex flex-col gap-3">
+              <li
+                v-for="(change, index) in day.changes"
+                :key="index"
+                class="flex gap-2.5 text-muted"
+              >
+                <UIcon
+                  :name="change.icon"
+                  class="mt-[0.2em] size-4 shrink-0 text-highlighted"
+                />
+                <p>
+                  <ULink
+                    :to="change.to"
+                    class="font-semibold text-highlighted hover:text-primary"
+                    >{{ change.name }}</ULink>:
+                  <CodeText :text="change.text" />
+                </p>
+              </li>
+            </ul>
+          </template>
+        </UChangelogVersion>
+      </template>
+
+      <template v-else>
+        <UChangelogVersion
+          v-for="(release, index) in releases"
+          :id="release.tag"
+          :key="release.tag"
+          :title="release.tag"
+          :date="release.date"
+          :description="release.summary || undefined"
+          :authors="authors"
+          :badge="
+            index === 0
+              ? {
+                  label: 'Latest',
+                  color: 'primary',
+                  variant: 'subtle',
+                }
+              : undefined
+          "
+          :ui="{
+            container: 'max-w-2xl',
+            title: 'font-mono',
+          }"
+        >
+          <template #body>
+            <!-- GitHub renders and sanitizes the notes -->
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div class="release-notes mt-4" v-html="release.html" />
+          </template>
+        </UChangelogVersion>
+      </template>
     </UChangelogVersions>
 
     <UEmpty
@@ -84,10 +146,12 @@
 </template>
 
 <script setup>
+import { ecosystemChanges } from '~/data/ecosystem-changelog'
+
 const meta = {
   title: 'Changelog',
   description:
-    'What each release of the soaring-symbols package brought: new airlines and marks, data and fixes. Every release reaches the CDN, the API and the apps; follow the feed to hear about the next one.',
+    'What each release of the soaring-symbols package brought, new airlines and marks, data and fixes, and what changed around it: the website, its API and the apps.',
 }
 
 useSeoMeta({
@@ -99,7 +163,46 @@ useSeoMeta({
 
 defineOgImage('Site', { title: meta.title, description: meta.description })
 
-const releases = useReleases()
+const route = useRoute()
+const router = useRouter()
+
+const tabs = [
+  { label: 'Package', value: 'package', icon: 'simple-icons:npm' },
+  { label: 'Ecosystem', value: 'ecosystem', icon: 'solar:widget-linear' },
+]
+
+// Kept in the URL (?tab=ecosystem), so a link can open either tab
+const tab = computed({
+  get: () => (route.query.tab === 'ecosystem' ? 'ecosystem' : 'package'),
+  set: (value) =>
+    router.replace({
+      query: { ...route.query, tab: value === 'package' ? undefined : value },
+    }),
+})
+
+// The releases, read again in the browser only once the Package tab shows
+const releases = useReleases(() => tab.value === 'package')
+
+// The changes grouped by day, newest first as the data lists them: a day
+// with one change shows it alone, a day with several is titled with their
+// apps, each named once
+const listFormat = new Intl.ListFormat('en', { type: 'conjunction' })
+
+const byDate = new Map()
+for (const change of ecosystemChanges) {
+  if (!byDate.has(change.date)) byDate.set(change.date, [])
+  byDate.get(change.date).push(change)
+}
+
+const days = [...byDate].map(([date, changes]) =>
+  changes.length === 1
+    ? { date, only: changes[0] }
+    : {
+        date,
+        title: listFormat.format([...new Set(changes.map((c) => c.name))]),
+        changes,
+      },
+)
 
 // Who makes the releases: the maintainer, with Claude Code
 const authors = [

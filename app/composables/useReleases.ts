@@ -68,19 +68,30 @@ const ENTITIES: Record<string, string> = {
 
 // Read while the page is prerendered, so it works without JavaScript and
 // search engines see it, then again in the browser: notes are written after a
-// release, often after the last deploy. A failed read keeps what the page
-// has (an empty list when the build couldn't reach GitHub either).
-export function useReleases() {
+// release, often after the last deploy. The browser reads them once `shown`
+// is true, so a page that starts on another view doesn't spend a request of
+// GitHub's hourly limit. A failed read keeps what the page has (an empty
+// list when the build couldn't reach GitHub either).
+export function useReleases(shown: () => boolean = () => true) {
   const { data } = useAsyncData('releases', () =>
     fetchReleases().catch(() => []),
   )
 
-  onMounted(async () => {
-    try {
-      data.value = await fetchReleases()
-    } catch {
-      // Keep the prerendered list
-    }
+  let read = false
+  onMounted(() => {
+    watch(
+      shown,
+      async (isShown) => {
+        if (!isShown || read) return
+        read = true
+        try {
+          data.value = await fetchReleases()
+        } catch {
+          // Keep the prerendered list
+        }
+      },
+      { immediate: true },
+    )
   })
 
   return data
