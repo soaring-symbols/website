@@ -36,7 +36,7 @@
                  stacked, is a name in a square viewBox, so its tile is
                  taller than an icon's to let the name read -->
             <div
-              class="flex items-center justify-center overflow-hidden rounded-lg p-6"
+              class="relative flex items-center justify-center overflow-hidden rounded-lg p-6"
               :class="[
                 file.kind === 'dark' ? 'bg-tile-dark' : 'bg-tile',
                 row.variant.startsWith('logo')
@@ -46,11 +46,71 @@
               :style="{ backgroundImage: tint }"
             >
               <img
-                :src="assetUrl(entry, file.variant, mark, source)"
+                :src="previewSrc(file.variant)"
                 :alt="`${entry.name} ${file.kind} ${row.label.toLowerCase()}${mark ? ` introduced in ${mark.since}` : ''}`"
                 loading="lazy"
                 class="size-full object-contain"
               />
+
+              <!-- A monochrome file in any color, from the corner of its
+                   preview: the preview, the copies and the downloads all
+                   take it -->
+              <UPopover v-if="file.kind === 'mono'" :content="{ align: 'end' }">
+                <!-- A palette until a color is picked, then that color -->
+                <UButton
+                  :icon="
+                    colorOf(file.variant) ? undefined : 'solar:pallete-2-linear'
+                  "
+                  variant="outline"
+                  size="sm"
+                  square
+                  class="absolute top-2 right-2"
+                  :aria-label="`Pick a color for ${fileName(file.variant)}`"
+                >
+                  <template v-if="colorOf(file.variant)" #leading>
+                    <span
+                      class="m-0.5 size-4 shrink-0 rounded-full ring ring-default"
+                      :style="{ background: colorOf(file.variant) }"
+                    />
+                  </template>
+                </UButton>
+
+                <template #content>
+                  <div class="flex w-56 flex-col gap-3 p-3">
+                    <UColorPicker
+                      :model-value="pickerColor(file.variant)"
+                      class="mx-auto"
+                      @update:model-value="pick(file.variant, $event)"
+                    />
+                    <UInput
+                      :model-value="colors[file.variant] ?? ''"
+                      placeholder="currentColor"
+                      class="font-mono"
+                      aria-label="Hex color"
+                      @update:model-value="setColor(file.variant, $event)"
+                    />
+                    <div class="flex gap-2">
+                      <UButton
+                        label="Brand color"
+                        size="sm"
+                        variant="subtle"
+                        class="flex-1 justify-center"
+                        :ui="{ label: 'block' }"
+                        @click="setColor(file.variant, brandColor(entry))"
+                      />
+                      <UButton
+                        label="currentColor"
+                        size="sm"
+                        variant="ghost"
+                        class="flex-1 justify-center"
+                        :ui="{ label: 'block' }"
+                        :disabled="!colorOf(file.variant)"
+                        @click="setColor(file.variant, '')"
+                      />
+                    </div>
+                  </div>
+                </template>
+              </UPopover>
             </div>
 
             <div class="flex items-center justify-between gap-3">
@@ -63,20 +123,35 @@
                 </p>
               </div>
               <div class="flex shrink-0 gap-1">
-                <UButton
-                  icon="solar:link-linear"
-                  variant="ghost"
-                  :aria-label="`Copy the CDN link to ${fileName(file.variant)}`"
-                  @click="copyCdnUrl(file.variant)"
-                />
-                <UButton
-                  :to="assetUrl(entry, file.variant, mark, source)"
-                  external
-                  :download="downloadName(entry, file.variant, mark)"
-                  icon="solar:download-linear"
-                  variant="outline"
-                  :aria-label="`Download ${fileName(file.variant)}`"
-                />
+                <!-- The SVG in one click, every other way in the menu -->
+                <UFieldGroup>
+                  <UButton
+                    :to="downloadHref(file.variant)"
+                    external
+                    :download="svgName(file.variant)"
+                    label="SVG"
+                    icon="solar:download-minimalistic-linear"
+                    variant="subtle"
+                    :ui="{ label: 'block' }"
+                    :aria-label="`Download ${fileName(file.variant)}`"
+                  />
+                  <!-- The chevron turns while the menu is open -->
+                  <UDropdownMenu
+                    :items="menuItems(file.variant)"
+                    :content="{ align: 'end' }"
+                  >
+                    <UButton
+                      icon="solar:alt-arrow-down-linear"
+                      variant="subtle"
+                      square
+                      :ui="{
+                        leadingIcon:
+                          'transition-transform duration-200 [[data-state=open]>&]:rotate-180',
+                      }"
+                      :aria-label="`More ways to get ${fileName(file.variant)}`"
+                    />
+                  </UDropdownMenu>
+                </UFieldGroup>
               </div>
             </div>
           </div>
@@ -175,6 +250,164 @@ function fileName(variant) {
 const toast = useToast()
 
 const { copy } = useCopy()
+
+// The color picked for each monochrome file, as typed: only a full hex
+// color applies
+const colors = reactive({})
+
+function colorOf(variant) {
+  const value = colors[variant]
+  return /^#[0-9a-f]{6}$/i.test(value ?? '') ? value.toLowerCase() : undefined
+}
+
+function setColor(variant, value) {
+  colors[variant] = value?.toLowerCase() ?? ''
+  // The preview keeps the file as is if the fetch fails
+  if (colorOf(variant)) loadSource(variant).catch(() => {})
+}
+
+// Without a color the picker shows black, as the <img> draws currentColor.
+// It sends back the value it is given whenever that changes, so a black
+// it was shown, not picked, leaves the file in currentColor
+function pickerColor(variant) {
+  return colorOf(variant) ?? '#000000'
+}
+
+function pick(variant, value) {
+  if (value?.toLowerCase() !== pickerColor(variant)) setColor(variant, value)
+}
+
+// Each file's source, fetched the first time something needs it
+const sources = reactive({})
+// A failed fetch is forgotten, so the next try fetches again
+const pending = new Map()
+
+function loadSource(variant) {
+  if (!pending.has(variant)) {
+    const url = assetUrl(props.entry, variant, props.mark, props.source)
+    pending.set(
+      variant,
+      $fetch(url, { responseType: 'text' })
+        .then((svg) => (sources[variant] = svg))
+        .catch((error) => {
+          pending.delete(variant)
+          throw error
+        }),
+    )
+  }
+
+  return pending.get(variant)
+}
+
+// The file as it is, or in the color picked for it
+async function svgOf(variant) {
+  return tintSvg(await loadSource(variant), colorOf(variant))
+}
+
+// A picked color shows once the source is in; until then, the file as is
+function tinted(variant) {
+  const color = colorOf(variant)
+  return color && sources[variant]
+    ? svgToDataUri(tintSvg(sources[variant], color))
+    : undefined
+}
+
+function previewSrc(variant) {
+  return (
+    tinted(variant) ?? assetUrl(props.entry, variant, props.mark, props.source)
+  )
+}
+
+function downloadHref(variant) {
+  return (
+    tinted(variant) ?? assetUrl(props.entry, variant, props.mark, props.source)
+  )
+}
+
+// 'korean-air-icon-mono.svg', or with a color 'korean-air-icon-mono-c8102e.svg'
+function nameOf(variant, extension) {
+  const color = colorOf(variant)?.slice(1)
+  return downloadName(props.entry, variant, props.mark).replace(
+    /\.svg$/,
+    `${color ? `-${color}` : ''}.${extension}`,
+  )
+}
+
+function svgName(variant) {
+  return nameOf(variant, 'svg')
+}
+
+const PNG_WIDTHS = [64, 128, 256, 512, 1024]
+
+function menuItems(variant) {
+  return [
+    [
+      {
+        label: 'Copy SVG',
+        icon: 'solar:code-linear',
+        onSelect: () => copySource(variant, (svg) => svg, 'the SVG'),
+      },
+      {
+        label: 'Copy JSX',
+        icon: 'solar:code-square-linear',
+        onSelect: () => copySource(variant, svgToJsx, 'the JSX'),
+      },
+      {
+        label: 'Copy data URI',
+        icon: 'solar:paperclip-linear',
+        onSelect: () => copySource(variant, svgToDataUri, 'the data URI'),
+      },
+      {
+        // jsDelivr serves the file as shipped, without a picked color
+        label: 'Copy CDN link',
+        icon: 'solar:link-linear',
+        onSelect: () => copyCdnUrl(variant),
+      },
+    ],
+    [
+      {
+        label: 'Download PNG',
+        icon: 'solar:gallery-download-linear',
+        children: PNG_WIDTHS.map((width) => ({
+          label: `${width} px`,
+          onSelect: () => downloadPng(variant, width),
+        })),
+      },
+    ],
+  ]
+}
+
+function failed(title) {
+  toast.add({
+    title,
+    description: 'Check your connection and try again.',
+    color: 'error',
+    icon: 'solar:danger-triangle-linear',
+  })
+}
+
+async function copySource(variant, format, what) {
+  let text
+  try {
+    text = format(await svgOf(variant))
+  } catch {
+    return failed('Couldn’t load the file')
+  }
+  if (await copy(text)) {
+    toast.add({ title: `Copied ${what}`, duration: 1500 })
+  }
+}
+
+async function downloadPng(variant, width) {
+  try {
+    saveBlob(
+      await svgToPng(await svgOf(variant), width),
+      nameOf(variant, 'png'),
+    )
+  } catch {
+    failed('Couldn’t make the PNG')
+  }
+}
 
 async function copyCdnUrl(variant) {
   if (!(await copy(cdnUrl(props.entry, variant, props.mark, props.source)))) {

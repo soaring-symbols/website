@@ -81,7 +81,7 @@
     <!-- Every SVG the alliance ships, with where to get it -->
     <UPageSection
       title="Files"
-      description="Download a file, or link it straight from the npm package through jsDelivr. Monochrome files use currentColor, so they take the color of the text around them."
+      description="Download a file as SVG or PNG, copy its code, or link it straight from the npm package through jsDelivr. Monochrome files use currentColor, so they take the color of the text around them; pick a color to get them in another."
       class="mt-16"
       :ui="filesUi"
     >
