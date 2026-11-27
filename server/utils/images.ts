@@ -57,17 +57,25 @@ export function parseHexColor(value: unknown): string | undefined {
 }
 
 // The SVG as the package ships it, from the copy of the airlines' or the
-// alliances' marks bundled into the Worker
+// alliances' marks bundled into the Worker; with since, the older mark
+// introduced that year (history/<since>/), as the package's
+// getAssetPath(airline, type, { since }) finds it
 export async function readMarkSvg(
   source: MarkSource,
   entry: Airline | Alliance,
-  { type, mono, dark }: ImageRequest,
+  { type, mono, dark }: Pick<ImageRequest, 'type' | 'mono' | 'dark'>,
+  since?: number,
 ) {
-  const asset = (entry.assets as Airline['assets'])[type]
+  const assets =
+    since === undefined
+      ? entry.assets
+      : entry.history?.find((era) => era.since === since)?.assets
+  const asset = (assets as Airline['assets'] | undefined)?.[type]
   const variant = mono ? 'mono' : dark ? 'dark' : 'color'
   if (!asset?.[variant]) return undefined
   const suffix = variant === 'color' ? '' : `-${variant}`
-  const name = `${entry.slug}:${type}${suffix}.svg`
+  const folder = since === undefined ? '' : `history:${since}:`
+  const name = `${entry.slug}:${folder}${type}${suffix}.svg`
 
   // Bundled files come back as bytes on Workers, and as text elsewhere
   const raw = await useStorage(`assets:${source}`).getItemRaw(name)
