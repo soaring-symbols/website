@@ -74,7 +74,7 @@ export const ecosystemGroups: {
     id: 'apps',
     title: 'Apps and plugins',
     description:
-      'Find an airline and grab its marks without leaving the tools you work in.',
+      'Find an airline by name or code and use its marks, alliance marks and earlier logos included, without leaving the tools you work in.',
     sortByName: true,
   },
 ]
@@ -314,7 +314,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:raycast',
     group: 'apps',
     description:
-      'Search airlines from your launcher, see their codes, hubs and history, and grab their SVGs, earlier logos included. Also works in Vicinae, SuperCmd and Tinycast, which run Raycast extensions.',
+      'From your launcher: see an airline’s codes, hubs and history, and grab its SVGs. Also runs in Vicinae, SuperCmd and Tinycast, which run Raycast extensions.',
     link: {
       label: 'Open in Raycast Store',
       to: 'https://www.raycast.com/anhthang/soaring-symbols',
@@ -327,7 +327,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:figma',
     group: 'apps',
     description:
-      'Search airlines by name or code in Figma or FigJam, and click or drag their marks onto the canvas as vector layers, earlier logos included, with monochrome marks in any color.',
+      'Click or drag marks onto the canvas in Figma or FigJam as editable vector layers, with monochrome marks in any color.',
     status: 'In review',
     link: {
       label: 'View on GitHub',
@@ -340,7 +340,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:framer',
     group: 'apps',
     description:
-      'Search airlines by name or code in Framer, and click or drag their marks onto the canvas as SVG layers, alliance marks and earlier logos included, with monochrome marks in any color or the airline’s own.',
+      'Click or drag marks onto the Framer canvas as SVG layers, with monochrome marks in any color or the airline’s own.',
     link: {
       label: 'Open in Framer Marketplace',
       to: 'https://www.framer.com/marketplace/plugins/soaring-symbols/',
@@ -353,7 +353,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:webflow',
     group: 'apps',
     description:
-      'Search airlines by name or code in the Webflow Designer, and click a mark to insert it into the selected element as an image, added to the site’s assets with alt text, alliance marks and earlier logos included, with monochrome marks in any color. It isn’t on the Webflow Marketplace, whose review asks for a demo video on Loom or YouTube: add it to your own workspace as a private app, or offer a video in an issue on GitHub to help bring it there.',
+      'Select an element in the Designer and click a mark: it goes in as an image, uploaded to the site’s assets with alt text. Not on the Webflow Marketplace, whose review asks for a demo video on Loom or YouTube: add it to your workspace as a private app, or offer a video in an issue on GitHub to help bring it there.',
     details: [
       {
         term: 'npm run bundle',
@@ -379,7 +379,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:miro',
     group: 'apps',
     description:
-      'Search airlines by name or code on a Miro board, and click a mark to add it to the middle of your view or drag it where it goes, alliance marks and earlier logos included, with monochrome marks in any color or the airline’s own. It isn’t on the Miro Marketplace yet, which lists apps once many teams use them: install it from its link.',
+      'Click a mark to add it to the middle of your view, or drag it where it goes on the board. Not on the Miro Marketplace yet, which lists apps once many teams use them: install it from its link.',
     link: {
       label: 'Install in Miro',
       to: 'https://miro.com/app-install/?response_type=code&client_id=3458764691750850052&redirect_uri=%2Fapp-install%2Fconfirm%2F',
@@ -392,7 +392,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:diagramsdotnet',
     group: 'apps',
     description:
-      'Open every airline’s icons, logos and tails, and the alliance marks, as libraries in draw.io (diagrams.net), find an airline by name or code in its shape search, and recolor the monochrome marks for light and dark diagrams.',
+      'Open every mark as a shape library in draw.io (diagrams.net), find an airline in its shape search, and recolor the monochrome marks for light and dark diagrams.',
     link: { label: 'Open in draw.io', to: drawioUrl() },
     source: 'https://github.com/soaring-symbols/drawio',
   },
