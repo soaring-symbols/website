@@ -180,6 +180,9 @@ export default defineNuxtConfig({
         ...alliances.map((alliance) => `/alliances/${alliance.slug}`),
       ],
       failOnError: true,
+      // The MCP server answers POSTs only, so a link to it must not be
+      // crawled
+      ignore: ['/mcp'],
     },
   },
 })

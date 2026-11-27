@@ -217,6 +217,98 @@ export const ecosystem: EcosystemEntry[] = [
     },
   },
   {
+    id: 'mcp',
+    name: 'MCP server',
+    icon: 'simple-icons:modelcontextprotocol',
+    group: 'data',
+    description:
+      'Let an AI assistant such as Claude, Cursor or VS Code look up airlines and fetch their marks, as SVG source for your code or as images it can see. A remote server over Streamable HTTP, with no key and nothing to install.',
+    details: [
+      {
+        term: 'search_airlines',
+        text: 'Find airlines by name, code or callsign, and filter by country, alliance, hub, cargo or defunct.',
+      },
+      {
+        term: 'get_airline',
+        text: 'One airline’s full entry, as the JSON API returns it.',
+      },
+      {
+        term: 'get_mark',
+        text: 'A logo, icon or tail of an airline or alliance, in color, monochrome in any color or for dark backgrounds, earlier logos included, as SVG or PNG.',
+      },
+      {
+        term: 'list_alliances, get_alliance',
+        text: 'The alliances, each with its marks and member airlines.',
+      },
+    ],
+    examples: [
+      {
+        id: 'claude-code',
+        label: 'Claude Code',
+        items: [
+          {
+            label: 'Run in a terminal',
+            code: 'claude mcp add --transport http soaring-symbols https://soaringsymbols.org/mcp',
+          },
+        ],
+      },
+      {
+        id: 'claude',
+        label: 'Claude',
+        items: [
+          {
+            label:
+              'In Settings, Connectors, add a custom connector with this URL',
+            code: 'https://soaringsymbols.org/mcp',
+          },
+        ],
+      },
+      {
+        id: 'vscode',
+        label: 'VS Code',
+        items: [
+          {
+            label: 'In .vscode/mcp.json',
+            code: JSON.stringify(
+              {
+                servers: {
+                  'soaring-symbols': {
+                    type: 'http',
+                    url: 'https://soaringsymbols.org/mcp',
+                  },
+                },
+              },
+              null,
+              2,
+            ),
+          },
+        ],
+      },
+      {
+        id: 'cursor',
+        label: 'Cursor',
+        items: [
+          {
+            label: 'In .cursor/mcp.json',
+            code: JSON.stringify(
+              {
+                mcpServers: {
+                  'soaring-symbols': { url: 'https://soaringsymbols.org/mcp' },
+                },
+              },
+              null,
+              2,
+            ),
+          },
+        ],
+      },
+    ],
+    snippet: {
+      label: 'Copy URL',
+      code: 'https://soaringsymbols.org/mcp',
+    },
+  },
+  {
     id: 'raycast',
     name: 'Raycast extension',
     icon: 'simple-icons:raycast',
@@ -261,7 +353,7 @@ export const ecosystem: EcosystemEntry[] = [
     icon: 'simple-icons:webflow',
     group: 'apps',
     description:
-      'Search airlines by name or code in the Webflow Designer, and click a mark to insert it into the selected element as an image, added to the site’s assets with alt text, alliance marks and earlier logos included, with monochrome marks in any color. It isn’t on the Webflow Marketplace: add it to your own workspace as a private app.',
+      'Search airlines by name or code in the Webflow Designer, and click a mark to insert it into the selected element as an image, added to the site’s assets with alt text, alliance marks and earlier logos included, with monochrome marks in any color. It isn’t on the Webflow Marketplace, whose review asks for a demo video on Loom or YouTube: add it to your own workspace as a private app, or offer a video in an issue on GitHub to help bring it there.',
     details: [
       {
         term: 'npm run bundle',
