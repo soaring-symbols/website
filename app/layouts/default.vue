@@ -12,7 +12,79 @@
         </span>
       </template>
 
-      <UNavigationMenu :items="nav" variant="link" />
+      <!-- Each dropdown takes its content's width (Browse's is set below,
+           Ecosystem's grows with its columns) and opens centered under its
+           own trigger, as content-orientation="vertical" places it, rather
+           than across the menu: the content's width sets the viewport's -->
+      <UNavigationMenu
+        :items="nav"
+        variant="link"
+        :ui="{
+          viewportWrapper: 'justify-start',
+          viewport:
+            'shrink-0 sm:w-(--reka-navigation-menu-viewport-width) left-(--reka-navigation-menu-viewport-left)',
+          content: 'sm:w-auto',
+        }"
+      >
+        <!-- Ecosystem lists every entry under its group's name, so each app
+             is one click from any page; a long group wraps into more
+             columns (ecosystemMenu) rather than running off the screen -->
+        <template #ecosystem-content="{ ui }">
+          <div class="flex w-max gap-x-4 p-2">
+            <div v-for="group in ecosystemMenu" :key="group.id">
+              <NavigationMenuLink as-child>
+                <ULink
+                  :to="`/ecosystem#${group.id}`"
+                  class="block px-2.5 pt-1.5 pb-1 text-xs font-medium text-muted hover:text-highlighted"
+                >
+                  {{ group.title }}
+                </ULink>
+              </NavigationMenuLink>
+              <div class="flex gap-x-1">
+                <ul
+                  v-for="(column, i) in group.columns"
+                  :key="i"
+                  class="min-w-40"
+                >
+                  <li v-for="entry in column" :key="entry.id">
+                    <NavigationMenuLink
+                      as-child
+                      :active="at('/ecosystem', `#${entry.id}`)"
+                    >
+                      <ULink
+                        :to="`/ecosystem#${entry.id}`"
+                        :class="
+                          ui.childLink({
+                            active: at('/ecosystem', `#${entry.id}`),
+                          })
+                        "
+                      >
+                        <UIcon
+                          :name="entry.icon"
+                          :class="
+                            ui.childLinkIcon({
+                              active: at('/ecosystem', `#${entry.id}`),
+                            })
+                          "
+                        />
+                        <span
+                          :class="
+                            ui.childLinkLabel({
+                              active: at('/ecosystem', `#${entry.id}`),
+                            })
+                          "
+                        >
+                          {{ entry.name }}
+                        </span>
+                      </ULink>
+                    </NavigationMenuLink>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </template>
+      </UNavigationMenu>
 
       <template #right>
         <!-- The header's buttons share the stars button's light border.
@@ -137,6 +209,9 @@
 </template>
 
 <script setup>
+import { NavigationMenuLink } from 'reka-ui'
+import { ecosystemEntries, ecosystemGroups } from '~/data/ecosystem'
+
 const year = new Date().getFullYear()
 
 const route = useRoute()
@@ -152,12 +227,15 @@ const under = (...paths) =>
 const at = (path, hash) => route.path === path && route.hash === hash
 
 // Browse opens the two halves of the collection, airlines and alliances, and
-// Ecosystem its two groups; each stays lit on any page below it
+// Ecosystem its two groups (on phones; the header lists every entry, from
+// ecosystemMenu); each stays lit on any page below it
 const nav = computed(() => [
   {
     label: 'Browse',
     icon: 'solar:plane-linear',
     active: under('/airlines', '/alliances'),
+    // Its two pages side by side, with room for their descriptions
+    ui: { childList: 'w-120' },
     children: [
       {
         label: 'Airlines',
@@ -180,6 +258,7 @@ const nav = computed(() => [
     label: 'Ecosystem',
     to: '/ecosystem',
     icon: 'solar:widget-add-linear',
+    slot: 'ecosystem',
     active: under('/ecosystem'),
     children: [
       {
@@ -201,11 +280,29 @@ const nav = computed(() => [
   { label: 'Changelog', to: '/changelog', icon: 'solar:history-linear' },
 ])
 
+// The header's Ecosystem menu: each group with its entries, in the order the
+// ecosystem page lists them, split into columns of at most MENU_ROWS, as even
+// as they divide, so the menu grows wider rather than taller
+const MENU_ROWS = 8
+const ecosystemMenu = ecosystemGroups.map((group) => {
+  const entries = ecosystemEntries(group.id)
+  const count = Math.ceil(entries.length / MENU_ROWS)
+  const rows = Math.ceil(entries.length / count)
+
+  return {
+    ...group,
+    columns: Array.from({ length: count }, (_, i) =>
+      entries.slice(i * rows, (i + 1) * rows),
+    ),
+  }
+})
+
 // The phone menu is a tree like a docs sidebar: each section shows its pages
 // beneath it, open, with a line down the side, so every page is one tap away
-// and the current one is marked on that line
+// and the current one is marked on that line. The header's dropdown widths
+// (ui) and Ecosystem's columns (slot) stay out of it
 const mobileNav = computed(() =>
-  nav.value.map(({ children, ...item }) => ({
+  nav.value.map(({ children, ui, slot, ...item }) => ({
     ...item,
     defaultOpen: true,
     // Its pages drop their descriptions and icons: the line says they belong
