@@ -374,6 +374,19 @@ export const ecosystem: EcosystemEntry[] = [
     },
   },
   {
+    id: 'miro',
+    name: 'Miro app',
+    icon: 'simple-icons:miro',
+    group: 'apps',
+    description:
+      'Search airlines by name or code on a Miro board, and click a mark to add it to the middle of your view or drag it where it goes, alliance marks and earlier logos included, with monochrome marks in any color or the airline’s own. It isn’t on the Miro Marketplace yet, which lists apps once many teams use them: install it from its link.',
+    link: {
+      label: 'Install in Miro',
+      to: 'https://miro.com/app-install/?response_type=code&client_id=3458764691750850052&redirect_uri=%2Fapp-install%2Fconfirm%2F',
+    },
+    source: 'https://github.com/soaring-symbols/miro',
+  },
+  {
     id: 'drawio',
     name: 'draw.io libraries',
     icon: 'simple-icons:diagramsdotnet',

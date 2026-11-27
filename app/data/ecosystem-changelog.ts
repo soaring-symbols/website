@@ -20,6 +20,11 @@ interface EcosystemChange {
 const changes: EcosystemChange[] = [
   {
     date: '2026-11-27',
+    app: 'miro',
+    text: 'Out now: search airlines on a Miro board and click or drag their marks onto it. Install it from its link on the ecosystem page.',
+  },
+  {
+    date: '2026-11-27',
     app: 'mcp',
     text: 'Out now: AI assistants such as Claude, Cursor and VS Code search airlines and fetch their marks as SVG or PNG. Add `https://soaringsymbols.org/mcp` to any MCP client.',
   },

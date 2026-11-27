@@ -26,7 +26,7 @@ Each airline has a slug, its name in lowercase with hyphens (vietnam-airlines). 
 - [jsDelivr CDN](https://www.jsdelivr.com/package/npm/soaring-symbols): \`https://cdn.jsdelivr.net/npm/soaring-symbols/dist/airlines/<slug>/logo.svg\`, older marks under \`<slug>/history/<year>/\`, alliances under \`dist/alliances/<slug>/\`. unpkg serves the same paths.
 - [npm package](https://www.npmjs.com/package/soaring-symbols): the SVGs, \`airlines.json\` and \`alliances.json\`, and a small JavaScript API (\`getAirline\`, \`findAirlines\`, \`listAirlines\`, \`getAssetPath\`, \`getAlliance\`).
 - [API reference](${REPO}/blob/main/API.md): every function of the package and the fields of its data.
-- [Ecosystem](${url('/ecosystem')}): every integration, from the CDNs and the API to the Raycast extension and the Figma, Framer and Webflow apps, with each parameter and setup step.
+- [Ecosystem](${url('/ecosystem')}): every integration, from the CDNs and the API to the Raycast extension and the Figma, Framer, Webflow and Miro apps, with each parameter and setup step.
 
 ## Browse
 

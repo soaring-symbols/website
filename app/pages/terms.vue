@@ -6,9 +6,9 @@
       <h2>What these terms cover</h2>
       <p>
         These terms cover soaringsymbols.org, its API, the soaring-symbols npm
-        package and the apps built on it: the Webflow app, the Figma and Framer
-        plugins, the Raycast extension and the draw.io libraries. Using any of
-        them means you accept these terms.
+        package and the apps built on it: the Webflow and Miro apps, the Figma
+        and Framer plugins, the Raycast extension and the draw.io libraries.
+        Using any of them means you accept these terms.
       </p>
 
       <h2>The code</h2>
@@ -48,6 +48,10 @@
           The Webflow app adds the marks you insert to your site’s assets and
           pages; what you publish with them is yours to answer for.
         </li>
+        <li>
+          The Miro app adds the marks you pick to your boards; what you share
+          with them is yours to answer for.
+        </li>
       </ul>
 
       <h2>No warranty</h2>
@@ -71,7 +75,7 @@
 </template>
 
 <script setup>
-const UPDATED = 'November 26, 2026'
+const UPDATED = 'November 27, 2026'
 const ISSUES_URL = 'https://github.com/soaring-symbols/soaring-symbols/issues'
 
 const meta = {
