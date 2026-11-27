@@ -12,15 +12,21 @@
 
       <h2>This website and the API</h2>
       <p>
-        soaringsymbols.org and its API (<code>/api/airlines</code>,
-        <code>/api/alliances</code>) run on Cloudflare Workers. Like any web
-        server, Cloudflare receives each request with your IP address, browser
-        and the address asked for, and keeps logs of requests so errors can be
-        found and fixed. Those logs are used for nothing else. Cloudflare
-        handles them under its own
+        soaringsymbols.org, its API (<code>/api/airlines</code>,
+        <code>/api/alliances</code>) and its MCP server (<code>/mcp</code>) run
+        on Cloudflare Workers. Like any web server, Cloudflare receives each
+        request with your IP address, browser and the address asked for, and
+        keeps logs of requests so errors can be found and fixed. Those logs are
+        used for nothing else. Cloudflare handles them under its own
         <ULink to="https://www.cloudflare.com/privacypolicy/" target="_blank"
           >privacy policy</ULink
         >.
+      </p>
+      <p>
+        When an AI assistant uses the MCP server, the request comes from the
+        assistant’s app or its provider’s servers and holds only what it looks
+        up, such as an airline’s name or code; your conversation stays with the
+        assistant.
       </p>
       <p>
         Your browser keeps your light or dark mode choice in its local storage,
@@ -69,7 +75,7 @@
 </template>
 
 <script setup>
-const UPDATED = 'November 26, 2026'
+const UPDATED = 'November 27, 2026'
 const ISSUES_URL = 'https://github.com/soaring-symbols/soaring-symbols/issues'
 
 const meta = {
